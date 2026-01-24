@@ -1,0 +1,55 @@
+name: science_lab_flutter
+description: "눈으로 보는 과학 - 힘들기만한 물리,수학을 시뮬레이터로 재미있게 이해하기"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # Routing
+  go_router: ^14.6.2
+
+  # Math & Equations
+  math_expressions: ^2.6.0
+  vector_math: ^2.1.4
+
+  # UI
+  google_fonts: ^6.2.1
+
+  # Storage
+  shared_preferences: ^2.3.3
+
+  # Ads
+  google_mobile_ads: ^5.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#0a0a0a"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+  remove_alpha_ios: true
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icon/
