@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,9 +15,8 @@ class GameOfLifeScreen extends StatefulWidget {
   State<GameOfLifeScreen> createState() => _GameOfLifeScreenState();
 }
 
-class _GameOfLifeScreenState extends State<GameOfLifeScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _GameOfLifeScreenState extends State<GameOfLifeScreen> {
+  Timer? _timer;
 
   static const int gridSize = 50;
   late List<List<bool>> grid;
@@ -35,10 +35,6 @@ class _GameOfLifeScreenState extends State<GameOfLifeScreen>
   void initState() {
     super.initState();
     _initGrid();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    )..addListener(_update);
   }
 
   void _initGrid() {
@@ -133,12 +129,23 @@ class _GameOfLifeScreenState extends State<GameOfLifeScreen>
     setState(() {
       isRunning = !isRunning;
       if (isRunning) {
-        _controller.duration = Duration(milliseconds: speed.toInt());
-        _controller.repeat();
+        _startTimer();
       } else {
-        _controller.stop();
+        _stopTimer();
       }
     });
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(milliseconds: speed.toInt()), (_) {
+      _update();
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+    _timer = null;
   }
 
   void _applyPattern(String pattern) {
@@ -208,7 +215,7 @@ class _GameOfLifeScreenState extends State<GameOfLifeScreen>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _stopTimer();
     super.dispose();
   }
 
@@ -317,7 +324,7 @@ class _GameOfLifeScreenState extends State<GameOfLifeScreen>
                   onChanged: (v) {
                     setState(() => speed = v);
                     if (isRunning) {
-                      _controller.duration = Duration(milliseconds: v.toInt());
+                      _startTimer(); // Restart timer with new speed
                     }
                   },
                 ),

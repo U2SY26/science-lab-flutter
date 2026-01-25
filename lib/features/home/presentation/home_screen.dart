@@ -325,6 +325,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // H-004: 배경 파티클 애니메이션
   late AnimationController _particleController;
 
+  DateTime? _lastBackPress;
+
   @override
   void initState() {
     super.initState();
@@ -346,6 +348,120 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _loadPreferences();
     _countController.forward();
+    _checkFirstLaunch();
+  }
+
+  Future<void> _checkFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenIntro = prefs.getBool('hasSeenIntro') ?? false;
+    if (!hasSeenIntro && mounted) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) _showIntroDialog();
+      await prefs.setBool('hasSeenIntro', true);
+    }
+  }
+
+  void _showIntroDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.science, color: AppColors.accent),
+            const SizedBox(width: 8),
+            const Text(
+              '눈으로 보는 과학',
+              style: TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '과학과 수학의 원리를 인터랙티브 시뮬레이션으로 배워보세요!',
+              style: TextStyle(color: AppColors.ink, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.update, color: AppColors.accent, size: 18),
+                      const SizedBox(width: 8),
+                      const Text(
+                        '지속적인 업데이트',
+                        style: TextStyle(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    '새로운 시뮬레이션과 기능이 계속 추가됩니다.',
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.accent2.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.language, color: AppColors.accent2, size: 18),
+                      const SizedBox(width: 8),
+                      const Text(
+                        '웹 버전도 있어요!',
+                        style: TextStyle(
+                          color: AppColors.accent2,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'https://3dweb-rust.vercel.app',
+                    style: TextStyle(color: AppColors.muted, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              '시작하기',
+              style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadPreferences() async {
@@ -400,9 +516,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      body: BottomAdBanner(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        final now = DateTime.now();
+        if (_lastBackPress == null ||
+            now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
+          _lastBackPress = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('한 번 더 누르면 앱을 종료합니다'),
+              duration: const Duration(seconds: 2),
+              backgroundColor: AppColors.card,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.bg,
+        body: BottomAdBanner(
         child: CustomScrollView(
         // H-015: 물리 스크롤
         physics: const BouncingScrollPhysics(),
@@ -664,6 +801,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           // 하단 여백
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
+      ),
       ),
       ),
     );
