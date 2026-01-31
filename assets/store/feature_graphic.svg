@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <!-- Light background -->
+  <rect width="1024" height="500" fill="#f8fafc" />
+
+  <!-- Atom on the left -->
+  <g transform="translate(220, 250)">
+    <ellipse cx="0" cy="0" rx="45" ry="117" fill="none" stroke="#94A3B8" stroke-width="8" />
+    <ellipse cx="0" cy="0" rx="45" ry="117" fill="none" stroke="#94A3B8" stroke-width="8" transform="rotate(60)" />
+    <ellipse cx="0" cy="0" rx="45" ry="117" fill="none" stroke="#94A3B8" stroke-width="8" transform="rotate(-60)" />
+    <circle cx="0" cy="0" r="36" fill="#1a1a1a" />
+  </g>
+
+  <!-- App name -->
+  <text x="620" y="200" font-family="Arial, sans-serif" font-size="68" font-weight="bold" fill="#1a1a1a" text-anchor="middle">눈으로 보는</text>
+  <text x="620" y="290" font-family="Arial, sans-serif" font-size="68" font-weight="bold" fill="#1a1a1a" text-anchor="middle">과학</text>
+
+  <!-- Tagline -->
+  <text x="620" y="370" font-family="Arial, sans-serif" font-size="22" fill="#64748b" text-anchor="middle">물리와 수학을 시뮬레이션으로 이해하세요</text>
+</svg>

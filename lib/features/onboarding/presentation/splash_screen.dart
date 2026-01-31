@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (isFirstLaunch) {
-      context.go('/onboarding');
+      context.go('/promo');
     } else {
       context.go('/home');
     }

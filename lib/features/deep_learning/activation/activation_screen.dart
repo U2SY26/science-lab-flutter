@@ -130,7 +130,7 @@ class _ActivationScreenState extends State<ActivationScreen> {
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+          onPressed: () => context.pop(),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

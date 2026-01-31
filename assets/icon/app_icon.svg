@@ -1,22 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Background -->
-  <rect width="1024" height="1024" fill="#1a1a2e"/>
-
-  <!-- Electron Orbits -->
-  <g fill="none" stroke="#4a90d9" stroke-width="4" opacity="0.8">
-    <!-- Horizontal orbit -->
-    <ellipse cx="512" cy="512" rx="340" ry="120"/>
-    <!-- Diagonal orbit 1 -->
-    <ellipse cx="512" cy="512" rx="340" ry="120" transform="rotate(60 512 512)"/>
-    <!-- Diagonal orbit 2 -->
-    <ellipse cx="512" cy="512" rx="340" ry="120" transform="rotate(-60 512 512)"/>
-  </g>
-
-  <!-- Nucleus (core) -->
-  <circle cx="512" cy="512" r="80" fill="#4a90d9"/>
-
-  <!-- Electrons -->
-  <circle cx="852" cy="512" r="24" fill="#ffffff"/>
-  <circle cx="342" cy="218" r="24" fill="#ffffff"/>
-  <circle cx="342" cy="806" r="24" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="230" fill="white" />
+  <ellipse cx="512" cy="512" rx="128" ry="332" fill="none" stroke="#94A3B8" stroke-width="24" />
+  <ellipse cx="512" cy="512" rx="128" ry="332" fill="none" stroke="#94A3B8" stroke-width="24" transform="rotate(60 512 512)" />
+  <ellipse cx="512" cy="512" rx="128" ry="332" fill="none" stroke="#94A3B8" stroke-width="24" transform="rotate(-60 512 512)" />
+  <circle cx="512" cy="512" r="104" fill="#1a1a1a" />
 </svg>

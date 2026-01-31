@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/ad_banner.dart';
+import '../../../shared/widgets/subscription_dialog.dart';
 
 /// 시뮬레이션 카테고리
 enum SimCategory {
@@ -836,6 +837,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
             const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.block, color: AppColors.accent),
+              title: const Text('광고 제거', style: TextStyle(color: AppColors.ink)),
+              subtitle: const Text('월 ₩990', style: TextStyle(color: AppColors.muted)),
+              onTap: () {
+                Navigator.pop(context);
+                SubscriptionDialog.show(context);
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.refresh, color: AppColors.accent),
               title: const Text('학습 기록 초기화', style: TextStyle(color: AppColors.ink)),
