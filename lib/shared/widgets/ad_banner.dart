@@ -1,10 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../core/services/ad_service.dart';
-import '../../core/services/subscription_service.dart';
 import '../../core/constants/app_colors.dart';
 
 /// 모바일 플랫폼 체크
@@ -74,21 +72,14 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   }
 }
 
-/// 하단 고정 배너 광고 위젯
-class BottomAdBanner extends ConsumerWidget {
+/// 하단 고정 배너 광고 위젯 (무료 앱 - 항상 광고 표시)
+class BottomAdBanner extends StatelessWidget {
   final Widget child;
 
   const BottomAdBanner({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final subscription = ref.watch(subscriptionProvider);
-
-    // 구독 중이면 광고 숨김
-    if (subscription.isSubscribed) {
-      return child;
-    }
-
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(child: child),

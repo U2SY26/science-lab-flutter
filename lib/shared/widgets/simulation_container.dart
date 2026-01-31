@@ -190,6 +190,9 @@ class _SimulationContainerState extends State<SimulationContainer> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: widget.buttons!,
             ),
+
+          // 하단 시스템 네비게이션 영역을 위한 여백
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 24),
         ],
       ),
     );
