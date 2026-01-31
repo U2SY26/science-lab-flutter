@@ -251,18 +251,19 @@ class _GradientDescentScreenState extends State<GradientDescentScreen>
           title: '경사 하강법',
           formula: 'θ = θ - α∇L(θ)',
           formulaDescription: _lossFunction.description,
-          simulation: SizedBox(
-            height: 350,
-            child: CustomPaint(
-              painter: GradientDescentPainter(
-                x: x,
-                y: y,
-                path: path,
-                lossFunction: _lossFunction,
-                converged: _converged,
-              ),
-              size: Size.infinite,
-            ),
+          simulation: LayoutBuilder(
+            builder: (context, constraints) {
+              return CustomPaint(
+                painter: GradientDescentPainter(
+                  x: x,
+                  y: y,
+                  path: path,
+                  lossFunction: _lossFunction,
+                  converged: _converged,
+                ),
+                size: Size(constraints.maxWidth, constraints.maxHeight),
+              );
+            },
           ),
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,6 +511,9 @@ class GradientDescentPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // 크기 유효성 검사
+    if (size.width <= 0 || size.height <= 0) return;
+
     // 배경
     canvas.drawRect(
       Offset.zero & size,
@@ -520,9 +524,10 @@ class GradientDescentPainter extends CustomPainter {
     final centerY = size.height / 2;
     final scale = size.width / 6;
 
-    // 손실 함수 시각화 (히트맵)
-    for (double px = 0; px < size.width; px += 4) {
-      for (double py = 0; py < size.height; py += 4) {
+    // 손실 함수 시각화 (히트맵) - 성능 최적화를 위해 step 8 사용
+    const step = 8.0;
+    for (double px = 0; px < size.width; px += step) {
+      for (double py = 0; py < size.height; py += step) {
         final fx = (px - centerX) / scale;
         final fy = (py - centerY) / scale;
         double loss = _loss(fx, fy);
@@ -543,7 +548,7 @@ class GradientDescentPainter extends CustomPainter {
         )!;
 
         canvas.drawRect(
-          Rect.fromLTWH(px, py, 4, 4),
+          Rect.fromLTWH(px, py, step, step),
           Paint()..color = color.withValues(alpha: 0.6),
         );
       }

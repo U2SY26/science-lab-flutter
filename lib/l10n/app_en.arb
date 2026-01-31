@@ -1,0 +1,235 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Visual Science Lab",
+  "appSubtitle1": "Feel the",
+  "appSubtitle2": "Laws of Universe",
+
+  "categoryAll": "All",
+  "categoryPhysics": "Physics",
+  "categoryMath": "Math",
+  "categoryChaos": "Chaos",
+  "categoryAI": "AI/ML",
+  "categoryChemistry": "Chemistry",
+
+  "simulations": "Simulations",
+  "completed": "Completed",
+  "favorites": "Favorites",
+  "results": "{count} results",
+  "@results": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "searchSimulations": "Search simulations...",
+  "settings": "Settings",
+  "removeAds": "Remove Ads",
+  "monthlyPrice": "Monthly ${price}",
+  "@monthlyPrice": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "resetProgress": "Reset Learning Progress",
+  "appInfo": "App Info",
+  "start": "Start",
+  "pressAgainToExit": "Press again to exit",
+
+  "introTitle": "Visual Science Lab",
+  "introDescription": "Learn science and math principles through interactive simulations!",
+  "continuousUpdates": "Continuous Updates",
+  "continuousUpdatesDesc": "New simulations and features are continuously added.",
+  "webVersionAvailable": "Web version available!",
+
+  "run": "Run",
+  "stop": "Stop",
+  "reset": "Reset",
+  "pause": "Pause",
+  "resume": "Resume",
+
+  "simPendulum": "Simple Pendulum",
+  "simPendulumLevel": "Physics Engine",
+  "simPendulumFormat": "Simulation",
+  "simPendulumSummary": "Simulate pendulum motion based on string length and gravity.",
+
+  "simWave": "Double Slit Interference",
+  "simWaveLevel": "Physics Engine",
+  "simWaveFormat": "Simulation",
+  "simWaveSummary": "Observe interference patterns from two wave sources.",
+
+  "simGravity": "Spacetime Curvature",
+  "simGravityLevel": "General Relativity",
+  "simGravityFormat": "3D Simulation",
+  "simGravitySummary": "Visualize spacetime curvature caused by mass in 3D grid.",
+
+  "simFormula": "Math Graph",
+  "simFormulaLevel": "High School",
+  "simFormulaFormat": "2D Graph",
+  "simFormulaSummary": "Enter math functions to generate real-time graphs.",
+
+  "simLorenz": "Lorenz Attractor",
+  "simLorenzLevel": "Chaos Theory",
+  "simLorenzFormat": "3D Graph",
+  "simLorenzSummary": "Chaos system visualizing the butterfly effect.",
+
+  "simDoublePendulum": "Double Pendulum",
+  "simDoublePendulumLevel": "Chaotic Dynamics",
+  "simDoublePendulumFormat": "Simulation",
+  "simDoublePendulumSummary": "Two connected pendulums demonstrating chaos theory.",
+
+  "simGameOfLife": "Conway's Game of Life",
+  "simGameOfLifeLevel": "Cellular Automata",
+  "simGameOfLifeFormat": "Simulation",
+  "simGameOfLifeSummary": "Cells evolve following rules of survival, birth, and death.",
+
+  "simSet": "Set Operations",
+  "simSetLevel": "Discrete Math",
+  "simSetFormat": "Interactive",
+  "simSetSummary": "Visualize union, intersection, difference with Venn diagrams.",
+
+  "simSorting": "Sorting Algorithms",
+  "simSortingLevel": "Algorithms",
+  "simSortingFormat": "Animation",
+  "simSortingSummary": "Compare bubble, quick, merge sort step by step.",
+
+  "simNeuralNet": "Neural Network Playground",
+  "simNeuralNetLevel": "Deep Learning",
+  "simNeuralNetFormat": "Interactive",
+  "simNeuralNetSummary": "Visualize forward propagation, backpropagation, weight learning.",
+
+  "simGradient": "Gradient Descent",
+  "simGradientLevel": "Optimization",
+  "simGradientFormat": "Visualization",
+  "simGradientSummary": "Visualize gradient descent convergence to minimize loss function.",
+
+  "simMandelbrot": "Mandelbrot Set",
+  "simMandelbrotLevel": "Fractal",
+  "simMandelbrotFormat": "Interactive",
+  "simMandelbrotSummary": "Explore fractals of infinite complexity: zₙ₊₁ = zₙ² + c",
+
+  "simFourier": "Fourier Transform",
+  "simFourierLevel": "Signal Processing",
+  "simFourierFormat": "Visualization",
+  "simFourierSummary": "Decompose complex waveforms into circular motions (epicycles).",
+
+  "simQuadratic": "Quadratic Vertex",
+  "simQuadraticLevel": "High School",
+  "simQuadraticFormat": "2D Graph",
+  "simQuadraticSummary": "Adjust a, b, c and observe vertex movement.",
+
+  "simVector": "Vector Dot Product Explorer",
+  "simVectorLevel": "Linear Algebra",
+  "simVectorFormat": "2D Graph",
+  "simVectorSummary": "Visualize dot product, angle, projection of vectors.",
+
+  "simProjectile": "Projectile Motion",
+  "simProjectileLevel": "Mechanics",
+  "simProjectileFormat": "Simulation",
+  "simProjectileSummary": "Simulate parabolic motion based on angle and velocity.",
+
+  "simSpring": "Spring Chain",
+  "simSpringLevel": "Mechanics",
+  "simSpringFormat": "Simulation",
+  "simSpringSummary": "Observe damped harmonic oscillation of connected springs.",
+
+  "simActivation": "Activation Functions",
+  "simActivationLevel": "Deep Learning",
+  "simActivationFormat": "Visualization",
+  "simActivationSummary": "Compare ReLU, Sigmoid, GELU and other neural network activations.",
+
+  "simLogistic": "Logistic Map",
+  "simLogisticLevel": "Chaos Theory",
+  "simLogisticFormat": "Visualization",
+  "simLogisticSummary": "Observe chaos emergence through bifurcation diagram and Feigenbaum constant.",
+
+  "simCollision": "Particle Collision",
+  "simCollisionLevel": "Mechanics",
+  "simCollisionFormat": "Simulation",
+  "simCollisionSummary": "Visualize elastic/inelastic collisions with momentum and energy conservation.",
+
+  "simKMeans": "K-Means Clustering",
+  "simKMeansLevel": "Machine Learning",
+  "simKMeansFormat": "Interactive",
+  "simKMeansSummary": "Visualize unsupervised learning clustering data into K groups.",
+
+  "simPrime": "Sieve of Eratosthenes",
+  "simPrimeLevel": "Number Theory",
+  "simPrimeFormat": "Algorithm",
+  "simPrimeSummary": "Visualize the ancient Greek prime number discovery algorithm step by step.",
+
+  "simThreeBody": "Three Body Problem",
+  "simThreeBodyLevel": "Chaotic Dynamics",
+  "simThreeBodyFormat": "Simulation",
+  "simThreeBodySummary": "Gravitational interaction of 3 bodies - chaotic system with no analytical solution.",
+
+  "simDecisionTree": "Decision Tree",
+  "simDecisionTreeLevel": "Machine Learning",
+  "simDecisionTreeFormat": "Interactive",
+  "simDecisionTreeSummary": "Classification algorithm that splits data by minimizing Gini impurity.",
+
+  "simSVM": "SVM Classifier",
+  "simSVMLevel": "Machine Learning",
+  "simSVMFormat": "Interactive",
+  "simSVMSummary": "Support Vector Machine finding maximum margin decision boundary.",
+
+  "simPCA": "PCA Analysis",
+  "simPCALevel": "Machine Learning",
+  "simPCAFormat": "Visualization",
+  "simPCASummary": "Dimensionality reduction by finding directions of maximum variance.",
+
+  "simElectromagnetic": "Electric Field Visualization",
+  "simElectromagneticLevel": "Electromagnetism",
+  "simElectromagneticFormat": "Interactive",
+  "simElectromagneticSummary": "Visualize electric field and field lines around point charges.",
+
+  "simGraphTheory": "Graph Traversal",
+  "simGraphTheoryLevel": "Graph Theory",
+  "simGraphTheoryFormat": "Algorithm",
+  "simGraphTheorySummary": "Visualize BFS and DFS graph traversal processes.",
+
+  "simBohrModel": "Bohr Model",
+  "simBohrModelLevel": "Atomic Physics",
+  "simBohrModelFormat": "Interactive",
+  "simBohrModelSummary": "Visualize electron orbits and energy levels in atoms.",
+
+  "simChemicalBonding": "Chemical Bonding",
+  "simChemicalBondingLevel": "Chemistry",
+  "simChemicalBondingFormat": "Interactive",
+  "simChemicalBondingSummary": "Explore ionic, covalent, and metallic bonds.",
+
+  "simElectronConfig": "Electron Configuration",
+  "simElectronConfigLevel": "Chemistry",
+  "simElectronConfigFormat": "Interactive",
+  "simElectronConfigSummary": "Learn electron orbital filling order and configuration.",
+
+  "simEquationBalance": "Equation Balancing",
+  "simEquationBalanceLevel": "Chemistry",
+  "simEquationBalanceFormat": "Interactive",
+  "simEquationBalanceSummary": "Practice balancing chemical equations step by step.",
+
+  "simHydrogenBonding": "Hydrogen Bonding",
+  "simHydrogenBondingLevel": "Chemistry",
+  "simHydrogenBondingFormat": "Visualization",
+  "simHydrogenBondingSummary": "Understand hydrogen bonds and their effects on properties.",
+
+  "simLewisStructure": "Lewis Structure",
+  "simLewisStructureLevel": "Chemistry",
+  "simLewisStructureFormat": "Interactive",
+  "simLewisStructureSummary": "Draw and understand Lewis dot structures of molecules.",
+
+  "simMolecularGeometry": "Molecular Geometry",
+  "simMolecularGeometryLevel": "Chemistry",
+  "simMolecularGeometryFormat": "3D Visualization",
+  "simMolecularGeometrySummary": "Explore VSEPR theory and 3D molecular shapes.",
+
+  "simOxidationReduction": "Oxidation-Reduction",
+  "simOxidationReductionLevel": "Chemistry",
+  "simOxidationReductionFormat": "Interactive",
+  "simOxidationReductionSummary": "Learn electron transfer in redox reactions.",
+
+  "simAStar": "A* Pathfinding",
+  "simAStarLevel": "Algorithms",
+  "simAStarFormat": "Interactive",
+  "simAStarSummary": "Find optimal path using A* search algorithm with heuristics."
+}

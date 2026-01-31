@@ -186,7 +186,7 @@ class _LogisticScreenState extends State<LogisticScreen>
         child: SimulationContainer(
           category: '혼돈 이론',
           title: '로지스틱 맵',
-          formula: 'xₙ₊₁ = r·xₙ·(1-xₙ)',
+          formula: 'x[n+1] = r * x[n] * (1 - x[n])',
           formulaDescription: '단순한 방정식에서 나타나는 결정론적 카오스',
           simulation: SizedBox(
             height: 300,
@@ -262,7 +262,7 @@ class _LogisticScreenState extends State<LogisticScreen>
                 ),
                 advancedControls: [
                   SimSlider(
-                    label: '초기값 x₀',
+                    label: '초기값 x(0)',
                     value: _timeSeries.isNotEmpty ? _timeSeries.first : 0.5,
                     min: 0.01,
                     max: 0.99,
@@ -352,7 +352,7 @@ class _StateInfo extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _InfoChip(
-                  label: 'xₙ',
+                  label: 'x(n)',
                   value: x.toStringAsFixed(4),
                   icon: Icons.circle,
                   color: AppColors.accent2,
@@ -549,7 +549,7 @@ class TimeSeriesPainter extends CustomPainter {
 
     // 축 레이블
     _drawText(canvas, 'n', Offset(size.width - padding + 5, size.height - padding + 5));
-    _drawText(canvas, 'xₙ', Offset(padding - 25, padding - 15));
+    _drawText(canvas, 'x', Offset(padding - 15, padding - 15));
     _drawText(canvas, '1', Offset(padding - 15, padding));
     _drawText(canvas, '0', Offset(padding - 15, size.height - padding));
 
