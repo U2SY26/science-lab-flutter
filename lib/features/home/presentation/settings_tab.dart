@@ -1,26 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../shared/widgets/subscription_dialog.dart';
+import '../../../core/providers/language_provider.dart';
+import '../../../core/services/iap_service.dart';
 
 /// 설정 탭
-class SettingsTab extends StatefulWidget {
+class SettingsTab extends ConsumerStatefulWidget {
   const SettingsTab({super.key});
 
   @override
-  State<SettingsTab> createState() => _SettingsTabState();
+  ConsumerState<SettingsTab> createState() => _SettingsTabState();
 }
 
-class _SettingsTabState extends State<SettingsTab> {
+class _SettingsTabState extends ConsumerState<SettingsTab> {
   int _completedCount = 0;
   int _favoritesCount = 0;
+  bool _adsRemoved = false;
+  StreamSubscription<bool>? _iapSubscription;
 
   @override
   void initState() {
     super.initState();
     _loadStats();
+    _adsRemoved = IAPService().adsRemoved;
+    _iapSubscription = IAPService().adsRemovedStream.listen((removed) {
+      if (mounted) setState(() => _adsRemoved = removed);
+    });
+  }
+
+  @override
+  void dispose() {
+    _iapSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadStats() async {
@@ -106,16 +121,22 @@ class _SettingsTabState extends State<SettingsTab> {
             onTap: _openPayPal,
           ),
           _SettingCard(
-            icon: Icons.block,
-            iconColor: AppColors.accent,
+            icon: _adsRemoved ? Icons.check_circle : Icons.block,
+            iconColor: _adsRemoved ? Colors.green : AppColors.accent,
             title: '광고 제거',
-            subtitle: '월 ₩990으로 광고 없이 이용',
-            onTap: () => SubscriptionDialog.show(context),
+            subtitle: _adsRemoved ? '구매 완료 - 광고 없이 이용 중' : '₩990 일회성 구매',
+            onTap: _adsRemoved ? () {} : _purchaseRemoveAds,
           ),
           const SizedBox(height: 24),
 
           // 앱 설정 섹션
           _SectionTitle(title: '앱 설정'),
+          _LanguageSelector(
+            currentLanguage: ref.watch(languageProvider),
+            onLanguageChanged: (lang) {
+              ref.read(languageProvider.notifier).setLanguage(lang);
+            },
+          ),
           _SettingCard(
             icon: Icons.refresh,
             iconColor: Colors.orange,
@@ -184,6 +205,100 @@ class _SettingsTabState extends State<SettingsTab> {
         ],
       ),
     );
+  }
+
+  Future<void> _purchaseRemoveAds() async {
+    HapticFeedback.mediumImpact();
+
+    final iap = IAPService();
+    final product = iap.removeAdsProduct;
+
+    if (product == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('스토어에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
+
+    // 구매 확인 다이얼로그
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.block, color: AppColors.accent),
+            const SizedBox(width: 8),
+            const Text(
+              '광고 제거',
+              style: TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${product.price}로 모든 광고를 영구적으로 제거합니다.',
+              style: const TextStyle(color: AppColors.ink, fontSize: 14),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: AppColors.accent, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '일회성 구매로 평생 광고 없이 이용할 수 있습니다.',
+                      style: TextStyle(color: AppColors.muted, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('취소', style: TextStyle(color: AppColors.muted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accent,
+              foregroundColor: AppColors.bg,
+            ),
+            child: Text('${product.price} 구매'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final success = await iap.purchaseRemoveAds();
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('구매를 시작할 수 없습니다. 다시 시도해주세요.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _openPayPal() async {
@@ -510,6 +625,88 @@ class _FeatureItem extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LanguageSelector extends StatelessWidget {
+  final AppLanguage currentLanguage;
+  final ValueChanged<AppLanguage> onLanguageChanged;
+
+  const _LanguageSelector({
+    required this.currentLanguage,
+    required this.onLanguageChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.cardBorder),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.translate, color: Colors.blue, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '언어 / Language',
+                      style: TextStyle(
+                        color: AppColors.ink,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      currentLanguage.getName(true),
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              DropdownButton<AppLanguage>(
+                value: currentLanguage,
+                underline: const SizedBox.shrink(),
+                dropdownColor: AppColors.card,
+                borderRadius: BorderRadius.circular(12),
+                items: AppLanguage.values.map((lang) {
+                  return DropdownMenuItem(
+                    value: lang,
+                    child: Text(
+                      lang.getName(true),
+                      style: const TextStyle(color: AppColors.ink, fontSize: 14),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (lang) {
+                  if (lang != null) onLanguageChanged(lang);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../core/services/ad_service.dart';
+import '../../core/services/iap_service.dart';
 import '../../core/constants/app_colors.dart';
 
 /// 모바일 플랫폼 체크
@@ -22,24 +24,39 @@ class AdBannerWidget extends StatefulWidget {
 class _AdBannerWidgetState extends State<AdBannerWidget> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
+  bool _adsRemoved = false;
+  StreamSubscription<bool>? _subscription;
 
   @override
   void initState() {
     super.initState();
-    if (_isMobilePlatform) {
+    _adsRemoved = IAPService().adsRemoved;
+
+    // 구매 상태 변경 구독
+    _subscription = IAPService().adsRemovedStream.listen((removed) {
+      if (mounted) {
+        setState(() => _adsRemoved = removed);
+        if (removed) {
+          _bannerAd?.dispose();
+          _bannerAd = null;
+        }
+      }
+    });
+
+    if (_isMobilePlatform && !_adsRemoved) {
       _loadAd();
     }
   }
 
   void _loadAd() {
-    if (!_isMobilePlatform) return;
+    if (!_isMobilePlatform || _adsRemoved) return;
     _bannerAd = AdService().createBannerAd(
       onAdLoaded: (ad) {
-        setState(() => _isAdLoaded = true);
+        if (mounted) setState(() => _isAdLoaded = true);
       },
       onAdFailedToLoad: (ad, error) {
         ad.dispose();
-        setState(() => _isAdLoaded = false);
+        if (mounted) setState(() => _isAdLoaded = false);
       },
     );
     _bannerAd?.load();
@@ -47,14 +64,26 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   void dispose() {
+    _subscription?.cancel();
     _bannerAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isAdLoaded || _bannerAd == null) {
+    // 광고 제거 구매 시 빈 영역
+    if (_adsRemoved) {
+      return const SizedBox(height: 8);
+    }
+
+    // 모바일이 아니면 빈 영역
+    if (!_isMobilePlatform) {
       return const SizedBox.shrink();
+    }
+
+    // 광고 로드 중이거나 실패한 경우 - 홈버튼/네비게이션 영역 확보용 패딩
+    if (!_isAdLoaded || _bannerAd == null) {
+      return const SizedBox(height: 50);
     }
 
     return Container(
@@ -72,7 +101,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   }
 }
 
-/// 하단 고정 배너 광고 위젯 (무료 앱 - 항상 광고 표시)
+/// 하단 고정 배너 광고 위젯
 class BottomAdBanner extends StatelessWidget {
   final Widget child;
 
@@ -83,9 +112,11 @@ class BottomAdBanner extends StatelessWidget {
     return Column(
       children: [
         Expanded(child: child),
-        const SafeArea(
+        // 광고 배너 + Safe Area
+        SafeArea(
           top: false,
-          child: AdBannerWidget(),
+          minimum: const EdgeInsets.only(bottom: 8),
+          child: const AdBannerWidget(),
         ),
       ],
     );

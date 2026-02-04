@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/language_provider.dart';
+import '../../../shared/widgets/ad_banner.dart';
 import 'simulations_tab.dart';
 
 /// 카테고리별 시뮬레이션 목록 화면
-class CategoryScreen extends StatefulWidget {
+class CategoryScreen extends ConsumerStatefulWidget {
   final String categoryId;
 
   const CategoryScreen({super.key, required this.categoryId});
 
   @override
-  State<CategoryScreen> createState() => _CategoryScreenState();
+  ConsumerState<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   Set<String> _favorites = {};
   Set<String> _completed = {};
   String _searchQuery = '';
@@ -66,7 +69,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   List<SimulationInfo> get _filteredSimulations {
-    var result = allSimulations.toList();
+    var result = getSimulations();
 
     // 카테고리 필터
     if (_category != null) {
@@ -86,20 +89,21 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return result;
   }
 
-  String get _title {
+  String _getTitle(bool isKorean) {
     if (_category != null) {
-      return _category!.label;
+      return _category!.getLabel(isKorean);
     }
-    return '전체 시뮬레이션';
+    return isKorean ? '전체 시뮬레이션' : 'All Simulations';
   }
 
   Color get _categoryColor {
-    return _category?.color ?? AppColors.accent;
+    return _category != null ? getCategoryColor(_category!) : AppColors.accent;
   }
 
   @override
   Widget build(BuildContext context) {
     final simulations = _filteredSimulations;
+    final isKorean = ref.watch(languageProvider.notifier).isKorean;
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -127,23 +131,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
               const SizedBox(width: 10),
             ],
             Text(
-              _title,
+              _getTitle(isKorean),
               style: const TextStyle(color: AppColors.ink, fontSize: 18),
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // 검색 바
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
+      body: BottomAdBanner(
+        child: Column(
+          children: [
+            // 검색 바
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
               controller: _searchController,
               onChanged: (value) => setState(() => _searchQuery = value),
               style: const TextStyle(color: AppColors.ink, fontSize: 14),
               decoration: InputDecoration(
-                hintText: '시뮬레이션 검색...',
+                hintText: isKorean ? '시뮬레이션 검색...' : 'Search simulations...',
                 hintStyle: const TextStyle(color: AppColors.muted, fontSize: 14),
                 prefixIcon: const Icon(Icons.search, color: AppColors.muted, size: 20),
                 suffixIcon: _searchQuery.isNotEmpty
@@ -180,13 +185,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
             child: Row(
               children: [
                 Text(
-                  '${simulations.length}개의 시뮬레이션',
+                  isKorean ? '${simulations.length}개의 시뮬레이션' : '${simulations.length} simulations',
                   style: const TextStyle(color: AppColors.muted, fontSize: 13),
                 ),
                 const Spacer(),
                 if (_category != null)
                   Text(
-                    _category!.description,
+                    getCategoryDescription(_category!),
                     style: TextStyle(color: _categoryColor, fontSize: 12),
                   ),
               ],
@@ -205,6 +210,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       final sim = simulations[index];
                       return _SimulationCard(
                         sim: sim,
+                        isKorean: isKorean,
                         isFavorite: _favorites.contains(sim.simId),
                         isCompleted: _completed.contains(sim.simId),
                         categoryColor: _categoryColor,
@@ -218,6 +224,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -254,6 +261,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
 class _SimulationCard extends StatelessWidget {
   final SimulationInfo sim;
+  final bool isKorean;
   final bool isFavorite;
   final bool isCompleted;
   final Color categoryColor;
@@ -262,6 +270,7 @@ class _SimulationCard extends StatelessWidget {
 
   const _SimulationCard({
     required this.sim,
+    required this.isKorean,
     required this.isFavorite,
     required this.isCompleted,
     required this.categoryColor,
@@ -292,12 +301,12 @@ class _SimulationCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: sim.category.color.withValues(alpha: 0.15),
+                    color: getCategoryColor(sim.category).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     sim.category.icon,
-                    color: sim.category.color,
+                    color: getCategoryColor(sim.category),
                     size: 24,
                   ),
                 ),
@@ -320,7 +329,7 @@ class _SimulationCard extends StatelessWidget {
                             ),
                           Expanded(
                             child: Text(
-                              sim.title,
+                              sim.getTitle(isKorean),
                               style: const TextStyle(
                                 color: AppColors.ink,
                                 fontSize: 15,
@@ -334,7 +343,7 @@ class _SimulationCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        sim.summary,
+                        sim.getSummary(isKorean),
                         style: TextStyle(
                           color: AppColors.muted,
                           fontSize: 12,
@@ -356,7 +365,7 @@ class _SimulationCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
-                              sim.level,
+                              sim.getLevel(isKorean),
                               style: TextStyle(
                                 color: categoryColor,
                                 fontSize: 10,

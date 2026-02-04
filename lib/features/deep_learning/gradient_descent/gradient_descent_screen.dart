@@ -251,19 +251,16 @@ class _GradientDescentScreenState extends State<GradientDescentScreen>
           title: '경사 하강법',
           formula: 'θ = θ - α∇L(θ)',
           formulaDescription: _lossFunction.description,
-          simulation: LayoutBuilder(
-            builder: (context, constraints) {
-              return CustomPaint(
-                painter: GradientDescentPainter(
-                  x: x,
-                  y: y,
-                  path: path,
-                  lossFunction: _lossFunction,
-                  converged: _converged,
-                ),
-                size: Size(constraints.maxWidth, constraints.maxHeight),
-              );
-            },
+          simulation: SizedBox.expand(
+            child: CustomPaint(
+              painter: GradientDescentPainter(
+                x: x,
+                y: y,
+                path: path,
+                lossFunction: _lossFunction,
+                converged: _converged,
+              ),
+            ),
           ),
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

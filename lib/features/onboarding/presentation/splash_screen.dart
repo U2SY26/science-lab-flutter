@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 
 /// O-001~O-004: 스플래시 스크린
@@ -75,17 +74,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    // 첫 실행 여부 확인
-    final prefs = await SharedPreferences.getInstance();
-    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-
-    if (!mounted) return;
-
-    if (isFirstLaunch) {
-      context.go('/promo');
-    } else {
-      context.go('/home');
-    }
+    // 항상 프로모 비디오 화면으로 이동 (랜덤 비디오 재생)
+    context.go('/promo');
   }
 
   @override

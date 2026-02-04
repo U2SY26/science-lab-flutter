@@ -1,10 +1,12 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 import '../../../core/constants/app_colors.dart';
 
-/// 최초 실행 시 프로모 영상 화면
+/// 프로모 영상 화면 - 9개 영상 중 랜덤 재생
 class PromoVideoScreen extends StatefulWidget {
   const PromoVideoScreen({super.key});
 
@@ -16,6 +18,19 @@ class _PromoVideoScreenState extends State<PromoVideoScreen> {
   late VideoPlayerController _controller;
   bool _isInitialized = false;
   bool _showSkipButton = false;
+
+  // 사용 가능한 프로모 비디오 목록
+  static const List<String> _promoVideos = [
+    'assets/video/promo1.mp4',
+    'assets/video/promo2.mp4',
+    'assets/video/promo3.mp4',
+    'assets/video/promo4.mp4',
+    'assets/video/promo5.mp4',
+    'assets/video/promo6.mp4',
+    'assets/video/promo7.mp4',
+    'assets/video/promo8.mp4',
+    'assets/video/promo9.mp4',
+  ];
 
   @override
   void initState() {
@@ -31,7 +46,11 @@ class _PromoVideoScreenState extends State<PromoVideoScreen> {
   }
 
   Future<void> _initializeVideo() async {
-    _controller = VideoPlayerController.asset('assets/video/promo.mp4');
+    // 랜덤으로 비디오 선택
+    final randomIndex = Random().nextInt(_promoVideos.length);
+    final selectedVideo = _promoVideos[randomIndex];
+
+    _controller = VideoPlayerController.asset(selectedVideo);
 
     try {
       await _controller.initialize();
@@ -54,13 +73,25 @@ class _PromoVideoScreenState extends State<PromoVideoScreen> {
     }
   }
 
-  void _navigateToNext() {
+  Future<void> _navigateToNext() async {
     if (!mounted) return;
 
     // 시스템 UI 복원
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    context.go('/onboarding');
+    // 첫 실행 여부 확인
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+
+    if (!mounted) return;
+
+    if (isFirstLaunch) {
+      // 첫 실행: 온보딩으로 이동
+      context.go('/onboarding');
+    } else {
+      // 이후 실행: 홈으로 바로 이동
+      context.go('/home');
+    }
   }
 
   @override

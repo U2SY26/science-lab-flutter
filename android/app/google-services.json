@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "547966121885",
+    "project_id": "dweb-8773b",
+    "storage_bucket": "dweb-8773b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547966121885:android:7ac63e6bc1719903e46174",
+        "android_client_info": {
+          "package_name": "com.sciencelab.science_lab_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzVcxfGLfDhrGDh_ibTm_Y1um1gx7KxdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

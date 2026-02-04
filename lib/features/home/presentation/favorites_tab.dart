@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/language_provider.dart';
 import 'simulations_tab.dart';
 
 /// 즐겨찾기 탭
-class FavoritesTab extends StatefulWidget {
+class FavoritesTab extends ConsumerStatefulWidget {
   const FavoritesTab({super.key});
 
   @override
-  State<FavoritesTab> createState() => _FavoritesTabState();
+  ConsumerState<FavoritesTab> createState() => _FavoritesTabState();
 }
 
-class _FavoritesTabState extends State<FavoritesTab> {
+class _FavoritesTabState extends ConsumerState<FavoritesTab> {
   Set<String> _favorites = {};
   bool _isLoading = true;
 
@@ -41,40 +43,42 @@ class _FavoritesTabState extends State<FavoritesTab> {
   }
 
   List<SimulationInfo> get _favoriteSimulations {
-    return allSimulations
+    return getSimulations()
         .where((sim) => _favorites.contains(sim.simId))
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg,
-        title: const Text(
-          '즐겨찾기',
-          style: TextStyle(color: AppColors.ink, fontSize: 20),
+        title: Text(
+          isKorean ? '즐겨찾기' : 'Favorites',
+          style: const TextStyle(color: AppColors.ink, fontSize: 20),
         ),
         centerTitle: false,
         actions: [
           if (_favorites.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.muted),
-              onPressed: _clearAllFavorites,
-              tooltip: '전체 삭제',
+              onPressed: () => _clearAllFavorites(isKorean),
+              tooltip: isKorean ? '전체 삭제' : 'Clear all',
             ),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _favorites.isEmpty
-              ? _buildEmptyState()
-              : _buildFavoritesList(),
+              ? _buildEmptyState(isKorean)
+              : _buildFavoritesList(isKorean),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isKorean) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +90,7 @@ class _FavoritesTabState extends State<FavoritesTab> {
           ),
           const SizedBox(height: 16),
           Text(
-            '즐겨찾기가 비어있습니다',
+            isKorean ? '즐겨찾기가 비어있습니다' : 'No favorites yet',
             style: TextStyle(
               color: AppColors.ink,
               fontSize: 18,
@@ -95,7 +99,9 @@ class _FavoritesTabState extends State<FavoritesTab> {
           ),
           const SizedBox(height: 8),
           Text(
-            '시뮬레이션에서 하트를 눌러\n즐겨찾기에 추가하세요',
+            isKorean
+                ? '시뮬레이션에서 하트를 눌러\n즐겨찾기에 추가하세요'
+                : 'Tap the heart icon on simulations\nto add them to favorites',
             style: TextStyle(
               color: AppColors.muted,
               fontSize: 14,
@@ -108,7 +114,7 @@ class _FavoritesTabState extends State<FavoritesTab> {
               // 시뮬레이션 탭으로 이동 (부모 위젯에서 처리)
             },
             icon: const Icon(Icons.science),
-            label: const Text('시뮬레이션 둘러보기'),
+            label: Text(isKorean ? '시뮬레이션 둘러보기' : 'Browse Simulations'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.accent,
               foregroundColor: Colors.black,
@@ -119,7 +125,7 @@ class _FavoritesTabState extends State<FavoritesTab> {
     );
   }
 
-  Widget _buildFavoritesList() {
+  Widget _buildFavoritesList(bool isKorean) {
     final favorites = _favoriteSimulations;
 
     return ListView.builder(
@@ -131,6 +137,7 @@ class _FavoritesTabState extends State<FavoritesTab> {
           padding: const EdgeInsets.only(bottom: 8),
           child: _FavoriteCard(
             sim: sim,
+            isKorean: isKorean,
             onTap: () {
               HapticFeedback.lightImpact();
               context.push('/simulation/${sim.simId}');
@@ -142,24 +149,27 @@ class _FavoritesTabState extends State<FavoritesTab> {
     );
   }
 
-  Future<void> _clearAllFavorites() async {
+  Future<void> _clearAllFavorites(bool isKorean) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.card,
-        title: const Text('즐겨찾기 전체 삭제', style: TextStyle(color: AppColors.ink)),
-        content: const Text(
-          '모든 즐겨찾기를 삭제하시겠습니까?',
-          style: TextStyle(color: AppColors.muted),
+        title: Text(
+          isKorean ? '즐겨찾기 전체 삭제' : 'Clear All Favorites',
+          style: const TextStyle(color: AppColors.ink),
+        ),
+        content: Text(
+          isKorean ? '모든 즐겨찾기를 삭제하시겠습니까?' : 'Delete all favorites?',
+          style: const TextStyle(color: AppColors.muted),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+            child: Text(isKorean ? '취소' : 'Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('삭제', style: TextStyle(color: Colors.red)),
+            child: Text(isKorean ? '삭제' : 'Delete', style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -176,11 +186,13 @@ class _FavoritesTabState extends State<FavoritesTab> {
 
 class _FavoriteCard extends StatelessWidget {
   final SimulationInfo sim;
+  final bool isKorean;
   final VoidCallback onTap;
   final VoidCallback onRemove;
 
   const _FavoriteCard({
     required this.sim,
+    required this.isKorean,
     required this.onTap,
     required this.onRemove,
   });
@@ -205,12 +217,12 @@ class _FavoriteCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: sim.category.color.withValues(alpha: 0.2),
+                  color: getCategoryColor(sim.category).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   sim.category.icon,
-                  color: sim.category.color,
+                  color: getCategoryColor(sim.category),
                   size: 22,
                 ),
               ),
@@ -220,7 +232,7 @@ class _FavoriteCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      sim.title,
+                      sim.getTitle(isKorean),
                       style: const TextStyle(
                         color: AppColors.ink,
                         fontSize: 15,
@@ -229,9 +241,9 @@ class _FavoriteCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      sim.category.label,
+                      sim.category.getLabel(isKorean),
                       style: TextStyle(
-                        color: sim.category.color,
+                        color: getCategoryColor(sim.category),
                         fontSize: 12,
                       ),
                     ),
@@ -241,7 +253,7 @@ class _FavoriteCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.favorite, color: Colors.redAccent),
                 onPressed: onRemove,
-                tooltip: '즐겨찾기 해제',
+                tooltip: isKorean ? '즐겨찾기 해제' : 'Remove from favorites',
               ),
               const Icon(Icons.chevron_right, color: AppColors.muted),
             ],

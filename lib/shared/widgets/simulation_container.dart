@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 
 /// S-001~S-030: 개선된 시뮬레이션 컨테이너 위젯
@@ -191,8 +192,8 @@ class _SimulationContainerState extends State<SimulationContainer> {
               child: widget.buttons!,
             ),
 
-          // 하단 시스템 네비게이션 영역을 위한 여백
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 24),
+          // 하단 시스템 네비게이션 + 광고 배너 영역을 위한 여백
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 80),
         ],
       ),
     );
@@ -278,12 +279,11 @@ class _FormulaSection extends StatelessWidget {
                   color: AppColors.accent,
                 ),
                 const SizedBox(width: 8),
-                // S-014: 수식 폰트 (LaTeX 스타일)
+                // S-014: 수식 폰트 (수학 기호 지원)
                 Expanded(
                   child: Text(
                     formula,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
+                    style: GoogleFonts.jetBrainsMono(
                       color: AppColors.ink,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

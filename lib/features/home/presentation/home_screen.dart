@@ -7,214 +7,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/ad_banner.dart';
 import '../../../shared/widgets/subscription_dialog.dart';
 import '../../../l10n/app_localizations.dart';
-
-/// Simulation category
-enum SimCategory {
-  all(Icons.apps),
-  physics(Icons.speed),
-  math(Icons.functions),
-  chaos(Icons.grain),
-  ai(Icons.psychology);
-
-  final IconData icon;
-  const SimCategory(this.icon);
-
-  String getLabel(AppLocalizations l10n) {
-    switch (this) {
-      case SimCategory.all: return l10n.categoryAll;
-      case SimCategory.physics: return l10n.categoryPhysics;
-      case SimCategory.math: return l10n.categoryMath;
-      case SimCategory.chaos: return l10n.categoryChaos;
-      case SimCategory.ai: return l10n.categoryAI;
-    }
-  }
-}
-
-/// Simulation metadata
-class SimulationInfo {
-  final String simId;
-  final SimCategory category;
-  final int difficulty;
-
-  const SimulationInfo({
-    required this.simId,
-    required this.category,
-    this.difficulty = 2,
-  });
-
-  String getTitle(AppLocalizations l10n) => _getLocalizedTitle(l10n, simId);
-  String getLevel(AppLocalizations l10n) => _getLocalizedLevel(l10n, simId);
-  String getFormat(AppLocalizations l10n) => _getLocalizedFormat(l10n, simId);
-  String getSummary(AppLocalizations l10n) => _getLocalizedSummary(l10n, simId);
-}
-
-String _getLocalizedTitle(AppLocalizations l10n, String simId) {
-  switch (simId) {
-    case 'pendulum': return l10n.simPendulum;
-    case 'wave': return l10n.simWave;
-    case 'gravity': return l10n.simGravity;
-    case 'formula': return l10n.simFormula;
-    case 'lorenz': return l10n.simLorenz;
-    case 'double-pendulum': return l10n.simDoublePendulum;
-    case 'gameoflife': return l10n.simGameOfLife;
-    case 'set': return l10n.simSet;
-    case 'sorting': return l10n.simSorting;
-    case 'neuralnet': return l10n.simNeuralNet;
-    case 'gradient': return l10n.simGradient;
-    case 'mandelbrot': return l10n.simMandelbrot;
-    case 'fourier': return l10n.simFourier;
-    case 'quadratic': return l10n.simQuadratic;
-    case 'vector': return l10n.simVector;
-    case 'projectile': return l10n.simProjectile;
-    case 'spring': return l10n.simSpring;
-    case 'activation': return l10n.simActivation;
-    case 'logistic': return l10n.simLogistic;
-    case 'collision': return l10n.simCollision;
-    case 'kmeans': return l10n.simKMeans;
-    case 'prime': return l10n.simPrime;
-    case 'threebody': return l10n.simThreeBody;
-    case 'decision-tree': return l10n.simDecisionTree;
-    case 'svm': return l10n.simSVM;
-    case 'pca': return l10n.simPCA;
-    case 'electromagnetic': return l10n.simElectromagnetic;
-    case 'graph-theory': return l10n.simGraphTheory;
-    default: return simId;
-  }
-}
-
-String _getLocalizedLevel(AppLocalizations l10n, String simId) {
-  switch (simId) {
-    case 'pendulum': return l10n.simPendulumLevel;
-    case 'wave': return l10n.simWaveLevel;
-    case 'gravity': return l10n.simGravityLevel;
-    case 'formula': return l10n.simFormulaLevel;
-    case 'lorenz': return l10n.simLorenzLevel;
-    case 'double-pendulum': return l10n.simDoublePendulumLevel;
-    case 'gameoflife': return l10n.simGameOfLifeLevel;
-    case 'set': return l10n.simSetLevel;
-    case 'sorting': return l10n.simSortingLevel;
-    case 'neuralnet': return l10n.simNeuralNetLevel;
-    case 'gradient': return l10n.simGradientLevel;
-    case 'mandelbrot': return l10n.simMandelbrotLevel;
-    case 'fourier': return l10n.simFourierLevel;
-    case 'quadratic': return l10n.simQuadraticLevel;
-    case 'vector': return l10n.simVectorLevel;
-    case 'projectile': return l10n.simProjectileLevel;
-    case 'spring': return l10n.simSpringLevel;
-    case 'activation': return l10n.simActivationLevel;
-    case 'logistic': return l10n.simLogisticLevel;
-    case 'collision': return l10n.simCollisionLevel;
-    case 'kmeans': return l10n.simKMeansLevel;
-    case 'prime': return l10n.simPrimeLevel;
-    case 'threebody': return l10n.simThreeBodyLevel;
-    case 'decision-tree': return l10n.simDecisionTreeLevel;
-    case 'svm': return l10n.simSVMLevel;
-    case 'pca': return l10n.simPCALevel;
-    case 'electromagnetic': return l10n.simElectromagneticLevel;
-    case 'graph-theory': return l10n.simGraphTheoryLevel;
-    default: return '';
-  }
-}
-
-String _getLocalizedFormat(AppLocalizations l10n, String simId) {
-  switch (simId) {
-    case 'pendulum': return l10n.simPendulumFormat;
-    case 'wave': return l10n.simWaveFormat;
-    case 'gravity': return l10n.simGravityFormat;
-    case 'formula': return l10n.simFormulaFormat;
-    case 'lorenz': return l10n.simLorenzFormat;
-    case 'double-pendulum': return l10n.simDoublePendulumFormat;
-    case 'gameoflife': return l10n.simGameOfLifeFormat;
-    case 'set': return l10n.simSetFormat;
-    case 'sorting': return l10n.simSortingFormat;
-    case 'neuralnet': return l10n.simNeuralNetFormat;
-    case 'gradient': return l10n.simGradientFormat;
-    case 'mandelbrot': return l10n.simMandelbrotFormat;
-    case 'fourier': return l10n.simFourierFormat;
-    case 'quadratic': return l10n.simQuadraticFormat;
-    case 'vector': return l10n.simVectorFormat;
-    case 'projectile': return l10n.simProjectileFormat;
-    case 'spring': return l10n.simSpringFormat;
-    case 'activation': return l10n.simActivationFormat;
-    case 'logistic': return l10n.simLogisticFormat;
-    case 'collision': return l10n.simCollisionFormat;
-    case 'kmeans': return l10n.simKMeansFormat;
-    case 'prime': return l10n.simPrimeFormat;
-    case 'threebody': return l10n.simThreeBodyFormat;
-    case 'decision-tree': return l10n.simDecisionTreeFormat;
-    case 'svm': return l10n.simSVMFormat;
-    case 'pca': return l10n.simPCAFormat;
-    case 'electromagnetic': return l10n.simElectromagneticFormat;
-    case 'graph-theory': return l10n.simGraphTheoryFormat;
-    default: return '';
-  }
-}
-
-String _getLocalizedSummary(AppLocalizations l10n, String simId) {
-  switch (simId) {
-    case 'pendulum': return l10n.simPendulumSummary;
-    case 'wave': return l10n.simWaveSummary;
-    case 'gravity': return l10n.simGravitySummary;
-    case 'formula': return l10n.simFormulaSummary;
-    case 'lorenz': return l10n.simLorenzSummary;
-    case 'double-pendulum': return l10n.simDoublePendulumSummary;
-    case 'gameoflife': return l10n.simGameOfLifeSummary;
-    case 'set': return l10n.simSetSummary;
-    case 'sorting': return l10n.simSortingSummary;
-    case 'neuralnet': return l10n.simNeuralNetSummary;
-    case 'gradient': return l10n.simGradientSummary;
-    case 'mandelbrot': return l10n.simMandelbrotSummary;
-    case 'fourier': return l10n.simFourierSummary;
-    case 'quadratic': return l10n.simQuadraticSummary;
-    case 'vector': return l10n.simVectorSummary;
-    case 'projectile': return l10n.simProjectileSummary;
-    case 'spring': return l10n.simSpringSummary;
-    case 'activation': return l10n.simActivationSummary;
-    case 'logistic': return l10n.simLogisticSummary;
-    case 'collision': return l10n.simCollisionSummary;
-    case 'kmeans': return l10n.simKMeansSummary;
-    case 'prime': return l10n.simPrimeSummary;
-    case 'threebody': return l10n.simThreeBodySummary;
-    case 'decision-tree': return l10n.simDecisionTreeSummary;
-    case 'svm': return l10n.simSVMSummary;
-    case 'pca': return l10n.simPCASummary;
-    case 'electromagnetic': return l10n.simElectromagneticSummary;
-    case 'graph-theory': return l10n.simGraphTheorySummary;
-    default: return '';
-  }
-}
-
-/// Simulation list
-const List<SimulationInfo> simulations = [
-  SimulationInfo(simId: "pendulum", category: SimCategory.physics, difficulty: 1),
-  SimulationInfo(simId: "wave", category: SimCategory.physics, difficulty: 2),
-  SimulationInfo(simId: "gravity", category: SimCategory.physics, difficulty: 3),
-  SimulationInfo(simId: "formula", category: SimCategory.math, difficulty: 1),
-  SimulationInfo(simId: "lorenz", category: SimCategory.chaos, difficulty: 2),
-  SimulationInfo(simId: "double-pendulum", category: SimCategory.chaos, difficulty: 2),
-  SimulationInfo(simId: "gameoflife", category: SimCategory.math, difficulty: 1),
-  SimulationInfo(simId: "set", category: SimCategory.math, difficulty: 1),
-  SimulationInfo(simId: "sorting", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "neuralnet", category: SimCategory.ai, difficulty: 3),
-  SimulationInfo(simId: "gradient", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "mandelbrot", category: SimCategory.math, difficulty: 2),
-  SimulationInfo(simId: "fourier", category: SimCategory.math, difficulty: 3),
-  SimulationInfo(simId: "quadratic", category: SimCategory.math, difficulty: 1),
-  SimulationInfo(simId: "vector", category: SimCategory.math, difficulty: 2),
-  SimulationInfo(simId: "projectile", category: SimCategory.physics, difficulty: 1),
-  SimulationInfo(simId: "spring", category: SimCategory.physics, difficulty: 2),
-  SimulationInfo(simId: "activation", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "logistic", category: SimCategory.chaos, difficulty: 2),
-  SimulationInfo(simId: "collision", category: SimCategory.physics, difficulty: 2),
-  SimulationInfo(simId: "kmeans", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "prime", category: SimCategory.math, difficulty: 1),
-  SimulationInfo(simId: "threebody", category: SimCategory.chaos, difficulty: 3),
-  SimulationInfo(simId: "decision-tree", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "svm", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "pca", category: SimCategory.ai, difficulty: 2),
-  SimulationInfo(simId: "electromagnetic", category: SimCategory.physics, difficulty: 2),
-  SimulationInfo(simId: "graph-theory", category: SimCategory.math, difficulty: 2),
-];
+import '../data/simulation_data.dart';
 
 /// Home Screen
 class HomeScreen extends StatefulWidget {
@@ -234,10 +27,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _countAnimation;
   late AnimationController _particleController;
   DateTime? _lastBackPress;
+  late List<SimulationInfo> _allSimulations;
 
   @override
   void initState() {
     super.initState();
+    _allSimulations = getSimulations();
     _countController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -361,17 +156,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     await prefs.setStringList('favorites', _favorites.toList());
   }
 
-  List<SimulationInfo> _getFilteredSimulations(AppLocalizations l10n) {
-    var result = simulations.toList();
+  List<SimulationInfo> _getFilteredSimulations() {
+    var result = _allSimulations.toList();
     if (_selectedCategory != SimCategory.all) {
       result = result.where((s) => s.category == _selectedCategory).toList();
     }
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       result = result.where((s) =>
-        s.getTitle(l10n).toLowerCase().contains(query) ||
-        s.getSummary(l10n).toLowerCase().contains(query) ||
-        s.getLevel(l10n).toLowerCase().contains(query)
+        s.title.toLowerCase().contains(query) ||
+        s.summary.toLowerCase().contains(query) ||
+        s.level.toLowerCase().contains(query)
       ).toList();
     }
     return result;
@@ -388,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final filteredSimulations = _getFilteredSimulations(l10n);
+    final filteredSimulations = _getFilteredSimulations();
 
     return PopScope(
       canPop: false,
@@ -423,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.search, color: AppColors.muted),
-                    onPressed: () => _showSearchDialog(context, l10n),
+                    onPressed: () => _showSearchDialog(context),
                   ),
                   IconButton(
                     icon: const Icon(Icons.settings_outlined, color: AppColors.muted),
@@ -479,8 +274,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _AnimatedStatCard(number: (62 * _countAnimation.value).toInt(), suffix: '+', label: l10n.simulations),
-                          _ProgressStatCard(completed: _completedSims.length, total: simulations.length, label: l10n.completed),
+                          _AnimatedStatCard(number: (_allSimulations.length * _countAnimation.value).toInt(), suffix: '+', label: l10n.simulations),
+                          _ProgressStatCard(completed: _completedSims.length, total: _allSimulations.length, label: l10n.completed),
                           _AnimatedStatCard(number: (_favorites.length * _countAnimation.value).toInt(), suffix: '', label: l10n.favorites, icon: Icons.favorite),
                         ],
                       );
@@ -539,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             setState(() => _selectedCategory = category);
                           },
                           avatar: Icon(category.icon, size: 14, color: isSelected ? Colors.black : AppColors.muted),
-                          label: Text(category.getLabel(l10n)),
+                          label: Text(category.getLabel(_isKorean)),
                           labelStyle: TextStyle(color: isSelected ? Colors.black : AppColors.muted, fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),
                           backgroundColor: AppColors.card,
                           selectedColor: AppColors.accent,
@@ -582,7 +377,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         },
                         child: _CompactSimulationCard(
                           sim: sim,
-                          l10n: l10n,
                           isFavorite: _favorites.contains(sim.simId),
                           isCompleted: _completedSims.contains(sim.simId),
                           onFavoriteToggle: () => _toggleFavorite(sim.simId),
@@ -602,8 +396,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _showSearchDialog(BuildContext context, AppLocalizations l10n) {
-    showSearch(context: context, delegate: SimulationSearchDelegate(simulations, l10n));
+  void _showSearchDialog(BuildContext context) {
+    showSearch(context: context, delegate: SimulationSearchDelegate(_allSimulations));
   }
 
   void _showSettingsDialog(BuildContext context, AppLocalizations l10n) {
@@ -645,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ListTile(
               leading: const Icon(Icons.info_outline, color: AppColors.accent),
               title: Text(l10n.appInfo, style: const TextStyle(color: AppColors.ink)),
-              subtitle: const Text('v1.3.0', style: TextStyle(color: AppColors.muted)),
+              subtitle: const Text('v1.8.0', style: TextStyle(color: AppColors.muted)),
               onTap: () {},
             ),
           ],
@@ -719,12 +513,11 @@ class _ProgressStatCard extends StatelessWidget {
 
 class _CompactSimulationCard extends StatelessWidget {
   final SimulationInfo sim;
-  final AppLocalizations l10n;
   final bool isFavorite;
   final bool isCompleted;
   final VoidCallback onFavoriteToggle;
 
-  const _CompactSimulationCard({required this.sim, required this.l10n, required this.isFavorite, required this.isCompleted, required this.onFavoriteToggle});
+  const _CompactSimulationCard({required this.sim, required this.isFavorite, required this.isCompleted, required this.onFavoriteToggle});
 
   @override
   Widget build(BuildContext context) {
@@ -758,11 +551,11 @@ class _CompactSimulationCard extends StatelessWidget {
                       Row(
                         children: [
                           if (isCompleted) Padding(padding: const EdgeInsets.only(right: 4), child: Icon(Icons.check_circle, size: 14, color: Colors.green)),
-                          Expanded(child: Text(sim.getTitle(l10n), style: const TextStyle(color: AppColors.ink, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                          Expanded(child: Text(sim.title, style: const TextStyle(color: AppColors.ink, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(sim.getLevel(l10n), style: const TextStyle(color: AppColors.muted, fontSize: 11)),
+                      Text(sim.level, style: const TextStyle(color: AppColors.muted, fontSize: 11)),
                     ],
                   ),
                 ),
@@ -822,9 +615,8 @@ class ParticleBackgroundPainter extends CustomPainter {
 
 class SimulationSearchDelegate extends SearchDelegate<SimulationInfo?> {
   final List<SimulationInfo> simulations;
-  final AppLocalizations l10n;
 
-  SimulationSearchDelegate(this.simulations, this.l10n);
+  SimulationSearchDelegate(this.simulations);
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -849,9 +641,9 @@ class SimulationSearchDelegate extends SearchDelegate<SimulationInfo?> {
 
   Widget _buildSearchResults() {
     final results = simulations.where((s) =>
-        s.getTitle(l10n).toLowerCase().contains(query.toLowerCase()) ||
-        s.getSummary(l10n).toLowerCase().contains(query.toLowerCase()) ||
-        s.getLevel(l10n).toLowerCase().contains(query.toLowerCase())
+        s.title.toLowerCase().contains(query.toLowerCase()) ||
+        s.summary.toLowerCase().contains(query.toLowerCase()) ||
+        s.level.toLowerCase().contains(query.toLowerCase())
     ).toList();
 
     return Container(
@@ -865,10 +657,10 @@ class SimulationSearchDelegate extends SearchDelegate<SimulationInfo?> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(color: AppColors.accent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.science, color: AppColors.accent),
+              child: Icon(sim.category.icon, color: AppColors.accent),
             ),
-            title: Text(sim.getTitle(l10n), style: const TextStyle(color: AppColors.ink)),
-            subtitle: Text(sim.getLevel(l10n), style: const TextStyle(color: AppColors.muted)),
+            title: Text(sim.title, style: const TextStyle(color: AppColors.ink)),
+            subtitle: Text(sim.level, style: const TextStyle(color: AppColors.muted)),
             onTap: () {
               close(context, sim);
               GoRouter.of(context).go('/simulation/${sim.simId}');
