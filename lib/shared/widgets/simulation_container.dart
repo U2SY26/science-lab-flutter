@@ -114,9 +114,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
       _aiError = null;
     });
 
-    final prefs = await SharedPreferences.getInstance();
-    final lang = prefs.getString('language') ?? 'ko';
-    final isKorean = lang == 'ko';
+    final isKorean = _isKoreanLocale(context);
 
     final result = await GeminiService().explainSimulation(
       simId: widget.simId ?? widget.title,

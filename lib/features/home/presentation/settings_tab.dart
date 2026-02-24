@@ -147,7 +147,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           icon: Icons.info_outline,
           iconColor: AppColors.accent2,
           title: isKorean ? '\uc571 \uc815\ubcf4' : 'App Info',
-          subtitle: 'v1.19.0',
+          subtitle: 'v1.19.1',
           onTap: () => _showAboutDialog(context, isKorean),
         ),
         _SettingCard(
@@ -455,7 +455,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isKorean ? '\ubc84\uc804 1.19.0' : 'Version 1.19.0',
+              isKorean ? '\ubc84\uc804 1.19.1' : 'Version 1.19.1',
               style: TextStyle(color: AppColors.muted, fontSize: 13),
             ),
             const SizedBox(height: 16),
