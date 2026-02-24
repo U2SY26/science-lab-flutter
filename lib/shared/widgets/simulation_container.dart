@@ -114,14 +114,14 @@ class _SimulationContainerState extends State<SimulationContainer> {
       _aiError = null;
     });
 
-    final isKorean = _isKoreanLocale(context);
+    final langCode = Localizations.localeOf(context).languageCode;
 
     final result = await GeminiService().explainSimulation(
       simId: widget.simId ?? widget.title,
       title: widget.title,
       description: widget.formulaDescription ?? widget.title,
       category: widget.category,
-      isKorean: isKorean,
+      languageCode: langCode,
       level: targetLevel,
       formula: widget.formula,
       subcategory: null,
@@ -131,7 +131,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
 
     setState(() {
       _isAiLoading = false;
-      if (result.startsWith('오류') || result.startsWith('An error')) {
+      if (result.startsWith('Error')) {
         _aiError = result;
         // 에러 시 사용 횟수 환불
         if (!_adsRemoved) {
