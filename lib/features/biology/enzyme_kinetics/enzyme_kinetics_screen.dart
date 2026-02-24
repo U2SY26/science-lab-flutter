@@ -123,7 +123,7 @@ class _EnzymeKineticsScreenState extends ConsumerState<EnzymeKineticsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     final currentVelocity = _calculateVelocity(_substrateConc);
     final halfVmax = _vMax / 2;

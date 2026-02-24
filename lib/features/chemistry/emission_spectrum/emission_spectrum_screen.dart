@@ -106,7 +106,7 @@ class _EmissionSpectrumScreenState extends ConsumerState<EmissionSpectrumScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     final lines = _emissionLines[_selectedElement] ?? [];
 

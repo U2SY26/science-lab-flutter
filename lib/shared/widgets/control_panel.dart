@@ -424,7 +424,7 @@ class ControlGroup extends StatefulWidget {
     super.key,
     required this.primaryControl,
     this.advancedControls,
-    this.advancedLabel = '고급 설정',
+    this.advancedLabel = 'Advanced Settings',
     this.initiallyExpanded = false,
   });
 

@@ -12,7 +12,7 @@ class ForceUpdateService {
   ForceUpdateService._internal();
 
   /// Current app version (update this when releasing new versions)
-  static const String currentVersion = '1.9.0';
+  static const String currentVersion = '1.14.0';
 
   /// Minimum required version (can be updated from remote config later)
   /// This is the minimum version users must have to use the app

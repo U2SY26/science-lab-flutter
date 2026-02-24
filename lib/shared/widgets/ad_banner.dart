@@ -101,6 +101,89 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   }
 }
 
+/// 네이티브 광고 위젯 (리스트 사이에 삽입용)
+class NativeAdWidget extends StatefulWidget {
+  const NativeAdWidget({super.key});
+
+  @override
+  State<NativeAdWidget> createState() => _NativeAdWidgetState();
+}
+
+class _NativeAdWidgetState extends State<NativeAdWidget> {
+  NativeAd? _nativeAd;
+  bool _isAdLoaded = false;
+  bool _adsRemoved = false;
+  StreamSubscription<bool>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _adsRemoved = IAPService().adsRemoved;
+
+    _subscription = IAPService().adsRemovedStream.listen((removed) {
+      if (mounted) {
+        setState(() => _adsRemoved = removed);
+        if (removed) {
+          _nativeAd?.dispose();
+          _nativeAd = null;
+        }
+      }
+    });
+
+    if (_isMobilePlatform && !_adsRemoved) {
+      _loadAd();
+    }
+  }
+
+  void _loadAd() {
+    if (!_isMobilePlatform || _adsRemoved) return;
+    _nativeAd = AdService().createNativeAd(
+      onAdLoaded: (ad) {
+        if (mounted) setState(() => _isAdLoaded = true);
+      },
+      onAdFailedToLoad: (ad, error) {
+        ad.dispose();
+        if (mounted) setState(() => _isAdLoaded = false);
+      },
+    );
+    _nativeAd?.load();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _nativeAd?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_adsRemoved || !_isMobilePlatform || !_isAdLoaded || _nativeAd == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.cardBorder),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: 320,
+            minHeight: 90,
+            maxHeight: 120,
+          ),
+          child: AdWidget(ad: _nativeAd!),
+        ),
+      ),
+    );
+  }
+}
+
 /// 하단 고정 배너 광고 위젯
 class BottomAdBanner extends StatelessWidget {
   final Widget child;

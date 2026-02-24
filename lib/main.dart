@@ -48,9 +48,8 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch language provider to rebuild when language changes
-    final languageNotifier = ref.watch(languageProvider.notifier);
-    final effectiveLocale = languageNotifier.getEffectiveLocale();
+    // Watch language state to rebuild when language changes
+    final effectiveLocale = ref.watch(effectiveLocaleProvider);
 
     return MaterialApp.router(
       title: 'Visual Science Lab',

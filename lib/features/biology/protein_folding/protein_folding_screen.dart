@@ -218,7 +218,7 @@ class _ProteinFoldingScreenState extends ConsumerState<ProteinFoldingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bg,

@@ -177,7 +177,7 @@ class _ElectrochemistryScreenState extends ConsumerState<ElectrochemistryScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     final anodeP = _reductionPotentials[_anode] ?? 0;
     final cathodeP = _reductionPotentials[_cathode] ?? 0;

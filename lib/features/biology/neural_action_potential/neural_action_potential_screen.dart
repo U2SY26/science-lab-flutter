@@ -167,7 +167,7 @@ class _NeuralActionPotentialScreenState extends ConsumerState<NeuralActionPotent
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     // Determine current phase
     String phase;

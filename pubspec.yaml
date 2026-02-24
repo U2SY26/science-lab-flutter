@@ -2,7 +2,7 @@ name: science_lab_flutter
 description: "눈으로 보는 과학 - 힘들기만한 물리,수학을 시뮬레이터로 재미있게 이해하기"
 publish_to: 'none'
 
-version: 1.11.0+13
+version: 1.19.0+24
 
 environment:
   sdk: ^3.9.2
@@ -44,8 +44,11 @@ dependencies:
   url_launcher: ^6.2.5
 
   # Firebase
-  firebase_core: ^3.8.0
-  firebase_analytics: ^11.3.6
+  firebase_core: ^4.4.0
+  firebase_analytics: ^12.0.0
+
+  # AI (OpenAI GPT)
+  http: ^1.2.2
 
   # Internationalization
   intl: any

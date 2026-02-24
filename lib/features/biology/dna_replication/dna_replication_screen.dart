@@ -86,7 +86,7 @@ class _DnaReplicationScreenState extends ConsumerState<DnaReplicationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bg,

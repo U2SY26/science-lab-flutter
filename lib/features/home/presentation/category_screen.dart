@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/language_provider.dart';
-import '../../../shared/widgets/ad_banner.dart';
+import '../../../shared/widgets/ad_banner.dart' show BottomAdBanner, NativeAdWidget;
 import 'simulations_tab.dart';
 
 /// 카테고리별 시뮬레이션 목록 화면
@@ -79,10 +79,13 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     // 검색 필터
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
+      final isKorean = ref.read(isKoreanProvider);
       result = result.where((s) =>
+        s.getTitle(isKorean).toLowerCase().contains(query) ||
+        s.getSummary(isKorean).toLowerCase().contains(query) ||
+        s.getLevel(isKorean).toLowerCase().contains(query) ||
         s.title.toLowerCase().contains(query) ||
-        s.summary.toLowerCase().contains(query) ||
-        s.level.toLowerCase().contains(query)
+        s.summary.toLowerCase().contains(query)
       ).toList();
     }
 
@@ -103,7 +106,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final simulations = _filteredSimulations;
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -191,7 +194,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 const Spacer(),
                 if (_category != null)
                   Text(
-                    getCategoryDescription(_category!),
+                    getCategoryDescription(_category!, isKorean: isKorean),
                     style: TextStyle(color: _categoryColor, fontSize: 12),
                   ),
               ],
@@ -199,15 +202,23 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           ),
           const SizedBox(height: 8),
 
-          // 시뮬레이션 목록
+          // 시뮬레이션 목록 (네이티브 광고 포함)
           Expanded(
             child: simulations.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: simulations.length,
+                    itemCount: simulations.length + (simulations.length ~/ 5),
                     itemBuilder: (context, index) {
-                      final sim = simulations[index];
+                      // 매 6번째 아이템(index 5, 11, 17...)에 네이티브 광고 삽입
+                      final adCount = index ~/ 6;
+                      final isAd = index > 0 && (index + 1) % 6 == 0;
+                      if (isAd) {
+                        return const NativeAdWidget();
+                      }
+                      final simIndex = index - adCount;
+                      if (simIndex >= simulations.length) return const SizedBox.shrink();
+                      final sim = simulations[simIndex];
                       return _SimulationCard(
                         sim: sim,
                         isKorean: isKorean,
@@ -230,6 +241,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   }
 
   Widget _buildEmptyState() {
+    final isKorean = ref.watch(isKoreanProvider);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -241,7 +253,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            '검색 결과가 없습니다',
+            isKorean ? '검색 결과가 없습니다' : 'No results found',
             style: TextStyle(
               color: AppColors.ink,
               fontSize: 16,
@@ -250,7 +262,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '다른 검색어를 시도해보세요',
+            isKorean ? '다른 검색어를 시도해보세요' : 'Try a different search term',
             style: TextStyle(color: AppColors.muted, fontSize: 14),
           ),
         ],

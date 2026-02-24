@@ -153,7 +153,7 @@ class _PopulationGeneticsScreenState extends ConsumerState<PopulationGeneticsScr
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     // Check if in equilibrium (no evolution forces)
     final isEquilibrium = _mutationRate == 0 && _selectionCoeff == 0 && !_enableDrift;

@@ -69,6 +69,21 @@ final languageProvider = StateNotifierProvider<LanguageNotifier, AppLanguage>((r
 
 /// Convenience provider to check if current language is Korean
 final isKoreanProvider = Provider<bool>((ref) {
-  final notifier = ref.watch(languageProvider.notifier);
-  return notifier.isKorean;
+  final language = ref.watch(languageProvider);
+  if (language == AppLanguage.system) {
+    return PlatformDispatcher.instance.locale.languageCode == 'ko';
+  }
+  return language == AppLanguage.ko;
+});
+
+/// Effective locale provider for MaterialApp
+final effectiveLocaleProvider = Provider<Locale>((ref) {
+  final language = ref.watch(languageProvider);
+  if (language == AppLanguage.system) {
+    final systemLocale = PlatformDispatcher.instance.locale;
+    return systemLocale.languageCode == 'ko'
+        ? const Locale('ko')
+        : const Locale('en');
+  }
+  return Locale(language.code);
 });

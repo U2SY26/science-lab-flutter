@@ -156,7 +156,7 @@ class _CellularAutomataScreenState extends ConsumerState<CellularAutomataScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     return Scaffold(
       backgroundColor: AppColors.bg,

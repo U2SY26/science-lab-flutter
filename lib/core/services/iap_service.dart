@@ -10,7 +10,7 @@ class IAPService {
   IAPService._internal();
 
   // 상품 ID
-  static const String removeAdsProductId = 'removeads';
+  static const String removeAdsProductId = 'remove_ads';
   static const String _adsRemovedKey = 'ads_removed';
 
   final InAppPurchase _iap = InAppPurchase.instance;

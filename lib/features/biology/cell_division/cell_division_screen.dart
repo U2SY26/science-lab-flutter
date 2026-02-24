@@ -147,7 +147,7 @@ class _CellDivisionScreenState extends ConsumerState<CellDivisionScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
     final currentPhaseName = _phases[_currentPhase];
 
     return Scaffold(

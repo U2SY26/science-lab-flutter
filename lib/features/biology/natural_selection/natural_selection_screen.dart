@@ -175,7 +175,7 @@ class _NaturalSelectionScreenState extends ConsumerState<NaturalSelectionScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     // Calculate current statistics
     int lightCount = _organisms.where((o) => o.color < 0.5).length;

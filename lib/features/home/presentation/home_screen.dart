@@ -183,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isKorean = Localizations.localeOf(context).languageCode == 'ko';
     final filteredSimulations = _getFilteredSimulations();
 
     return PopScope(
@@ -334,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             setState(() => _selectedCategory = category);
                           },
                           avatar: Icon(category.icon, size: 14, color: isSelected ? Colors.black : AppColors.muted),
-                          label: Text(category.getLabel(_isKorean)),
+                          label: Text(category.getLabel(isKorean)),
                           labelStyle: TextStyle(color: isSelected ? Colors.black : AppColors.muted, fontSize: 12, fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal),
                           backgroundColor: AppColors.card,
                           selectedColor: AppColors.accent,
@@ -364,10 +365,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final sim = filteredSimulations[index];
+                      // 매 8번째 위치에 네이티브 광고 삽입
+                      final adCount = index ~/ 9;
+                      final isAd = index > 0 && (index + 1) % 9 == 0;
+                      if (isAd) {
+                        return const NativeAdWidget();
+                      }
+                      final simIndex = index - adCount;
+                      if (simIndex >= filteredSimulations.length) return const SizedBox.shrink();
+                      final sim = filteredSimulations[simIndex];
                       return TweenAnimationBuilder<double>(
                         tween: Tween(begin: 0, end: 1),
-                        duration: Duration(milliseconds: 200 + index * 30),
+                        duration: Duration(milliseconds: 200 + simIndex * 30),
                         curve: Curves.easeOutCubic,
                         builder: (context, value, child) {
                           return Opacity(
@@ -377,13 +386,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         },
                         child: _CompactSimulationCard(
                           sim: sim,
+                          isKorean: isKorean,
                           isFavorite: _favorites.contains(sim.simId),
                           isCompleted: _completedSims.contains(sim.simId),
                           onFavoriteToggle: () => _toggleFavorite(sim.simId),
                         ),
                       );
                     },
-                    childCount: filteredSimulations.length,
+                    childCount: filteredSimulations.length + (filteredSimulations.length ~/ 8),
                   ),
                 ),
               ),
@@ -397,7 +407,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showSearchDialog(BuildContext context) {
-    showSearch(context: context, delegate: SimulationSearchDelegate(_allSimulations));
+    final isKorean = Localizations.localeOf(context).languageCode == 'ko';
+    showSearch(context: context, delegate: SimulationSearchDelegate(_allSimulations, isKorean: isKorean));
   }
 
   void _showSettingsDialog(BuildContext context, AppLocalizations l10n) {
@@ -513,11 +524,12 @@ class _ProgressStatCard extends StatelessWidget {
 
 class _CompactSimulationCard extends StatelessWidget {
   final SimulationInfo sim;
+  final bool isKorean;
   final bool isFavorite;
   final bool isCompleted;
   final VoidCallback onFavoriteToggle;
 
-  const _CompactSimulationCard({required this.sim, required this.isFavorite, required this.isCompleted, required this.onFavoriteToggle});
+  const _CompactSimulationCard({required this.sim, required this.isKorean, required this.isFavorite, required this.isCompleted, required this.onFavoriteToggle});
 
   @override
   Widget build(BuildContext context) {
@@ -551,11 +563,11 @@ class _CompactSimulationCard extends StatelessWidget {
                       Row(
                         children: [
                           if (isCompleted) Padding(padding: const EdgeInsets.only(right: 4), child: Icon(Icons.check_circle, size: 14, color: Colors.green)),
-                          Expanded(child: Text(sim.title, style: const TextStyle(color: AppColors.ink, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                          Expanded(child: Text(sim.getTitle(isKorean), style: const TextStyle(color: AppColors.ink, fontSize: 14, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(sim.level, style: const TextStyle(color: AppColors.muted, fontSize: 11)),
+                      Text(sim.getLevel(isKorean), style: const TextStyle(color: AppColors.muted, fontSize: 11)),
                     ],
                   ),
                 ),
@@ -615,8 +627,9 @@ class ParticleBackgroundPainter extends CustomPainter {
 
 class SimulationSearchDelegate extends SearchDelegate<SimulationInfo?> {
   final List<SimulationInfo> simulations;
+  final bool isKorean;
 
-  SimulationSearchDelegate(this.simulations);
+  SimulationSearchDelegate(this.simulations, {this.isKorean = false});
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -640,10 +653,13 @@ class SimulationSearchDelegate extends SearchDelegate<SimulationInfo?> {
   Widget buildSuggestions(BuildContext context) => _buildSearchResults();
 
   Widget _buildSearchResults() {
+    final q = query.toLowerCase();
     final results = simulations.where((s) =>
-        s.title.toLowerCase().contains(query.toLowerCase()) ||
-        s.summary.toLowerCase().contains(query.toLowerCase()) ||
-        s.level.toLowerCase().contains(query.toLowerCase())
+        s.getTitle(isKorean).toLowerCase().contains(q) ||
+        s.getSummary(isKorean).toLowerCase().contains(q) ||
+        s.getLevel(isKorean).toLowerCase().contains(q) ||
+        s.title.toLowerCase().contains(q) ||
+        s.summary.toLowerCase().contains(q)
     ).toList();
 
     return Container(
@@ -659,8 +675,8 @@ class SimulationSearchDelegate extends SearchDelegate<SimulationInfo?> {
               decoration: BoxDecoration(color: AppColors.accent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
               child: Icon(sim.category.icon, color: AppColors.accent),
             ),
-            title: Text(sim.title, style: const TextStyle(color: AppColors.ink)),
-            subtitle: Text(sim.level, style: const TextStyle(color: AppColors.muted)),
+            title: Text(sim.getTitle(isKorean), style: const TextStyle(color: AppColors.ink)),
+            subtitle: Text(sim.getLevel(isKorean), style: const TextStyle(color: AppColors.muted)),
             onTap: () {
               close(context, sim);
               GoRouter.of(context).go('/simulation/${sim.simId}');

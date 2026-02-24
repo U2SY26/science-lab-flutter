@@ -89,7 +89,7 @@ class _PhaseDiagramScreenState extends ConsumerState<PhaseDiagramScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
     final currentPhase = _getCurrentPhase();
     final data = _phaseData[_substance]!;
 

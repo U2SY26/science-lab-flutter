@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/language_provider.dart';
+import '../../../shared/widgets/ad_banner.dart';
 import '../data/simulation_data.dart';
 
 // Re-export for other files that import from here
@@ -41,7 +42,7 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
     // Filter out 'all' category for display
     final categories = SimCategory.values.where((c) => c != SimCategory.all).toList();
 
@@ -184,6 +185,14 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
               },
               childCount: categories.length,
             ),
+          ),
+        ),
+
+        // 네이티브 광고
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: NativeAdWidget(),
           ),
         ),
 

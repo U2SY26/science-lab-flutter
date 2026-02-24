@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../animations/animations.dart';
+import '../../shared/widgets/ad_banner.dart';
 import '../../features/onboarding/presentation/splash_screen.dart';
 import '../../features/onboarding/presentation/promo_video_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
@@ -306,19 +307,39 @@ final appRouter = GoRouter(
         );
       },
     ),
-    // 시뮬레이션
+    // 시뮬레이션 (배너 광고 포함)
     GoRoute(
       path: '/simulation/:simId',
       pageBuilder: (context, state) {
         final simId = state.pathParameters['simId']!;
         return ScaleFadeTransitionPage(
           key: state.pageKey,
-          child: _getSimulationScreen(simId),
+          child: _SimulationAdWrapper(child: _getSimulationScreen(simId)),
         );
       },
     ),
   ],
 );
+
+/// 시뮬레이션 화면을 배너 광고와 함께 표시하는 래퍼
+class _SimulationAdWrapper extends StatelessWidget {
+  final Widget child;
+  const _SimulationAdWrapper({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(child: child),
+        SafeArea(
+          top: false,
+          minimum: const EdgeInsets.only(bottom: 4),
+          child: const AdBannerWidget(),
+        ),
+      ],
+    );
+  }
+}
 
 Widget _getSimulationScreen(String simId) {
   switch (simId) {

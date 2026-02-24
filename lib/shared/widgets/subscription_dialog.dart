@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/subscription_service.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/providers/language_provider.dart';
 
 /// 구독 구매 다이얼로그
 class SubscriptionDialog extends ConsumerWidget {
@@ -20,6 +21,7 @@ class SubscriptionDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final subscription = ref.watch(subscriptionProvider);
     final notifier = ref.read(subscriptionProvider.notifier);
+    final isKorean = ref.watch(isKoreanProvider);
 
     return Container(
       decoration: BoxDecoration(
@@ -59,7 +61,9 @@ class SubscriptionDialog extends ConsumerWidget {
 
             // 제목
             Text(
-              subscription.isSubscribed ? '광고 제거 활성화됨' : '광고 제거',
+              subscription.isSubscribed
+                  ? (isKorean ? '광고 제거 활성화됨' : 'Ads Removed')
+                  : (isKorean ? '광고 제거' : 'Remove Ads'),
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -71,8 +75,8 @@ class SubscriptionDialog extends ConsumerWidget {
             // 설명
             Text(
               subscription.isSubscribed
-                  ? '광고 없이 앱을 즐기고 계십니다'
-                  : '월 990원으로 모든 광고를 제거하세요',
+                  ? (isKorean ? '광고 없이 앱을 즐기고 계십니다' : 'You are enjoying the app ad-free')
+                  : (isKorean ? '월 990원으로 모든 광고를 제거하세요' : 'Remove all ads for \u20a9990/month'),
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.muted,
@@ -83,9 +87,9 @@ class SubscriptionDialog extends ConsumerWidget {
 
             // 혜택 목록
             if (!subscription.isSubscribed) ...[
-              _buildBenefit(Icons.block, '배너 광고 제거'),
-              _buildBenefit(Icons.speed, '더 빠른 앱 실행'),
-              _buildBenefit(Icons.favorite, '개발자 지원'),
+              _buildBenefit(Icons.block, isKorean ? '배너 광고 제거' : 'Remove banner ads'),
+              _buildBenefit(Icons.speed, isKorean ? '더 빠른 앱 실행' : 'Faster app performance'),
+              _buildBenefit(Icons.favorite, isKorean ? '개발자 지원' : 'Support the developer'),
               const SizedBox(height: 24),
             ],
 
@@ -132,9 +136,9 @@ class SubscriptionDialog extends ConsumerWidget {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          '월 ₩990 구독하기',
-                          style: TextStyle(
+                      : Text(
+                          isKorean ? '월 \u20a9990 구독하기' : 'Subscribe \u20a9990/month',
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -149,7 +153,7 @@ class SubscriptionDialog extends ConsumerWidget {
                     ? null
                     : () => notifier.restorePurchases(),
                 child: Text(
-                  '구매 복원',
+                  isKorean ? '구매 복원' : 'Restore Purchases',
                   style: TextStyle(color: AppColors.muted),
                 ),
               ),
@@ -167,7 +171,7 @@ class SubscriptionDialog extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('확인'),
+                  child: Text(isKorean ? '확인' : 'OK'),
                 ),
               ),
             ],
@@ -177,7 +181,7 @@ class SubscriptionDialog extends ConsumerWidget {
             // 약관
             if (!subscription.isSubscribed)
               Text(
-                '구독은 언제든지 취소할 수 있습니다',
+                isKorean ? '구독은 언제든지 취소할 수 있습니다' : 'You can cancel your subscription at any time',
                 style: TextStyle(
                   fontSize: 11,
                   color: AppColors.muted.withValues(alpha: 0.7),

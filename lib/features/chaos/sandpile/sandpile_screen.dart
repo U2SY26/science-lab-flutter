@@ -150,7 +150,7 @@ class _SandpileScreenState extends ConsumerState<SandpileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     // Calculate statistics
     int maxHeight = 0;

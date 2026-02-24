@@ -107,7 +107,7 @@ class _PercolationScreenState extends ConsumerState<PercolationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isKorean = ref.watch(languageProvider.notifier).isKorean;
+    final isKorean = ref.watch(isKoreanProvider);
 
     final openFraction = _openSites / (_gridSize * _gridSize);
     final filledFraction = _filledSites / (_gridSize * _gridSize);
