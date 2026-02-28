@@ -1231,5 +1231,13 @@
   "simCosmicDistanceLadder": "Cosmic Distance Ladder",
   "simCosmicDistanceLadderLevel": "Observational Astronomy",
   "simCosmicDistanceLadderFormat": "Interactive",
-  "simCosmicDistanceLadderSummary": "Explore the chain of distance measurement methods: parallax → Cepheids → supernovae → Hubble's law."
+  "simCosmicDistanceLadderSummary": "Explore the chain of distance measurement methods: parallax → Cepheids → supernovae → Hubble's law.",
+
+  "updateRequired": "Update Required",
+  "updateDescription": "A new version of Visual Science Lab is available. Please update to continue using the app.",
+  "updateNow": "Update Now",
+  "updateLater": "Later",
+  "currentVersionLabel": "Current version",
+  "requiredVersionLabel": "Required version",
+  "updateBenefits": "New simulations, bug fixes, and performance improvements!"
 }

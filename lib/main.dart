@@ -22,10 +22,11 @@ void main() async {
   // 앱 시작 이벤트 로깅
   AnalyticsService.logAppOpen();
 
-  // AdMob 초기화 (모바일만)
+  // AdMob + Remote Config 초기화 (모바일만)
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await AdService().initialize();
     await IAPService().initialize();
+    await ForceUpdateService().initialize();
   }
 
   runApp(
@@ -85,13 +86,7 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
   void _checkForceUpdate(BuildContext context) {
     final updateService = ForceUpdateService();
     if (updateService.isUpdateRequired()) {
-      // Show force update dialog
-      ForceUpdateDialog.show(
-        context,
-        isForced: true,
-        currentVersion: ForceUpdateService.currentVersion,
-        requiredVersion: ForceUpdateService.minimumRequiredVersion,
-      );
+      ForceUpdateDialog.show(context);
     }
   }
 }

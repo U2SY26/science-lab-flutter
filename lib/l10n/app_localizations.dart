@@ -5971,6 +5971,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Explore the chain of distance measurement methods: parallax → Cepheids → supernovae → Hubble\'s law.'**
   String get simCosmicDistanceLadderSummary;
+
+  /// No description provided for @updateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Required'**
+  String get updateRequired;
+
+  /// No description provided for @updateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of Visual Science Lab is available. Please update to continue using the app.'**
+  String get updateDescription;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get updateNow;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
+
+  /// No description provided for @currentVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current version'**
+  String get currentVersionLabel;
+
+  /// No description provided for @requiredVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Required version'**
+  String get requiredVersionLabel;
+
+  /// No description provided for @updateBenefits.
+  ///
+  /// In en, this message translates to:
+  /// **'New simulations, bug fixes, and performance improvements!'**
+  String get updateBenefits;
 }
 
 class _AppLocalizationsDelegate

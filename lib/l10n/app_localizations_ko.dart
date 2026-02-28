@@ -3110,4 +3110,26 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get simCosmicDistanceLadderSummary =>
       '거리 측정 방법의 연쇄를 탐구합니다: 시차 → 세페이드 변광성 → 초신성 → 허블 법칙.';
+
+  @override
+  String get updateRequired => '업데이트 필요';
+
+  @override
+  String get updateDescription =>
+      '눈으로 보는 과학의 새 버전이 출시되었습니다. 계속 사용하려면 업데이트해 주세요.';
+
+  @override
+  String get updateNow => '지금 업데이트';
+
+  @override
+  String get updateLater => '나중에';
+
+  @override
+  String get currentVersionLabel => '현재 버전';
+
+  @override
+  String get requiredVersionLabel => '최소 버전';
+
+  @override
+  String get updateBenefits => '새로운 시뮬레이션, 버그 수정, 성능 개선이 포함되어 있습니다!';
 }

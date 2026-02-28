@@ -852,7 +852,7 @@ List<SimulationInfo> getSimulations() => [
     formula: "c = 1/sqrt(mu_0*epsilon_0)",
   ),
   const SimulationInfo(
-    simId: "transformer",
+    simId: "transformer-physics",
     category: SimCategory.physics,
     difficulty: 2,
     title: "Transformer",
@@ -975,7 +975,7 @@ List<SimulationInfo> getSimulations() => [
     formula: "a*sin(theta) = m*lambda",
   ),
   const SimulationInfo(
-    simId: "double-slit",
+    simId: "double-slit-physics",
     category: SimCategory.physics,
     difficulty: 2,
     title: "Double Slit Interference",

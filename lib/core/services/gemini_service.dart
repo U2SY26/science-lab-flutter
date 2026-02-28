@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' as http;
 
 enum AiLevel { middle, high, university, general }
@@ -6,7 +7,9 @@ enum AiLevel { middle, high, university, general }
 class GeminiService {
   static final GeminiService _instance = GeminiService._internal();
   factory GeminiService() => _instance;
-  GeminiService._internal();
+  GeminiService._internal() {
+    debugPrint('[GeminiService] API key length: ${_apiKey.length}, available: $isAvailable');
+  }
 
   static const _apiKey = String.fromEnvironment('OPENAI_API_KEY', defaultValue: '');
 
@@ -26,8 +29,8 @@ Rules:
 - Use "it's like..." comparisons actively
 - Skip formulas; convey key principles intuitively
 - Guide what's fun to interact with in the simulation
-- Use markdown formatting (headings ##, bold **, lists -)
-- For any math formula, use LaTeX notation wrapped in \$\$ for display math or \$ for inline math (e.g. \$E = mc^2\$)
+- Write formulas in plain text (e.g. E = mc², F = ma, v = d/t)
+- Use Unicode superscripts/subscripts when possible (e.g. x², H₂O)
 - Keep it around 150-300 words
 - $langInstruction''';
 
@@ -40,8 +43,8 @@ Rules:
 - Include 1-2 key formulas and explain what each variable means
 - Mention real-life examples and exam-relevant points
 - Guide what happens when parameters are adjusted
-- Use markdown formatting (headings ##, bold **, lists -)
-- For any math formula, use LaTeX notation wrapped in \$\$ for display math or \$ for inline math (e.g. \$F = ma\$, \$\$E = \\frac{1}{2}mv^2\$\$)
+- Write formulas in plain text (e.g. F = ma, E = ½mv², ΔG = ΔH - TΔS)
+- Use Unicode superscripts/subscripts (e.g. x², ∫, Σ, √, π, θ)
 - Keep it around 200-400 words
 - $langInstruction''';
 
@@ -55,9 +58,9 @@ Rules:
 - Cover related theorems, laws, boundary conditions, and special cases in depth
 - **Recommend 2-3 related simulations** and explain the connections
 - Suggest keywords or directions for deeper study
-- Use markdown formatting (headings ##, bold **, lists -)
-- For any math formula, use LaTeX notation wrapped in \$\$ for display math or \$ for inline math (e.g. \$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}\$)
-- Use display math \$\$ for important derivations and multi-line equations
+- Write formulas in plain text with Unicode symbols (e.g. ∇·E = ρ/ε₀, ∂ψ/∂t = -iĤψ/ℏ)
+- Use Unicode superscripts/subscripts and math symbols (², ³, ₀, ₁, ∫, Σ, ∂, ∇, ∞, ≈, ≤, ≥, →, ⟨, ⟩)
+- For complex equations, write them on separate lines for clarity
 - Keep it around 400-600 words
 - $langInstruction''';
 
@@ -71,8 +74,7 @@ Rules:
 - Skip or only briefly mention formulas
 - Include 1-2 fun facts to spark curiosity
 - Guide what to interact with in the simulation in simple terms
-- Use markdown formatting (headings ##, bold **, lists -)
-- If you mention any formula, use LaTeX notation wrapped in \$ (e.g. \$E = mc^2\$)
+- If you mention a formula, write it in plain text (e.g. E = mc²)
 - Keep it around 200-400 words
 - $langInstruction''';
     }
@@ -125,9 +127,11 @@ Rules:
         return data['choices'][0]['message']['content'] ??
             'Could not generate response.';
       } else {
+        debugPrint('[GeminiService] API error: ${response.statusCode} - ${response.body}');
         return 'Error: API response code ${response.statusCode}';
       }
     } catch (e) {
+      debugPrint('[GeminiService] Exception: $e, keyAvailable: $isAvailable');
       if (!isAvailable) {
         return 'Error: OpenAI API key is not configured.';
       }

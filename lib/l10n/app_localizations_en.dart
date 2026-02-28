@@ -3187,4 +3187,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get simCosmicDistanceLadderSummary =>
       'Explore the chain of distance measurement methods: parallax → Cepheids → supernovae → Hubble\'s law.';
+
+  @override
+  String get updateRequired => 'Update Required';
+
+  @override
+  String get updateDescription =>
+      'A new version of Visual Science Lab is available. Please update to continue using the app.';
+
+  @override
+  String get updateNow => 'Update Now';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get currentVersionLabel => 'Current version';
+
+  @override
+  String get requiredVersionLabel => 'Required version';
+
+  @override
+  String get updateBenefits =>
+      'New simulations, bug fixes, and performance improvements!';
 }

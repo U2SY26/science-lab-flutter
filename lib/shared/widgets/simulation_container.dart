@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/gemini_service.dart';
 import '../../core/services/ad_service.dart';
@@ -712,7 +710,10 @@ class _AiExplanationPanel extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _MathMarkdownBody(text: explanation!),
+                  SelectableText(
+                    explanation!,
+                    style: const TextStyle(color: AppColors.ink, fontSize: 13, height: 1.7),
+                  ),
                   const SizedBox(height: 12),
                   // 네이티브 광고 (AI 해설 내)
                   const NativeAdWidget(),
@@ -734,198 +735,6 @@ class _AiExplanationPanel extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Markdown + LaTeX math rendering widget for AI explanations
-class _MathMarkdownBody extends StatelessWidget {
-  final String text;
-  const _MathMarkdownBody({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    // Split text by LaTeX delimiters ($$ and $) and render mixed content
-    final segments = _parseSegments(text);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: segments.map((seg) {
-        if (seg.isDisplayMath) {
-          // Display math (centered, block)
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF7C3AED).withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF7C3AED).withValues(alpha: 0.15)),
-                ),
-                child: Math.tex(
-                  seg.content,
-                  textStyle: const TextStyle(fontSize: 16, color: AppColors.ink),
-                  onErrorFallback: (e) => Text(
-                    seg.content,
-                    style: GoogleFonts.jetBrainsMono(color: AppColors.ink, fontSize: 13),
-                  ),
-                ),
-              ),
-            ),
-          );
-        } else if (seg.isInlineMath) {
-          // Inline math rendered within a text flow
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 2),
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: _buildInlineMathRichText(seg.content),
-            ),
-          );
-        } else {
-          // Regular markdown text
-          return MarkdownBody(
-            data: seg.content,
-            selectable: true,
-            styleSheet: MarkdownStyleSheet(
-              p: const TextStyle(color: AppColors.ink, fontSize: 13, height: 1.7),
-              h1: const TextStyle(color: AppColors.ink, fontSize: 20, fontWeight: FontWeight.w700, height: 1.4),
-              h2: const TextStyle(color: AppColors.ink, fontSize: 17, fontWeight: FontWeight.w700, height: 1.4),
-              h3: const TextStyle(color: AppColors.ink, fontSize: 15, fontWeight: FontWeight.w600, height: 1.4),
-              strong: const TextStyle(color: Color(0xFFC4B5FD), fontWeight: FontWeight.w700),
-              em: const TextStyle(color: AppColors.ink, fontStyle: FontStyle.italic),
-              listBullet: const TextStyle(color: AppColors.accent, fontSize: 13),
-              code: GoogleFonts.jetBrainsMono(
-                color: const Color(0xFF00D4FF),
-                fontSize: 12,
-                backgroundColor: const Color(0xFF1A3040),
-              ),
-              codeblockDecoration: BoxDecoration(
-                color: const Color(0xFF0D1A20),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              blockquoteDecoration: BoxDecoration(
-                border: Border(left: BorderSide(color: AppColors.accent.withValues(alpha: 0.5), width: 3)),
-              ),
-            ),
-          );
-        }
-      }).toList(),
-    );
-  }
-
-  /// Build inline content mixing text and LaTeX
-  List<Widget> _buildInlineMathRichText(String content) {
-    final widgets = <Widget>[];
-    final regex = RegExp(r'\$(.+?)\$');
-    int lastEnd = 0;
-
-    for (final match in regex.allMatches(content)) {
-      // Text before math
-      if (match.start > lastEnd) {
-        widgets.add(Text(
-          content.substring(lastEnd, match.start),
-          style: const TextStyle(color: AppColors.ink, fontSize: 13, height: 1.7),
-        ));
-      }
-      // Inline math
-      widgets.add(Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
-        child: Math.tex(
-          match.group(1)!,
-          textStyle: const TextStyle(fontSize: 14, color: Color(0xFFC4B5FD)),
-          onErrorFallback: (e) => Text(
-            match.group(1)!,
-            style: GoogleFonts.jetBrainsMono(color: const Color(0xFFC4B5FD), fontSize: 12),
-          ),
-        ),
-      ));
-      lastEnd = match.end;
-    }
-    // Remaining text
-    if (lastEnd < content.length) {
-      widgets.add(Text(
-        content.substring(lastEnd),
-        style: const TextStyle(color: AppColors.ink, fontSize: 13, height: 1.7),
-      ));
-    }
-    return widgets;
-  }
-
-  /// Parse text into segments: markdown, display math ($$...$$), inline math lines
-  static List<_Segment> _parseSegments(String text) {
-    final segments = <_Segment>[];
-    final lines = text.split('\n');
-    final buffer = StringBuffer();
-    bool inDisplayMath = false;
-    final mathBuffer = StringBuffer();
-
-    for (final line in lines) {
-      final trimmed = line.trim();
-
-      // Display math block: $$ on its own line or $$...$$
-      if (trimmed == r'$$' && !inDisplayMath) {
-        // Flush markdown buffer
-        if (buffer.isNotEmpty) {
-          segments.add(_Segment(buffer.toString(), _SegType.markdown));
-          buffer.clear();
-        }
-        inDisplayMath = true;
-        mathBuffer.clear();
-        continue;
-      }
-      if (trimmed == r'$$' && inDisplayMath) {
-        segments.add(_Segment(mathBuffer.toString().trim(), _SegType.displayMath));
-        mathBuffer.clear();
-        inDisplayMath = false;
-        continue;
-      }
-      // Inline $$...$$ on one line
-      if (trimmed.startsWith(r'$$') && trimmed.endsWith(r'$$') && trimmed.length > 4) {
-        if (buffer.isNotEmpty) {
-          segments.add(_Segment(buffer.toString(), _SegType.markdown));
-          buffer.clear();
-        }
-        segments.add(_Segment(trimmed.substring(2, trimmed.length - 2).trim(), _SegType.displayMath));
-        continue;
-      }
-
-      if (inDisplayMath) {
-        mathBuffer.writeln(line);
-        continue;
-      }
-
-      // Line with inline $...$ math
-      if (RegExp(r'\$.+?\$').hasMatch(line) && !line.startsWith('#')) {
-        if (buffer.isNotEmpty) {
-          segments.add(_Segment(buffer.toString(), _SegType.markdown));
-          buffer.clear();
-        }
-        segments.add(_Segment(line, _SegType.inlineMath));
-      } else {
-        buffer.writeln(line);
-      }
-    }
-
-    // Flush remaining
-    if (inDisplayMath && mathBuffer.isNotEmpty) {
-      segments.add(_Segment(mathBuffer.toString().trim(), _SegType.displayMath));
-    }
-    if (buffer.isNotEmpty) {
-      segments.add(_Segment(buffer.toString(), _SegType.markdown));
-    }
-
-    return segments;
-  }
-}
-
-enum _SegType { markdown, displayMath, inlineMath }
-
-class _Segment {
-  final String content;
-  final _SegType type;
-  const _Segment(this.content, this.type);
-  bool get isDisplayMath => type == _SegType.displayMath;
-  bool get isInlineMath => type == _SegType.inlineMath;
 }
 
 /// S-004~S-006: 액션 버튼
