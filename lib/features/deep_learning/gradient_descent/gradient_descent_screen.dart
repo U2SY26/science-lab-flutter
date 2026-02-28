@@ -56,11 +56,22 @@ class _GradientDescentScreenState extends State<GradientDescentScreen>
   @override
   void initState() {
     super.initState();
-    _reset();
+    // 초기 위치 설정 (haptic 없이)
+    final random = math.Random();
+    x = (random.nextDouble() - 0.5) * 4;
+    y = (random.nextDouble() - 0.5) * 4;
+    path = [Offset(x, y)];
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 100),
     )..addListener(_update);
+    // 진입 즉시 자동 시작
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() => isRunning = true);
+        _controller.repeat();
+      }
+    });
   }
 
   void _reset() {

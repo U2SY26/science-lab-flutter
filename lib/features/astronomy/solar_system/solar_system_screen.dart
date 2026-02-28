@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/simulation_container.dart';
 import '../../../shared/widgets/control_panel.dart';
+import '../../../shared/painters/projection_3d.dart';
 
 /// Solar System Simulation
 class SolarSystemScreen extends StatefulWidget {
@@ -283,149 +284,330 @@ class SolarSystemPainter extends CustomPainter {
     required this.planets,
   });
 
+  // Orbital inclinations (radians) per planet for 3D tilt
+  static const List<double> _inclinations = [
+    0.122, 0.059, 0.0, 0.032, 0.023, 0.043, 0.013, 0.031,
+  ];
+
   @override
   void paint(Canvas canvas, Size size) {
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-    final maxRadius = math.min(size.width, size.height) / 2 - 20;
-
     // Background
     canvas.drawRect(
       Offset.zero & size,
-      Paint()..color = const Color(0xFF050510),
+      Paint()..color = const Color(0xFF0D1A20),
     );
 
-    // Stars
+    _drawMilkyWay(canvas, size);
     _drawStars(canvas, size);
 
-    // Draw Sun
-    _drawSun(canvas, centerX, centerY);
+    final cx = size.width / 2;
+    final cy = size.height * 0.46;
+    final maxR = math.min(size.width * 0.46, size.height * 0.46);
 
-    // Draw orbits and planets
+    // Isometric projection: tilt the solar system view
+    // rotX ~0.45 (tilted 3D view), rotY tracks time for slow auto-spin
+    final proj = Projection3D(
+      rotX: 0.42,
+      rotY: 0.3 + time * 0.004,
+      scale: maxR,
+      center: Offset(cx, cy),
+    );
+
+    // Draw orbits first (back to front)
+    if (showOrbits) {
+      _drawOrbits(canvas, proj, maxR);
+    }
+
+    // Draw Sun (always on top via depth-neutral center)
+    _drawSun(canvas, Offset(cx, cy), time);
+
+    // Compute planet 3D positions, sort by depth
+    final planetData = <Map<String, dynamic>>[];
     for (int i = 0; i < planets.length; i++) {
-      final planet = planets[i];
-      final orbitRadius = planet['orbit'] * maxRadius;
-      final angle = time * 2 * math.pi / planet['period'];
+      final p = planets[i];
+      final orbitNorm = p['orbit'] as double;
+      final period = p['period'] as double;
+      final incl = _inclinations[i];
+      final angle = time * 2 * math.pi / period;
+      // 3D orbit position with inclination
+      final rx = orbitNorm * math.cos(angle);
+      final ry = orbitNorm * math.sin(angle) * math.sin(incl);
+      final rz = orbitNorm * math.sin(angle) * math.cos(incl);
+      final pos2d = proj.project(rx, ry, rz);
+      final depth = proj.depth(rx, ry, rz);
+      planetData.add({
+        ...p,
+        'index': i,
+        'pos2d': pos2d,
+        'depth': depth,
+        'rx': rx, 'ry': ry, 'rz': rz,
+      });
+    }
+    // Sort: farthest first
+    planetData.sort((a, b) => (a['depth'] as double).compareTo(b['depth'] as double));
 
-      // Orbit
-      if (showOrbits) {
-        canvas.drawCircle(
-          Offset(centerX, centerY),
-          orbitRadius,
-          Paint()
-            ..color = i == selectedPlanet
-                ? Color(planet['color']).withValues(alpha: 0.5)
-                : Colors.white.withValues(alpha: 0.15)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = i == selectedPlanet ? 2 : 0.5,
-        );
+    for (final pd in planetData) {
+      final i = pd['index'] as int;
+      final pos2d = pd['pos2d'] as Offset;
+      final planetSize = (pd['size'] as double);
+      final color = Color(pd['color'] as int);
+      final isSelected = i == selectedPlanet;
+
+      // Saturn: draw back ring half before planet
+      if (pd['name'] == 'Saturn') {
+        _drawSaturnRingHalf(canvas, pos2d, planetSize, false);
       }
 
-      // Planet position
-      final px = centerX + orbitRadius * math.cos(angle);
-      final py = centerY + orbitRadius * math.sin(angle);
-      final planetSize = planet['size'].toDouble();
+      _drawPlanet(canvas, pos2d, planetSize, color, isSelected, pd['name'] as String);
 
-      // Planet
-      _drawPlanet(canvas, px, py, planetSize, Color(planet['color']), i == selectedPlanet);
-
-      // Saturn rings
-      if (planet['name'] == 'Saturn') {
-        _drawSaturnRings(canvas, px, py, planetSize);
+      // Saturn: draw front ring half after planet
+      if (pd['name'] == 'Saturn') {
+        _drawSaturnRingHalf(canvas, pos2d, planetSize, true);
       }
 
-      // Label
-      if (showLabels && (i == selectedPlanet || selectedPlanet < 0)) {
-        _drawLabel(canvas, px, py + planetSize + 8, isKorean ? planet['nameKr'] : planet['name']);
+      if (showLabels && (isSelected || selectedPlanet < 0)) {
+        _drawPlanetLabel(canvas, pos2d, planetSize, isKorean ? pd['nameKr'] as String : pd['name'] as String, color, isSelected);
       }
+    }
+
+    // Draw asteroid belt hint between Mars and Jupiter
+    _drawAsteroidBelt(canvas, proj, maxR);
+  }
+
+  void _drawMilkyWay(Canvas canvas, Size size) {
+    // Soft diagonal band of diffuse stars
+    final rng = math.Random(77);
+    final bandAngle = 0.35; // radians
+    for (int i = 0; i < 120; i++) {
+      // Position along the band
+      final along = rng.nextDouble() * size.width * 1.4 - size.width * 0.2;
+      final across = (rng.nextDouble() - 0.5) * size.height * 0.55;
+      final x = along * math.cos(bandAngle) - across * math.sin(bandAngle);
+      final y = along * math.sin(bandAngle) + across * math.cos(bandAngle) + size.height * 0.1;
+      final r = rng.nextDouble() * 0.9 + 0.1;
+      final alpha = rng.nextDouble() * 0.18 + 0.04;
+      canvas.drawCircle(
+        Offset(x, y), r,
+        Paint()..color = Colors.white.withValues(alpha: alpha),
+      );
     }
   }
 
   void _drawStars(Canvas canvas, Size size) {
-    final random = math.Random(42);
-    for (int i = 0; i < 80; i++) {
-      final x = random.nextDouble() * size.width;
-      final y = random.nextDouble() * size.height;
-      final radius = random.nextDouble() * 1.2 + 0.3;
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        Paint()..color = Colors.white.withValues(alpha: random.nextDouble() * 0.5 + 0.2),
+    final rng = math.Random(99);
+    for (int i = 0; i < 200; i++) {
+      final x = rng.nextDouble() * size.width;
+      final y = rng.nextDouble() * size.height;
+      final r = rng.nextDouble() * 1.4 + 0.2;
+      final bright = rng.nextDouble();
+      final alpha = bright * 0.55 + 0.1;
+      if (bright > 0.85) {
+        // Bright star with small glow
+        canvas.drawCircle(
+          Offset(x, y), r * 2.5,
+          Paint()
+            ..color = Colors.white.withValues(alpha: alpha * 0.25)
+            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+        );
+      }
+      canvas.drawCircle(Offset(x, y), r, Paint()..color = Colors.white.withValues(alpha: alpha));
+    }
+  }
+
+  void _drawOrbits(Canvas canvas, Projection3D proj, double maxR) {
+    for (int i = 0; i < planets.length; i++) {
+      final p = planets[i];
+      final orbitNorm = p['orbit'] as double;
+      final incl = _inclinations[i];
+      final isSelected = i == selectedPlanet;
+      final color = Color(p['color'] as int);
+
+      // Draw ellipse as polyline in 3D
+      final path = Path();
+      const nSegs = 80;
+      for (int j = 0; j <= nSegs; j++) {
+        final theta = j * 2 * math.pi / nSegs;
+        final rx = orbitNorm * math.cos(theta);
+        final ry = orbitNorm * math.sin(theta) * math.sin(incl);
+        final rz = orbitNorm * math.sin(theta) * math.cos(incl);
+        final p2d = proj.project(rx, ry, rz);
+        if (j == 0) {
+          path.moveTo(p2d.dx, p2d.dy);
+        } else {
+          path.lineTo(p2d.dx, p2d.dy);
+        }
+      }
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = isSelected
+              ? color.withValues(alpha: 0.55)
+              : Colors.white.withValues(alpha: 0.12)
+          ..strokeWidth = isSelected ? 1.5 : 0.6
+          ..style = PaintingStyle.stroke,
       );
     }
   }
 
-  void _drawSun(Canvas canvas, double x, double y) {
-    // Glow
-    final glowPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          const Color(0xFFFFD700),
-          const Color(0xFFFF8C00).withValues(alpha: 0.5),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ).createShader(Rect.fromCircle(center: Offset(x, y), radius: 50));
-    canvas.drawCircle(Offset(x, y), 50, glowPaint);
-
-    // Body
-    canvas.drawCircle(Offset(x, y), 22, Paint()..color = const Color(0xFFFFD700));
-  }
-
-  void _drawPlanet(Canvas canvas, double x, double y, double size, Color color, bool isSelected) {
-    if (isSelected) {
-      // Selection glow
+  void _drawAsteroidBelt(Canvas canvas, Projection3D proj, double maxR) {
+    final rng = math.Random(55);
+    const innerNorm = 0.385;
+    const outerNorm = 0.415;
+    for (int i = 0; i < 60; i++) {
+      final theta = rng.nextDouble() * 2 * math.pi;
+      final r = innerNorm + rng.nextDouble() * (outerNorm - innerNorm);
+      final rx = r * math.cos(theta);
+      final rz = r * math.sin(theta);
+      final ry = (rng.nextDouble() - 0.5) * 0.015;
+      final p2d = proj.project(rx, ry, rz);
       canvas.drawCircle(
-        Offset(x, y),
-        size + 5,
-        Paint()..color = color.withValues(alpha: 0.3),
+        p2d, 0.8,
+        Paint()..color = Colors.white.withValues(alpha: rng.nextDouble() * 0.25 + 0.05),
       );
     }
+  }
 
-    // Shadow
-    canvas.drawCircle(
-      Offset(x + 1, y + 1),
-      size,
-      Paint()..color = Colors.black.withValues(alpha: 0.3),
-    );
-
-    // Planet
+  void _drawSun(Canvas canvas, Offset center, double t) {
+    // Outer corona layers
+    for (int layer = 5; layer >= 1; layer--) {
+      final r = 20.0 + layer * 9.0;
+      final alpha = 0.04 + 0.02 * (6 - layer) / 5.0;
+      canvas.drawCircle(
+        center, r,
+        Paint()
+          ..color = const Color(0xFFFF8C00).withValues(alpha: alpha)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, layer * 3.5),
+      );
+    }
+    // Radial gradient body
     final gradient = RadialGradient(
-      center: const Alignment(-0.3, -0.3),
-      colors: [color, color.withValues(alpha: 0.7)],
-    ).createShader(Rect.fromCircle(center: Offset(x, y), radius: size));
-    canvas.drawCircle(Offset(x, y), size, Paint()..shader = gradient);
+      colors: [
+        const Color(0xFFFFFFCC),
+        const Color(0xFFFFD700),
+        const Color(0xFFFF8C00),
+        const Color(0xFFFF4500).withValues(alpha: 0),
+      ],
+      stops: const [0.0, 0.35, 0.7, 1.0],
+    ).createShader(Rect.fromCircle(center: center, radius: 28));
+    canvas.drawCircle(center, 28, Paint()..shader = gradient);
+
+    // Surface flares (8 directions)
+    for (int f = 0; f < 8; f++) {
+      final angle = f * math.pi / 4 + t * 0.3;
+      final flareLen = 18.0 + 6.0 * math.sin(t * 2.1 + f * 0.7);
+      final tip = Offset(
+        center.dx + (22 + flareLen) * math.cos(angle),
+        center.dy + (22 + flareLen) * math.sin(angle),
+      );
+      canvas.drawLine(
+        center, tip,
+        Paint()
+          ..color = const Color(0xFFFFD700).withValues(alpha: 0.18)
+          ..strokeWidth = 2.5
+          ..strokeCap = StrokeCap.round
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+      );
+    }
   }
 
-  void _drawSaturnRings(Canvas canvas, double x, double y, double size) {
-    final ringPaint = Paint()
-      ..color = const Color(0xFFE8D4A2).withValues(alpha: 0.6)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
+  void _drawPlanet(Canvas canvas, Offset pos, double radius, Color color, bool isSelected, String name) {
+    if (isSelected) {
+      // Selection ring
+      canvas.drawCircle(
+        pos, radius + 6,
+        Paint()
+          ..color = color.withValues(alpha: 0.3)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5,
+      );
+      canvas.drawCircle(
+        pos, radius + 8,
+        Paint()
+          ..color = color.withValues(alpha: 0.15)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+      );
+    }
 
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(x, y), width: size * 3, height: size * 0.8),
-      ringPaint,
+    // Planet glow
+    canvas.drawCircle(
+      pos, radius * 1.8,
+      Paint()
+        ..color = color.withValues(alpha: 0.12)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
     );
+
+    // Sphere with radial gradient (light from upper-left)
+    final gradient = RadialGradient(
+      center: const Alignment(-0.35, -0.45),
+      radius: 0.9,
+      colors: [
+        Color.lerp(color, Colors.white, 0.5)!,
+        color,
+        Color.lerp(color, Colors.black, 0.45)!,
+      ],
+      stops: const [0.0, 0.5, 1.0],
+    ).createShader(Rect.fromCircle(center: pos, radius: radius));
+    canvas.drawCircle(pos, radius, Paint()..shader = gradient);
+
+    // Earth: add continent hint
+    if (name == 'Earth') {
+      canvas.drawCircle(
+        Offset(pos.dx - radius * 0.2, pos.dy + radius * 0.1),
+        radius * 0.35,
+        Paint()..color = const Color(0xFF228B22).withValues(alpha: 0.55),
+      );
+    }
+    // Jupiter: banding stripes
+    if (name == 'Jupiter') {
+      for (int b = 0; b < 4; b++) {
+        final bY = pos.dy - radius * 0.5 + b * radius * 0.35;
+        canvas.drawRect(
+          Rect.fromLTWH(pos.dx - radius, bY, radius * 2, radius * 0.15),
+          Paint()..color = const Color(0xFFAA7744).withValues(alpha: 0.22),
+        );
+      }
+    }
   }
 
-  void _drawLabel(Canvas canvas, double x, double y, String text) {
-    final textPainter = TextPainter(
+  void _drawSaturnRingHalf(Canvas canvas, Offset pos, double planetSize, bool frontHalf) {
+    final rW = planetSize * 2.8;
+    final rH = planetSize * 0.55;
+    // Outer ring
+    for (int ring = 0; ring < 3; ring++) {
+      final scale = 1.0 + ring * 0.12;
+      final alpha = 0.35 - ring * 0.08;
+      final ringPaint = Paint()
+        ..color = const Color(0xFFE8D4A2).withValues(alpha: alpha)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5 - ring * 0.5;
+      // Draw either top half (back) or bottom half (front)
+      final rect = Rect.fromCenter(center: pos, width: rW * scale, height: rH * scale);
+      canvas.drawArc(
+        rect,
+        frontHalf ? 0 : math.pi,
+        math.pi,
+        false,
+        ringPaint,
+      );
+    }
+  }
+
+  void _drawPlanetLabel(Canvas canvas, Offset pos, double radius, String name, Color color, bool isSelected) {
+    final tp = TextPainter(
       text: TextSpan(
-        text: text,
-        style: const TextStyle(color: Colors.white70, fontSize: 9),
+        text: name,
+        style: TextStyle(
+          color: isSelected ? color : color.withValues(alpha: 0.75),
+          fontSize: isSelected ? 10.0 : 8.5,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          shadows: const [Shadow(blurRadius: 4, color: Color(0xFF0D1A20))],
+        ),
       ),
       textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-    textPainter.paint(canvas, Offset(x - textPainter.width / 2, y));
+    )..layout();
+    tp.paint(canvas, Offset(pos.dx - tp.width / 2, pos.dy + radius + 3));
   }
 
   @override
-  bool shouldRepaint(covariant SolarSystemPainter oldDelegate) {
-    return time != oldDelegate.time ||
-        showOrbits != oldDelegate.showOrbits ||
-        showLabels != oldDelegate.showLabels ||
-        selectedPlanet != oldDelegate.selectedPlanet;
-  }
+  bool shouldRepaint(covariant SolarSystemPainter old) => true;
 }

@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/language_provider.dart';
 import '../../../core/services/iap_service.dart';
+import '../data/simulation_data.dart';
 
 /// Settings tab widget.
 /// When [embedded] is true, returns only the body content without Scaffold/AppBar
@@ -475,7 +476,7 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
               ),
             ),
             const SizedBox(height: 8),
-            _FeatureItem(text: isKorean ? '231\uac1c \uc778\ud130\ub799\ud2f0\ube0c \uc2dc\ubbac\ub808\uc774\uc158' : '231 Interactive Simulations'),
+            _FeatureItem(text: isKorean ? '${getSimulations().length}\uac1c \uc778\ud130\ub799\ud2f0\ube0c \uc2dc\ubbac\ub808\uc774\uc158' : '${getSimulations().length} Interactive Simulations'),
             _FeatureItem(text: isKorean ? '\ubb3c\ub9ac, \uc218\ud559, AI/ML, \uce74\uc624\uc2a4 \uc774\ub860' : 'Physics, Math, AI/ML, Chaos Theory'),
             _FeatureItem(text: isKorean ? '\uc9c1\uc811 \uc870\uc791\ud558\uba70 \uc6d0\ub9ac \uc774\ud574' : 'Learn by interacting'),
             _FeatureItem(text: isKorean ? '\uc9c0\uc18d\uc801\uc778 \uc5c5\ub370\uc774\ud2b8' : 'Continuous updates'),

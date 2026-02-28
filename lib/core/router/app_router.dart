@@ -265,6 +265,221 @@ import '../../features/earth_science/coriolis_effect/coriolis_effect_screen.dart
 import '../../features/earth_science/eclipses/eclipses_screen.dart';
 import '../../features/earth_science/carbon_cycle/carbon_cycle_screen.dart';
 import '../../features/earth_science/ocean_currents/ocean_currents_screen.dart';
+// Phase 1 - New Simulations (40)
+// Physics
+import '../../features/physics/simple_harmonic/simple_harmonic_screen.dart';
+import '../../features/physics/coupled_oscillators/coupled_oscillators_screen.dart';
+import '../../features/physics/gyroscope/gyroscope_screen.dart';
+import '../../features/physics/ballistic_pendulum/ballistic_pendulum_screen.dart';
+// Math
+import '../../features/mathematics/game_theory/game_theory_screen.dart';
+import '../../features/mathematics/prisoners_dilemma/prisoners_dilemma_screen.dart';
+import '../../features/mathematics/linear_programming/linear_programming_screen.dart';
+import '../../features/mathematics/simplex_method/simplex_method_screen.dart';
+// AI/ML
+import '../../features/deep_learning/naive_bayes/naive_bayes_screen.dart';
+import '../../features/machine_learning/random_forest/random_forest_screen.dart';
+import '../../features/deep_learning/gradient_boosting/gradient_boosting_screen.dart';
+import '../../features/machine_learning/logistic_regression/logistic_regression_screen.dart';
+// Quantum
+import '../../features/quantum/quantum_teleportation/quantum_teleportation_screen.dart';
+import '../../features/quantum/quantum_error_correction/quantum_error_correction_screen.dart';
+import '../../features/quantum/grover_algorithm/grover_algorithm_screen.dart';
+import '../../features/quantum/shor_algorithm/shor_algorithm_screen.dart';
+// Chemistry
+import '../../features/chemistry/gas_laws/gas_laws_screen.dart';
+import '../../features/chemistry/dalton_law/dalton_law_screen.dart';
+import '../../features/chemistry/colligative_properties/colligative_properties_screen.dart';
+import '../../features/chemistry/solubility_curve/solubility_curve_screen.dart';
+// Relativity
+import '../../features/relativity/proper_time/proper_time_screen.dart';
+import '../../features/relativity/four_vectors/four_vectors_screen.dart';
+import '../../features/relativity/velocity_addition/velocity_addition_screen.dart';
+import '../../features/relativity/barn_pole_paradox/barn_pole_paradox_screen.dart';
+// Earth Science
+import '../../features/earth_science/weather_fronts/weather_fronts_screen.dart';
+import '../../features/earth_science/hurricane_formation/hurricane_formation_screen.dart';
+import '../../features/earth_science/jet_stream/jet_stream_screen.dart';
+import '../../features/earth_science/orographic_rainfall/orographic_rainfall_screen.dart';
+// Chaos
+import '../../features/chaos/barnsley_fern/barnsley_fern_screen.dart';
+import '../../features/chaos/dragon_curve/dragon_curve_screen.dart';
+import '../../features/chaos/diffusion_limited/diffusion_limited_screen.dart';
+import '../../features/chaos/reaction_diffusion/reaction_diffusion_screen.dart';
+// Biology
+import '../../features/biology/mendelian_genetics/mendelian_genetics_screen.dart';
+import '../../features/biology/punnett_square/punnett_square_screen.dart';
+import '../../features/biology/gene_expression/gene_expression_screen.dart';
+import '../../features/biology/genetic_drift/genetic_drift_screen.dart';
+// Astronomy
+import '../../features/astronomy/hr_diagram/hr_diagram_screen.dart';
+import '../../features/astronomy/stellar_nucleosynthesis/stellar_nucleosynthesis_screen.dart';
+import '../../features/astronomy/chandrasekhar_limit/chandrasekhar_limit_screen.dart';
+import '../../features/astronomy/neutron_star/neutron_star_screen.dart';
+// Phase 2 imports
+import '../../features/physics/venturi_tube/venturi_tube_screen.dart';
+import '../../features/physics/surface_tension/surface_tension_screen.dart';
+import '../../features/physics/hooke_spring_series/hooke_spring_series_screen.dart';
+import '../../features/physics/wheatstone_bridge/wheatstone_bridge_screen.dart';
+import '../../features/mathematics/gradient_field/gradient_field_screen.dart';
+import '../../features/mathematics/divergence_curl/divergence_curl_screen.dart';
+import '../../features/mathematics/laplace_transform/laplace_transform_screen.dart';
+import '../../features/mathematics/z_transform/z_transform_screen.dart';
+import '../../features/machine_learning/dbscan/dbscan_screen.dart';
+import '../../features/machine_learning/confusion_matrix/confusion_matrix_screen.dart';
+import '../../features/machine_learning/cross_validation/cross_validation_screen.dart';
+import '../../features/deep_learning/bias_variance/bias_variance_screen.dart';
+import '../../features/quantum/quantum_fourier/quantum_fourier_screen.dart';
+import '../../features/quantum/density_matrix/density_matrix_screen.dart';
+import '../../features/quantum/quantum_walk/quantum_walk_screen.dart';
+import '../../features/quantum/quantum_decoherence/quantum_decoherence_screen.dart';
+import '../../features/chemistry/crystal_lattice/crystal_lattice_screen.dart';
+import '../../features/chemistry/hess_law/hess_law_screen.dart';
+import '../../features/chemistry/enthalpy_diagram/enthalpy_diagram_screen.dart';
+import '../../features/chemistry/le_chatelier/le_chatelier_screen.dart';
+import '../../features/relativity/relativistic_energy/relativistic_energy_screen.dart';
+import '../../features/relativity/light_cone/light_cone_screen.dart';
+import '../../features/relativity/equivalence_principle/equivalence_principle_screen.dart';
+import '../../features/relativity/metric_tensor/metric_tensor_screen.dart';
+import '../../features/earth_science/soil_layers/soil_layers_screen.dart';
+import '../../features/earth_science/volcano_types/volcano_types_screen.dart';
+import '../../features/earth_science/mineral_identification/mineral_identification_screen.dart';
+import '../../features/earth_science/erosion_deposition/erosion_deposition_screen.dart';
+import '../../features/chaos/flocking/flocking_screen.dart';
+import '../../features/chaos/ant_colony/ant_colony_screen.dart';
+import '../../features/chaos/forest_fire/forest_fire_screen.dart';
+import '../../features/chaos/network_cascade/network_cascade_screen.dart';
+import '../../features/biology/speciation/speciation_screen.dart';
+import '../../features/biology/phylogenetic_tree/phylogenetic_tree_screen.dart';
+import '../../features/biology/food_web/food_web_screen.dart';
+import '../../features/biology/ecological_succession/ecological_succession_screen.dart';
+import '../../features/astronomy/supernova/supernova_screen.dart';
+import '../../features/astronomy/binary_star/binary_star_screen.dart';
+import '../../features/astronomy/exoplanet_transit/exoplanet_transit_screen.dart';
+import '../../features/astronomy/parallax/parallax_screen.dart';
+// Phase 3 imports
+import '../../features/physics/magnetic_induction/magnetic_induction_screen.dart';
+import '../../features/physics/ac_circuits/ac_circuits_screen.dart';
+import '../../features/physics/photodiode/photodiode_screen.dart';
+import '../../features/physics/hall_effect/hall_effect_screen.dart';
+import '../../features/mathematics/convolution/convolution_screen.dart';
+import '../../features/mathematics/fibonacci_sequence/fibonacci_sequence_screen.dart';
+import '../../features/mathematics/euler_path/euler_path_screen.dart';
+import '../../features/mathematics/minimum_spanning_tree/minimum_spanning_tree_screen.dart';
+import '../../features/deep_learning/batch_norm/batch_norm_screen.dart';
+import '../../features/deep_learning/learning_rate/learning_rate_screen.dart';
+import '../../features/deep_learning/backpropagation/backpropagation_screen.dart';
+import '../../features/deep_learning/vae/vae_screen.dart';
+import '../../features/quantum/quantum_zeno/quantum_zeno_screen.dart';
+import '../../features/quantum/aharonov_bohm/aharonov_bohm_screen.dart';
+import '../../features/quantum/quantum_key_dist/quantum_key_dist_screen.dart';
+import '../../features/quantum/franck_hertz/franck_hertz_screen.dart';
+import '../../features/chemistry/equilibrium_constant/equilibrium_constant_screen.dart';
+import '../../features/chemistry/buffer_solution/buffer_solution_screen.dart';
+import '../../features/chemistry/radioactive_decay/radioactive_decay_screen.dart';
+import '../../features/chemistry/nuclear_fission_fusion/nuclear_fission_fusion_screen.dart';
+import '../../features/relativity/frame_dragging/frame_dragging_screen.dart';
+import '../../features/relativity/penrose_diagram/penrose_diagram_screen.dart';
+import '../../features/relativity/friedmann_equations/friedmann_equations_screen.dart';
+import '../../features/relativity/hubble_expansion/hubble_expansion_screen.dart';
+import '../../features/earth_science/ocean_tides/ocean_tides_screen.dart';
+import '../../features/earth_science/thermohaline/thermohaline_screen.dart';
+import '../../features/earth_science/el_nino/el_nino_screen.dart';
+import '../../features/earth_science/ice_ages/ice_ages_screen.dart';
+import '../../features/chaos/small_world/small_world_screen.dart';
+import '../../features/chaos/scale_free_network/scale_free_network_screen.dart';
+import '../../features/chaos/strange_attractor_explorer/strange_attractor_explorer_screen.dart';
+import '../../features/chaos/feigenbaum/feigenbaum_screen.dart';
+import '../../features/biology/carbon_fixation/carbon_fixation_screen.dart';
+import '../../features/biology/krebs_cycle/krebs_cycle_screen.dart';
+import '../../features/biology/osmosis/osmosis_screen.dart';
+import '../../features/biology/action_potential_synapse/action_potential_synapse_screen.dart';
+import '../../features/astronomy/redshift_measurement/redshift_measurement_screen.dart';
+import '../../features/astronomy/planet_formation/planet_formation_screen.dart';
+import '../../features/astronomy/roche_limit/roche_limit_screen.dart';
+import '../../features/astronomy/lagrange_points/lagrange_points_screen.dart';
+// Phase 4 imports
+import '../../features/physics/eddy_currents/eddy_currents_screen.dart';
+import '../../features/physics/pascal_hydraulic/pascal_hydraulic_screen.dart';
+import '../../features/physics/specific_heat/specific_heat_screen.dart';
+import '../../features/physics/stefan_boltzmann/stefan_boltzmann_screen.dart';
+import '../../features/mathematics/dijkstra/dijkstra_screen.dart';
+import '../../features/mathematics/voronoi/voronoi_screen.dart';
+import '../../features/mathematics/delaunay/delaunay_screen.dart';
+import '../../features/mathematics/bezier_curves/bezier_curves_screen.dart';
+import '../../features/deep_learning/diffusion_model/diffusion_model_screen.dart';
+import '../../features/deep_learning/tokenizer/tokenizer_screen.dart';
+import '../../features/deep_learning/beam_search/beam_search_screen.dart';
+import '../../features/machine_learning/feature_importance/feature_importance_screen.dart';
+import '../../features/quantum/zeeman_effect/zeeman_effect_screen.dart';
+import '../../features/quantum/quantum_well/quantum_well_screen.dart';
+import '../../features/quantum/band_structure/band_structure_screen.dart';
+import '../../features/quantum/bose_einstein/bose_einstein_screen.dart';
+import '../../features/chemistry/organic_functional_groups/organic_functional_groups_screen.dart';
+import '../../features/chemistry/isomers/isomers_screen.dart';
+import '../../features/chemistry/polymerization/polymerization_screen.dart';
+import '../../features/chemistry/electrolysis/electrolysis_screen.dart';
+import '../../features/relativity/cosmic_microwave_bg/cosmic_microwave_bg_screen.dart';
+import '../../features/relativity/kerr_black_hole/kerr_black_hole_screen.dart';
+import '../../features/relativity/shapiro_delay/shapiro_delay_screen.dart';
+import '../../features/relativity/gravitational_time/gravitational_time_screen.dart';
+import '../../features/earth_science/ozone_layer/ozone_layer_screen.dart';
+import '../../features/earth_science/radiation_budget/radiation_budget_screen.dart';
+import '../../features/earth_science/nitrogen_cycle/nitrogen_cycle_screen.dart';
+import '../../features/earth_science/fossil_formation/fossil_formation_screen.dart';
+import '../../features/chaos/lyapunov_exponent/lyapunov_exponent_screen.dart';
+import '../../features/chaos/tent_map/tent_map_screen.dart';
+import '../../features/chaos/sierpinski_carpet/sierpinski_carpet_screen.dart';
+import '../../features/chaos/chaos_game/chaos_game_screen.dart';
+import '../../features/biology/immune_response/immune_response_screen.dart';
+import '../../features/biology/muscle_contraction/muscle_contraction_screen.dart';
+import '../../features/biology/heart_conduction/heart_conduction_screen.dart';
+import '../../features/biology/blood_circulation/blood_circulation_screen.dart';
+import '../../features/astronomy/orbital_transfer/orbital_transfer_screen.dart';
+import '../../features/astronomy/escape_velocity/escape_velocity_screen.dart';
+import '../../features/astronomy/celestial_sphere/celestial_sphere_screen.dart';
+import '../../features/astronomy/galaxy_rotation/galaxy_rotation_screen.dart';
+// Phase 5 imports
+import '../../features/physics/wave_packet/wave_packet_screen.dart';
+import '../../features/physics/lissajous/lissajous_screen.dart';
+import '../../features/physics/doppler_radar/doppler_radar_screen.dart';
+import '../../features/physics/cavendish/cavendish_screen.dart';
+import '../../features/mathematics/polar_coordinates/polar_coordinates_screen.dart';
+import '../../features/mathematics/parametric_curves/parametric_curves_screen.dart';
+import '../../features/mathematics/binomial_distribution/binomial_distribution_screen.dart';
+import '../../features/mathematics/poisson_distribution/poisson_distribution_screen.dart';
+import '../../features/machine_learning/dimensionality_reduction/dimensionality_reduction_screen.dart';
+import '../../features/deep_learning/neural_style/neural_style_screen.dart';
+import '../../features/machine_learning/maze_rl/maze_rl_screen.dart';
+import '../../features/machine_learning/minimax/minimax_screen.dart';
+import '../../features/quantum/fermi_dirac/fermi_dirac_screen.dart';
+import '../../features/quantum/wigner_function/wigner_function_screen.dart';
+import '../../features/quantum/quantum_oscillator_2d/quantum_oscillator_2d_screen.dart';
+import '../../features/quantum/spin_chain/spin_chain_screen.dart';
+import '../../features/chemistry/ideal_solution/ideal_solution_screen.dart';
+import '../../features/chemistry/chromatography/chromatography_screen.dart';
+import '../../features/chemistry/calorimetry/calorimetry_screen.dart';
+import '../../features/chemistry/activation_energy/activation_energy_screen.dart';
+import '../../features/relativity/relativistic_aberration/relativistic_aberration_screen.dart';
+import '../../features/relativity/relativistic_beaming/relativistic_beaming_screen.dart';
+import '../../features/relativity/cosmological_redshift/cosmological_redshift_screen.dart';
+import '../../features/relativity/dark_energy/dark_energy_screen.dart';
+import '../../features/earth_science/magnetic_reversal/magnetic_reversal_screen.dart';
+import '../../features/earth_science/seismograph/seismograph_screen.dart';
+import '../../features/earth_science/continental_drift/continental_drift_screen.dart';
+import '../../features/earth_science/greenhouse_gases/greenhouse_gases_screen.dart';
+import '../../features/chaos/rule_110/rule_110_screen.dart';
+import '../../features/chaos/schelling_segregation/schelling_segregation_screen.dart';
+import '../../features/chaos/duffing_oscillator/duffing_oscillator_screen.dart';
+import '../../features/chaos/belousov_zhabotinsky/belousov_zhabotinsky_screen.dart';
+import '../../features/biology/cellular_respiration/cellular_respiration_screen.dart';
+import '../../features/biology/logistic_growth/logistic_growth_screen.dart';
+import '../../features/biology/competitive_exclusion/competitive_exclusion_screen.dart';
+import '../../features/biology/crispr/crispr_screen.dart';
+import '../../features/astronomy/dark_matter/dark_matter_screen.dart';
+import '../../features/astronomy/pulsar/pulsar_screen.dart';
+import '../../features/astronomy/asteroid_belt/asteroid_belt_screen.dart';
+import '../../features/astronomy/cosmic_distance_ladder/cosmic_distance_ladder_screen.dart';
 
 /// 앱 라우터 설정
 final appRouter = GoRouter(
@@ -843,6 +1058,291 @@ Widget _getSimulationScreen(String simId) {
       return const CarbonCycleScreen(isKorean: false);
     case 'ocean-currents':
       return const OceanCurrentsScreen(isKorean: false);
+    // Phase 1 - New Simulations
+    case 'simple-harmonic':
+      return const SimpleHarmonicScreen();
+    case 'coupled-oscillators':
+      return const CoupledOscillatorsScreen();
+    case 'gyroscope':
+      return const GyroscopeScreen();
+    case 'ballistic-pendulum':
+      return const BallisticPendulumScreen();
+    case 'game-theory':
+      return const GameTheoryScreen();
+    case 'prisoners-dilemma':
+      return const PrisonersDilemmaScreen();
+    case 'linear-programming':
+      return const LinearProgrammingScreen();
+    case 'simplex-method':
+      return const SimplexMethodScreen();
+    case 'naive-bayes':
+      return const NaiveBayesScreen();
+    case 'random-forest':
+      return const RandomForestScreen();
+    case 'gradient-boosting':
+      return const GradientBoostingScreen();
+    case 'logistic-regression':
+      return const LogisticRegressionScreen();
+    case 'quantum-teleportation':
+      return const QuantumTeleportationScreen();
+    case 'quantum-error-correction':
+      return const QuantumErrorCorrectionScreen();
+    case 'grover-algorithm':
+      return const GroverAlgorithmScreen();
+    case 'shor-algorithm':
+      return const ShorAlgorithmScreen();
+    case 'gas-laws':
+      return const GasLawsScreen();
+    case 'dalton-law':
+      return const DaltonLawScreen();
+    case 'colligative-properties':
+      return const ColligativePropertiesScreen();
+    case 'solubility-curve':
+      return const SolubilityCurveScreen();
+    case 'proper-time':
+      return const ProperTimeScreen();
+    case 'four-vectors':
+      return const FourVectorsScreen();
+    case 'velocity-addition':
+      return const VelocityAdditionScreen();
+    case 'barn-pole-paradox':
+      return const BarnPoleParadoxScreen();
+    case 'weather-fronts':
+      return const WeatherFrontsScreen();
+    case 'hurricane-formation':
+      return const HurricaneFormationScreen();
+    case 'jet-stream':
+      return const JetStreamScreen();
+    case 'orographic-rainfall':
+      return const OrographicRainfallScreen();
+    case 'barnsley-fern':
+      return const BarnsleyFernScreen();
+    case 'dragon-curve':
+      return const DragonCurveScreen();
+    case 'diffusion-limited':
+      return const DiffusionLimitedScreen();
+    case 'reaction-diffusion':
+      return const ReactionDiffusionScreen();
+    case 'mendelian-genetics':
+      return const MendelianGeneticsScreen();
+    case 'punnett-square':
+      return const PunnettSquareScreen();
+    case 'gene-expression':
+      return const GeneExpressionScreen();
+    case 'genetic-drift':
+      return const GeneticDriftScreen();
+    case 'hr-diagram':
+      return const HrDiagramScreen();
+    case 'stellar-nucleosynthesis':
+      return const StellarNucleosynthesisScreen();
+    case 'chandrasekhar-limit':
+      return const ChandrasekharLimitScreen();
+    case 'neutron-star':
+      return const NeutronStarScreen();
+    // Phase 2 cases
+    case 'venturi-tube':
+      return const VenturiTubeScreen();
+    case 'surface-tension':
+      return const SurfaceTensionScreen();
+    case 'hooke-spring-series':
+      return const HookeSpringScreen();
+    case 'wheatstone-bridge':
+      return const WheatstoneBridgeScreen();
+    case 'gradient-field':
+      return const GradientFieldScreen();
+    case 'divergence-curl':
+      return const DivergenceCurlScreen();
+    case 'laplace-transform':
+      return const LaplaceTransformScreen();
+    case 'z-transform':
+      return const ZTransformScreen();
+    case 'dbscan':
+      return const DbscanScreen();
+    case 'confusion-matrix':
+      return const ConfusionMatrixScreen();
+    case 'cross-validation':
+      return const CrossValidationScreen();
+    case 'bias-variance':
+      return const BiasVarianceScreen();
+    case 'quantum-fourier':
+      return const QuantumFourierScreen();
+    case 'density-matrix':
+      return const DensityMatrixScreen();
+    case 'quantum-walk':
+      return const QuantumWalkScreen();
+    case 'quantum-decoherence':
+      return const QuantumDecoherenceScreen();
+    case 'crystal-lattice':
+      return const CrystalLatticeScreen();
+    case 'hess-law':
+      return const HessLawScreen();
+    case 'enthalpy-diagram':
+      return const EnthalpyDiagramScreen();
+    case 'le-chatelier':
+      return const LeChatelierScreen();
+    case 'relativistic-energy':
+      return const RelativisticEnergyScreen();
+    case 'light-cone':
+      return const LightConeScreen();
+    case 'equivalence-principle':
+      return const EquivalencePrincipleScreen();
+    case 'metric-tensor':
+      return const MetricTensorScreen();
+    case 'soil-layers':
+      return const SoilLayersScreen();
+    case 'volcano-types':
+      return const VolcanoTypesScreen();
+    case 'mineral-identification':
+      return const MineralIdentificationScreen();
+    case 'erosion-deposition':
+      return const ErosionDepositionScreen();
+    case 'flocking':
+      return const FlockingScreen();
+    case 'ant-colony':
+      return const AntColonyScreen();
+    case 'forest-fire':
+      return const ForestFireScreen();
+    case 'network-cascade':
+      return const NetworkCascadeScreen();
+    case 'speciation':
+      return const SpeciationScreen();
+    case 'phylogenetic-tree':
+      return const PhylogeneticTreeScreen();
+    case 'food-web':
+      return const FoodWebScreen();
+    case 'ecological-succession':
+      return const EcologicalSuccessionScreen();
+    case 'supernova':
+      return const SupernovaScreen();
+    case 'binary-star':
+      return const BinaryStarScreen();
+    case 'exoplanet-transit':
+      return const ExoplanetTransitScreen();
+    case 'parallax':
+      return const ParallaxScreen();
+    // Phase 3 cases
+    case 'magnetic-induction': return const MagneticInductionScreen();
+    case 'ac-circuits': return const AcCircuitsScreen();
+    case 'photodiode': return const PhotodiodeScreen();
+    case 'hall-effect': return const HallEffectScreen();
+    case 'convolution': return const ConvolutionScreen();
+    case 'fibonacci-sequence': return const FibonacciSequenceScreen();
+    case 'euler-path': return const EulerPathScreen();
+    case 'minimum-spanning-tree': return const MinimumSpanningTreeScreen();
+    case 'batch-norm': return const BatchNormScreen();
+    case 'learning-rate': return const LearningRateScreen();
+    case 'backpropagation': return const BackpropagationScreen();
+    case 'vae': return const VaeScreen();
+    case 'quantum-zeno': return const QuantumZenoScreen();
+    case 'aharonov-bohm': return const AharonovBohmScreen();
+    case 'quantum-key-dist': return const QuantumKeyDistScreen();
+    case 'franck-hertz': return const FranckHertzScreen();
+    case 'equilibrium-constant': return const EquilibriumConstantScreen();
+    case 'buffer-solution': return const BufferSolutionScreen();
+    case 'radioactive-decay': return const RadioactiveDecayScreen();
+    case 'nuclear-fission-fusion': return const NuclearFissionFusionScreen();
+    case 'frame-dragging': return const FrameDraggingScreen();
+    case 'penrose-diagram': return const PenroseDiagramScreen();
+    case 'friedmann-equations': return const FriedmannEquationsScreen();
+    case 'hubble-expansion': return const HubbleExpansionScreen();
+    case 'ocean-tides': return const OceanTidesScreen();
+    case 'thermohaline': return const ThermohalineScreen();
+    case 'el-nino': return const ElNinoScreen();
+    case 'ice-ages': return const IceAgesScreen();
+    case 'small-world': return const SmallWorldScreen();
+    case 'scale-free-network': return const ScaleFreeNetworkScreen();
+    case 'strange-attractor-explorer': return const StrangeAttractorExplorerScreen();
+    case 'feigenbaum': return const FeigenbaumScreen();
+    case 'carbon-fixation': return const CarbonFixationScreen();
+    case 'krebs-cycle': return const KrebsCycleScreen();
+    case 'osmosis': return const OsmosisScreen();
+    case 'action-potential-synapse': return const ActionPotentialSynapseScreen();
+    case 'redshift-measurement': return const RedshiftMeasurementScreen();
+    case 'planet-formation': return const PlanetFormationScreen();
+    case 'roche-limit': return const RocheLimitScreen();
+    case 'lagrange-points': return const LagrangePointsScreen();
+    // Phase 4 cases
+    case 'eddy-currents': return const EddyCurrentsScreen();
+    case 'pascal-hydraulic': return const PascalHydraulicScreen();
+    case 'specific-heat': return const SpecificHeatScreen();
+    case 'stefan-boltzmann': return const StefanBoltzmannScreen();
+    case 'dijkstra': return const DijkstraScreen();
+    case 'voronoi': return const VoronoiScreen();
+    case 'delaunay': return const DelaunayScreen();
+    case 'bezier-curves': return const BezierCurvesScreen();
+    case 'diffusion-model': return const DiffusionModelScreen();
+    case 'tokenizer': return const TokenizerScreen();
+    case 'beam-search': return const BeamSearchScreen();
+    case 'feature-importance': return const FeatureImportanceScreen();
+    case 'zeeman-effect': return const ZeemanEffectScreen();
+    case 'quantum-well': return const QuantumWellScreen();
+    case 'band-structure': return const BandStructureScreen();
+    case 'bose-einstein': return const BoseEinsteinScreen();
+    case 'organic-functional-groups': return const OrganicFunctionalGroupsScreen();
+    case 'isomers': return const IsomersScreen();
+    case 'polymerization': return const PolymerizationScreen();
+    case 'electrolysis': return const ElectrolysisScreen();
+    case 'cosmic-microwave-bg': return const CosmicMicrowaveBgScreen();
+    case 'kerr-black-hole': return const KerrBlackHoleScreen();
+    case 'shapiro-delay': return const ShapiroDelayScreen();
+    case 'gravitational-time': return const GravitationalTimeScreen();
+    case 'ozone-layer': return const OzoneLayerScreen();
+    case 'radiation-budget': return const RadiationBudgetScreen();
+    case 'nitrogen-cycle': return const NitrogenCycleScreen();
+    case 'fossil-formation': return const FossilFormationScreen();
+    case 'lyapunov-exponent': return const LyapunovExponentScreen();
+    case 'tent-map': return const TentMapScreen();
+    case 'sierpinski-carpet': return const SierpinskiCarpetScreen();
+    case 'chaos-game': return const ChaosGameScreen();
+    case 'immune-response': return const ImmuneResponseScreen();
+    case 'muscle-contraction': return const MuscleContractionScreen();
+    case 'heart-conduction': return const HeartConductionScreen();
+    case 'blood-circulation': return const BloodCirculationScreen();
+    case 'orbital-transfer': return const OrbitalTransferScreen();
+    case 'escape-velocity': return const EscapeVelocityScreen();
+    case 'celestial-sphere': return const CelestialSphereScreen();
+    case 'galaxy-rotation': return const GalaxyRotationScreen();
+    // Phase 5 cases
+    case 'wave-packet': return const WavePacketScreen();
+    case 'lissajous': return const LissajousScreen();
+    case 'doppler-radar': return const DopplerRadarScreen();
+    case 'cavendish': return const CavendishScreen();
+    case 'polar-coordinates': return const PolarCoordinatesScreen();
+    case 'parametric-curves': return const ParametricCurvesScreen();
+    case 'binomial-distribution': return const BinomialDistributionScreen();
+    case 'poisson-distribution': return const PoissonDistributionScreen();
+    case 'dimensionality-reduction': return const DimensionalityReductionScreen();
+    case 'neural-style': return const NeuralStyleScreen();
+    case 'maze-rl': return const MazeRlScreen();
+    case 'minimax': return const MinimaxScreen();
+    case 'fermi-dirac': return const FermiDiracScreen();
+    case 'wigner-function': return const WignerFunctionScreen();
+    case 'quantum-oscillator-2d': return const QuantumOscillator2dScreen();
+    case 'spin-chain': return const SpinChainScreen();
+    case 'ideal-solution': return const IdealSolutionScreen();
+    case 'chromatography': return const ChromatographyScreen();
+    case 'calorimetry': return const CalorimetryScreen();
+    case 'activation-energy': return const ActivationEnergyScreen();
+    case 'relativistic-aberration': return const RelativisticAberrationScreen();
+    case 'relativistic-beaming': return const RelativisticBeamingScreen();
+    case 'cosmological-redshift': return const CosmologicalRedshiftScreen();
+    case 'dark-energy': return const DarkEnergyScreen();
+    case 'magnetic-reversal': return const MagneticReversalScreen();
+    case 'seismograph': return const SeismographScreen();
+    case 'continental-drift': return const ContinentalDriftScreen();
+    case 'greenhouse-gases': return const GreenhouseGasesScreen();
+    case 'rule-110': return const Rule110Screen();
+    case 'schelling-segregation': return const SchellingSegregationScreen();
+    case 'duffing-oscillator': return const DuffingOscillatorScreen();
+    case 'belousov-zhabotinsky': return const BelousovZhabotinskyScreen();
+    case 'cellular-respiration': return const CellularRespirationScreen();
+    case 'logistic-growth': return const LogisticGrowthScreen();
+    case 'competitive-exclusion': return const CompetitiveExclusionScreen();
+    case 'crispr': return const CrisprScreen();
+    case 'dark-matter': return const DarkMatterScreen();
+    case 'pulsar': return const PulsarScreen();
+    case 'asteroid-belt': return const AsteroidBeltScreen();
+    case 'cosmic-distance-ladder': return const CosmicDistanceLadderScreen();
     default:
       return _ComingSoonScreen(simId: simId);
   }

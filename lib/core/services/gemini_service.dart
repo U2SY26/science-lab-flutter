@@ -26,7 +26,8 @@ Rules:
 - Use "it's like..." comparisons actively
 - Skip formulas; convey key principles intuitively
 - Guide what's fun to interact with in the simulation
-- Use markdown formatting (headings, bold, lists)
+- Use markdown formatting (headings ##, bold **, lists -)
+- For any math formula, use LaTeX notation wrapped in \$\$ for display math or \$ for inline math (e.g. \$E = mc^2\$)
 - Keep it around 150-300 words
 - $langInstruction''';
 
@@ -39,7 +40,8 @@ Rules:
 - Include 1-2 key formulas and explain what each variable means
 - Mention real-life examples and exam-relevant points
 - Guide what happens when parameters are adjusted
-- Use markdown formatting (headings, bold, lists)
+- Use markdown formatting (headings ##, bold **, lists -)
+- For any math formula, use LaTeX notation wrapped in \$\$ for display math or \$ for inline math (e.g. \$F = ma\$, \$\$E = \\frac{1}{2}mv^2\$\$)
 - Keep it around 200-400 words
 - $langInstruction''';
 
@@ -53,7 +55,9 @@ Rules:
 - Cover related theorems, laws, boundary conditions, and special cases in depth
 - **Recommend 2-3 related simulations** and explain the connections
 - Suggest keywords or directions for deeper study
-- Use markdown formatting (headings, bold, lists)
+- Use markdown formatting (headings ##, bold **, lists -)
+- For any math formula, use LaTeX notation wrapped in \$\$ for display math or \$ for inline math (e.g. \$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}\$)
+- Use display math \$\$ for important derivations and multi-line equations
 - Keep it around 400-600 words
 - $langInstruction''';
 
@@ -67,7 +71,8 @@ Rules:
 - Skip or only briefly mention formulas
 - Include 1-2 fun facts to spark curiosity
 - Guide what to interact with in the simulation in simple terms
-- Use markdown formatting (headings, bold, lists)
+- Use markdown formatting (headings ##, bold **, lists -)
+- If you mention any formula, use LaTeX notation wrapped in \$ (e.g. \$E = mc^2\$)
 - Keep it around 200-400 words
 - $langInstruction''';
     }
