@@ -135,8 +135,8 @@ class _SimulationContainerState extends State<SimulationContainer> {
 
     setState(() {
       _isAiLoading = false;
-      if (result.startsWith('Error')) {
-        _aiError = result;
+      if (result.startsWith('Error:')) {
+        _aiError = _localizeAiError(result);
         // 에러 시 사용 횟수 환불
         if (!_adsRemoved) {
           _aiRemaining++;
@@ -224,6 +224,26 @@ class _SimulationContainerState extends State<SimulationContainer> {
         }
       },
     );
+  }
+
+  String _localizeAiError(String errorCode) {
+    final isKo = _isKoreanLocale(context);
+    switch (errorCode) {
+      case 'Error:TIMEOUT':
+        return isKo ? '요청 시간이 초과되었습니다. 다시 시도해주세요.' : 'Request timed out. Please try again.';
+      case 'Error:AUTH':
+        return isKo ? 'AI 서비스 인증에 실패했습니다.' : 'AI service authentication failed.';
+      case 'Error:RATE_LIMIT':
+        return isKo ? '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' : 'Too many requests. Please try again later.';
+      case 'Error:SERVER':
+        return isKo ? 'AI 서버에 일시적인 문제가 있습니다.' : 'AI server is temporarily unavailable.';
+      case 'Error:NETWORK':
+        return isKo ? '네트워크 연결을 확인해주세요.' : 'Please check your network connection.';
+      case 'Error:NO_KEY':
+        return isKo ? 'AI 서비스가 설정되지 않았습니다.' : 'AI service is not configured.';
+      default:
+        return isKo ? 'AI 해설을 불러올 수 없습니다.' : 'Could not load AI explanation.';
+    }
   }
 
   void _toggleAi() {

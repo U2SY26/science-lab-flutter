@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ class GeminiService {
   }
 
   static const _apiKey = String.fromEnvironment('OPENAI_API_KEY', defaultValue: '');
+  static const _requestTimeout = Duration(seconds: 30);
 
   bool get isAvailable => _apiKey.isNotEmpty;
 
@@ -80,6 +82,21 @@ Rules:
     }
   }
 
+  static String _mapHttpError(int statusCode) {
+    switch (statusCode) {
+      case 401:
+        return 'Error:AUTH';
+      case 429:
+        return 'Error:RATE_LIMIT';
+      case 500:
+      case 502:
+      case 503:
+        return 'Error:SERVER';
+      default:
+        return 'Error:HTTP_$statusCode';
+    }
+  }
+
   Future<String> explainSimulation({
     required String simId,
     required String title,
@@ -114,13 +131,13 @@ Rules:
           'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-4o-mini',
+          'model': 'gpt-5.2-pro-2025-12-11',
           'messages': [
             {'role': 'system', 'content': systemPrompt},
             {'role': 'user', 'content': userPrompt},
           ],
         }),
-      );
+      ).timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -128,14 +145,21 @@ Rules:
             'Could not generate response.';
       } else {
         debugPrint('[GeminiService] API error: ${response.statusCode} - ${response.body}');
-        return 'Error: API response code ${response.statusCode}';
+        return _mapHttpError(response.statusCode);
       }
+    } on TimeoutException {
+      debugPrint('[GeminiService] Request timed out');
+      return 'Error:TIMEOUT';
     } catch (e) {
       debugPrint('[GeminiService] Exception: $e, keyAvailable: $isAvailable');
       if (!isAvailable) {
-        return 'Error: OpenAI API key is not configured.';
+        return 'Error:NO_KEY';
       }
-      return 'Error: $e';
+      if (e.toString().contains('SocketException') ||
+          e.toString().contains('HandshakeException')) {
+        return 'Error:NETWORK';
+      }
+      return 'Error:UNKNOWN';
     }
   }
 }

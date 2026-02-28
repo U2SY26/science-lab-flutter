@@ -3132,4 +3132,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get updateBenefits => '새로운 시뮬레이션, 버그 수정, 성능 개선이 포함되어 있습니다!';
+
+  @override
+  String get optionalUpdateTitle => '업데이트 안내';
+
+  @override
+  String optionalUpdateDescription(String version) {
+    return '새 버전(v$version)이 출시되었습니다. 개선사항과 새 기능이 포함되어 있습니다.';
+  }
+
+  @override
+  String get whatsNewTitle => '새로운 소식';
+
+  @override
+  String get whatsNewDismiss => '확인';
 }

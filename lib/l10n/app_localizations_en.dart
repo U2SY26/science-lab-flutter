@@ -3210,4 +3210,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateBenefits =>
       'New simulations, bug fixes, and performance improvements!';
+
+  @override
+  String get optionalUpdateTitle => 'Update Available';
+
+  @override
+  String optionalUpdateDescription(String version) {
+    return 'A new version (v$version) is available with improvements and new features.';
+  }
+
+  @override
+  String get whatsNewTitle => 'What\'s New';
+
+  @override
+  String get whatsNewDismiss => 'Got it!';
 }

@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +12,7 @@ import 'core/providers/language_provider.dart';
 import 'core/services/ad_service.dart';
 import 'core/services/iap_service.dart';
 import 'core/services/force_update_service.dart';
+import 'core/services/whats_new_service.dart';
 import 'core/services/analytics_service.dart';
 
 void main() async {
@@ -22,11 +24,22 @@ void main() async {
   // 앱 시작 이벤트 로깅
   AnalyticsService.logAppOpen();
 
+  // Edge-to-Edge 시스템 UI 설정 (Android 15+ 대응)
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+    systemNavigationBarIconBrightness: Brightness.light,
+  ));
+
   // AdMob + Remote Config 초기화 (모바일만)
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await AdService().initialize();
     await IAPService().initialize();
     await ForceUpdateService().initialize();
+    await WhatsNewService().initialize();
   }
 
   runApp(
@@ -86,7 +99,14 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
   void _checkForceUpdate(BuildContext context) {
     final updateService = ForceUpdateService();
     if (updateService.isUpdateRequired()) {
+      // 1순위: 강제 업데이트 (current < minimum)
       ForceUpdateDialog.show(context);
+    } else if (updateService.isOptionalUpdateAvailable()) {
+      // 2순위: 선택적 업데이트 안내 (current < latest, 구버전 사용자에게 알림)
+      ForceUpdateDialog.showOptional(context);
+    } else {
+      // 3순위: What's New (최신 버전 사용자에게 변경사항 안내)
+      WhatsNewDialog.showIfNeeded(context);
     }
   }
 }

@@ -6013,6 +6013,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New simulations, bug fixes, and performance improvements!'**
   String get updateBenefits;
+
+  /// No description provided for @optionalUpdateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get optionalUpdateTitle;
+
+  /// No description provided for @optionalUpdateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version (v{version}) is available with improvements and new features.'**
+  String optionalUpdateDescription(String version);
+
+  /// No description provided for @whatsNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s New'**
+  String get whatsNewTitle;
+
+  /// No description provided for @whatsNewDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get whatsNewDismiss;
 }
 
 class _AppLocalizationsDelegate

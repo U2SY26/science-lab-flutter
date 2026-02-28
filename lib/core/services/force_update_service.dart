@@ -79,11 +79,18 @@ class ForceUpdateService {
     }
   }
 
-  /// Check if update is needed
+  /// Check if mandatory update is needed (current < minimum)
   bool isUpdateRequired() {
     if (kIsWeb) return false;
     if (_currentVersion.isEmpty) return false;
     return _compareVersions(_currentVersion, _minimumVersion) < 0;
+  }
+
+  /// Check if optional update is available (current < latest, but >= minimum)
+  bool isOptionalUpdateAvailable() {
+    if (kIsWeb) return false;
+    if (_currentVersion.isEmpty || _latestVersion.isEmpty) return false;
+    return _compareVersions(_currentVersion, _latestVersion) < 0;
   }
 
   /// Whether update is mandatory (can't dismiss)
@@ -159,6 +166,7 @@ class ForceUpdateDialog extends StatelessWidget {
     this.onSkip,
   });
 
+  /// Show forced update dialog
   static Future<void> show(BuildContext context) {
     final service = ForceUpdateService();
     final langCode = Localizations.localeOf(context).languageCode;
@@ -174,6 +182,29 @@ class ForceUpdateDialog extends StatelessWidget {
         onSkip: service.isForced
             ? null
             : () => service.skipVersion(service.minimumVersion),
+      ),
+    );
+  }
+
+  /// Show optional update dialog (soft prompt for old version users)
+  static Future<void> showOptional(BuildContext context) async {
+    final service = ForceUpdateService();
+
+    // 사용자가 이 버전 건너뛰기를 선택한 경우 표시 안 함
+    if (await service.hasSkippedVersion(service.latestVersion)) return;
+
+    if (!context.mounted) return;
+    final langCode = Localizations.localeOf(context).languageCode;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => ForceUpdateDialog(
+        isForced: false,
+        currentVersion: service.currentVersion,
+        requiredVersion: service.latestVersion,
+        customMessage: service.getUpdateMessage(langCode),
+        onSkip: () => service.skipVersion(service.latestVersion),
       ),
     );
   }

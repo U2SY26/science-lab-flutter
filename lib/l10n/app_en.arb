@@ -1239,5 +1239,16 @@
   "updateLater": "Later",
   "currentVersionLabel": "Current version",
   "requiredVersionLabel": "Required version",
-  "updateBenefits": "New simulations, bug fixes, and performance improvements!"
+  "updateBenefits": "New simulations, bug fixes, and performance improvements!",
+
+  "optionalUpdateTitle": "Update Available",
+  "optionalUpdateDescription": "A new version (v{version}) is available with improvements and new features.",
+  "@optionalUpdateDescription": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+
+  "whatsNewTitle": "What's New",
+  "whatsNewDismiss": "Got it!"
 }
