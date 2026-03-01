@@ -482,7 +482,10 @@ import '../../features/astronomy/asteroid_belt/asteroid_belt_screen.dart';
 import '../../features/astronomy/cosmic_distance_ladder/cosmic_distance_ladder_screen.dart';
 
 /// 앱 라우터 설정
+final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
 final appRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/',
   routes: [
     // 스플래시 (초기 화면)

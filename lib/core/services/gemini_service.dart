@@ -131,7 +131,7 @@ Rules:
           'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-5.2-pro-2025-12-11',
+          'model': 'gpt-4o',
           'messages': [
             {'role': 'system', 'content': systemPrompt},
             {'role': 'user', 'content': userPrompt},
