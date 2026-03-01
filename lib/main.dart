@@ -58,8 +58,6 @@ class ScienceLabApp extends ConsumerStatefulWidget {
 }
 
 class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
-  bool _hasCheckedUpdate = false;
-
   @override
   Widget build(BuildContext context) {
     // Watch language state to rebuild when language changes
@@ -83,34 +81,6 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
         Locale('en'), // English
         Locale('ko'), // Korean
       ],
-      builder: (context, child) {
-        // Check for force update after first frame
-        if (!_hasCheckedUpdate) {
-          _hasCheckedUpdate = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _checkForceUpdate(context);
-          });
-        }
-        return child ?? const SizedBox.shrink();
-      },
     );
-  }
-
-  void _checkForceUpdate(BuildContext context) {
-    // rootNavigatorKey의 context를 사용해야 Navigator가 존재함
-    final navContext = rootNavigatorKey.currentContext;
-    if (navContext == null) return;
-
-    final updateService = ForceUpdateService();
-    if (updateService.isUpdateRequired()) {
-      // 1순위: 강제 업데이트 (current < minimum)
-      ForceUpdateDialog.show(navContext);
-    } else if (updateService.isOptionalUpdateAvailable()) {
-      // 2순위: 선택적 업데이트 안내 (current < latest, 구버전 사용자에게 알림)
-      ForceUpdateDialog.showOptional(navContext);
-    } else {
-      // 3순위: What's New (최신 버전 사용자에게 변경사항 안내)
-      WhatsNewDialog.showIfNeeded(navContext);
-    }
   }
 }

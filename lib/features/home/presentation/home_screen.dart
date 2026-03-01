@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/force_update_service.dart';
+import '../../../core/services/whats_new_service.dart';
 import '../../../shared/widgets/ad_banner.dart';
 import '../../../shared/widgets/subscription_dialog.dart';
 import '../../../l10n/app_localizations.dart';
@@ -57,7 +59,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) _showIntroDialog();
       await prefs.setBool('hasSeenIntro', true);
+    } else {
+      // 첫 실행이 아닌 경우: 프로모 영상 후 업데이트/What's New 체크
+      _checkForUpdate();
     }
+  }
+
+  void _checkForUpdate() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final updateService = ForceUpdateService();
+      if (updateService.isUpdateRequired()) {
+        ForceUpdateDialog.show(context);
+      } else if (updateService.isOptionalUpdateAvailable()) {
+        ForceUpdateDialog.showOptional(context);
+      } else {
+        WhatsNewDialog.showIfNeeded(context);
+      }
+    });
   }
 
   void _showIntroDialog() {
