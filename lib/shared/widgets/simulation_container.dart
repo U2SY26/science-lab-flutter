@@ -5,8 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/gemini_service.dart';
 import '../../core/services/ad_service.dart';
-import '../../core/services/iap_service.dart';
+import '../../core/services/subscription_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'ad_banner.dart';
+import 'subscription_dialog.dart';
 import 'fullscreen_sim_view.dart';
 
 /// Helper to check if current locale is Korean
@@ -69,13 +71,29 @@ class _SimulationContainerState extends State<SimulationContainer> {
 
   // AI usage limit
   int _aiRemaining = _maxAiUses;
-  bool _adsRemoved = false;
+  bool _isAiUnlimited = false;
 
   @override
   void initState() {
     super.initState();
     _loadAiRemaining();
-    _adsRemoved = IAPService().adsRemoved;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // ProviderScope에서 구독 상태 읽기
+    final container = ProviderScope.containerOf(context, listen: false);
+    final sub = container.read(subscriptionProvider);
+    _isAiUnlimited = sub.isAiUnlimited || sub.isAiAssist;
+    // 구독 상태 변경 리스닝
+    container.listen<SubscriptionState>(subscriptionProvider, (prev, next) {
+      if (mounted) {
+        setState(() {
+          _isAiUnlimited = next.isAiUnlimited || next.isAiAssist;
+        });
+      }
+    });
   }
 
   Future<void> _loadAiRemaining() async {
@@ -91,7 +109,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
   }
 
   bool _consumeAiUse() {
-    if (_adsRemoved) return true; // 광고 제거 구매자는 무제한
+    if (_isAiUnlimited) return true; // AI 구독자는 무제한
     if (_aiRemaining <= 0) return false;
     setState(() => _aiRemaining--);
     _saveAiRemaining(_aiRemaining);
@@ -138,7 +156,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
       if (result.startsWith('Error:')) {
         _aiError = _localizeAiError(result);
         // 에러 시 사용 횟수 환불
-        if (!_adsRemoved) {
+        if (!_isAiUnlimited) {
           _aiRemaining++;
           _saveAiRemaining(_aiRemaining);
         }
@@ -159,11 +177,55 @@ class _SimulationContainerState extends State<SimulationContainer> {
           isKo ? 'AI 해설 횟수 소진' : 'AI Explanations Used Up',
           style: const TextStyle(color: AppColors.ink, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        content: Text(
-          isKo
-              ? '무료 AI 해설 횟수를 모두 사용했습니다.\n광고를 시청하면 3회 더 사용할 수 있습니다.'
-              : 'You\'ve used all free AI explanations.\nWatch an ad to get 3 more.',
-          style: const TextStyle(color: AppColors.muted, fontSize: 14, height: 1.5),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isKo
+                  ? '무료 AI 해설 횟수를 모두 사용했습니다.'
+                  : 'You\'ve used all free AI explanations.',
+              style: const TextStyle(color: AppColors.muted, fontSize: 14, height: 1.5),
+            ),
+            const SizedBox(height: 16),
+            // 보상형 광고 버튼
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  _watchRewardedAd();
+                },
+                icon: const Icon(Icons.play_circle_outline, size: 18),
+                label: Text(isKo ? '광고 보고 3회 충전' : 'Watch ad for 3 more'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7C3AED),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // AI 구독 유도 버튼
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  _showAiSubscriptionDialog();
+                },
+                icon: const Icon(Icons.auto_awesome, size: 18),
+                label: Text(isKo ? 'AI 무제한 구독 (₩2,990/월)' : 'Unlimited AI (₩2,990/mo)'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFC4B5FD),
+                  side: BorderSide(color: const Color(0xFF7C3AED).withValues(alpha: 0.5)),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -173,21 +235,17 @@ class _SimulationContainerState extends State<SimulationContainer> {
               style: TextStyle(color: AppColors.muted),
             ),
           ),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              _watchRewardedAd();
-            },
-            icon: const Icon(Icons.play_circle_outline, size: 18),
-            label: Text(isKo ? '광고 보고 3회 충전' : 'Watch ad for 3 more'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF7C3AED),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-          ),
         ],
       ),
+    );
+  }
+
+  void _showAiSubscriptionDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => const SubscriptionDialog(),
     );
   }
 
@@ -376,7 +434,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
                   _AiButton(
                     isActive: _isAiOpen,
                     onTap: _toggleAi,
-                    remaining: _adsRemoved ? null : _aiRemaining,
+                    remaining: _isAiUnlimited ? null : _aiRemaining,
                     maxUses: _maxAiUses,
                   ),
                   const SizedBox(height: 8),
@@ -555,7 +613,7 @@ class _AiLevelSelector extends StatelessWidget {
 class _AiButton extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
-  final int? remaining; // null이면 무제한 (광고 제거 구매자)
+  final int? remaining; // null이면 무제한 (AI 구독자)
   final int maxUses;
 
   const _AiButton({
@@ -607,24 +665,22 @@ class _AiButton extends StatelessWidget {
                   color: isActive ? const Color(0xFFDDD6FE) : const Color(0xFFC4B5FD),
                 ),
               ),
-              if (remaining != null) ...[
-                const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF7C3AED).withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '$remaining/$maxUses',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFFC4B5FD),
-                    ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7C3AED).withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  remaining == null ? '∞' : '$remaining/$maxUses',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFC4B5FD),
                   ),
                 ),
-              ],
+              ),
             ],
           ),
         ),
@@ -732,7 +788,12 @@ class _AiExplanationPanel extends StatelessWidget {
                 children: [
                   SelectableText(
                     explanation!,
-                    style: const TextStyle(color: AppColors.ink, fontSize: 13, height: 1.7),
+                    style: const TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 13,
+                      height: 1.7,
+                      fontFamilyFallback: ['Noto Sans', 'Roboto', 'sans-serif'],
+                    ),
                   ),
                   const SizedBox(height: 12),
                   // 네이티브 광고 (AI 해설 내)
@@ -836,7 +897,7 @@ class _FormulaSection extends StatelessWidget {
                   color: AppColors.accent,
                 ),
                 const SizedBox(width: 8),
-                // S-014: 수식 폰트 (수학 기호 지원)
+                // S-014: 수식 폰트 (수학 기호 지원 — 시스템 폰트 fallback)
                 Expanded(
                   child: Text(
                     formula,
@@ -844,6 +905,8 @@ class _FormulaSection extends StatelessWidget {
                       color: AppColors.ink,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                    ).copyWith(
+                      fontFamilyFallback: const ['Noto Sans', 'Roboto', 'sans-serif'],
                     ),
                   ),
                 ),

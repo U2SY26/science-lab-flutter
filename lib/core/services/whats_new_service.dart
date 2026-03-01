@@ -62,42 +62,42 @@ class WhatsNewDialog extends StatelessWidget {
     final features = isKo
         ? [
             _FeatureItem(
-              icon: Icons.auto_fix_high,
+              icon: Icons.chat_bubble_rounded,
               color: const Color(0xFF7C3AED),
-              title: 'AI 해설 기능 개선',
-              description: '더 안정적인 AI 해설과 상세한 에러 안내',
+              title: 'AI 챗봇 추가',
+              description: '시뮬레이션에 대해 AI와 자유롭게 대화하세요',
             ),
             _FeatureItem(
-              icon: Icons.speed,
+              icon: Icons.auto_fix_high,
               color: const Color(0xFF3B82F6),
-              title: '성능 최적화',
-              description: '네트워크 타임아웃 추가로 앱 응답성 향상',
+              title: 'AI 해설 수식 개선',
+              description: '수식 표시가 깨지던 문제를 수정했습니다',
             ),
             _FeatureItem(
-              icon: Icons.bug_report,
+              icon: Icons.play_circle_outline,
               color: const Color(0xFF10B981),
-              title: '안정성 향상',
-              description: '에러 처리 개선 및 사용 횟수 환불 로직 강화',
+              title: '3분 무료 체험',
+              description: '광고 시청 후 AI 챗봇을 3분간 체험할 수 있습니다',
             ),
           ]
         : [
             _FeatureItem(
-              icon: Icons.auto_fix_high,
+              icon: Icons.chat_bubble_rounded,
               color: const Color(0xFF7C3AED),
-              title: 'Improved AI Explanations',
-              description: 'More stable AI explanations with detailed error messages',
+              title: 'AI Chatbot',
+              description: 'Chat freely with AI about any simulation',
             ),
             _FeatureItem(
-              icon: Icons.speed,
+              icon: Icons.auto_fix_high,
               color: const Color(0xFF3B82F6),
-              title: 'Performance Optimization',
-              description: 'Better app responsiveness with network timeout handling',
+              title: 'Improved Formula Display',
+              description: 'Fixed broken formula rendering in AI explanations',
             ),
             _FeatureItem(
-              icon: Icons.bug_report,
+              icon: Icons.play_circle_outline,
               color: const Color(0xFF10B981),
-              title: 'Stability Improvements',
-              description: 'Enhanced error handling and usage refund logic',
+              title: '3-Min Free Trial',
+              description: 'Try AI chatbot for 3 minutes after watching an ad',
             ),
           ];
 

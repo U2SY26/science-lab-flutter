@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../animations/animations.dart';
 import '../../shared/widgets/ad_banner.dart';
+import '../../shared/widgets/ai_chat_overlay.dart';
+import '../../features/home/data/simulation_data.dart';
 import '../../features/onboarding/presentation/splash_screen.dart';
 import '../../features/onboarding/presentation/promo_video_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
@@ -532,27 +534,47 @@ final appRouter = GoRouter(
         final simId = state.pathParameters['simId']!;
         return ScaleFadeTransitionPage(
           key: state.pageKey,
-          child: _SimulationAdWrapper(child: _getSimulationScreen(simId)),
+          child: _SimulationAdWrapper(simId: simId, child: _getSimulationScreen(simId)),
         );
       },
     ),
   ],
 );
 
-/// 시뮬레이션 화면을 배너 광고와 함께 표시하는 래퍼
+/// 시뮬레이션 화면을 배너 광고 + AI 채팅 오버레이와 함께 표시하는 래퍼
 class _SimulationAdWrapper extends StatelessWidget {
+  final String simId;
   final Widget child;
-  const _SimulationAdWrapper({required this.child});
+  const _SimulationAdWrapper({required this.simId, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    // simId로 시뮬레이션 메타데이터 조회
+    final sims = getSimulations();
+    final simInfo = sims.cast<SimulationInfo?>().firstWhere(
+      (s) => s!.simId == simId,
+      orElse: () => null,
+    );
+
+    return Stack(
       children: [
-        Expanded(child: child),
-        SafeArea(
-          top: false,
-          minimum: const EdgeInsets.only(bottom: 4),
-          child: const AdBannerWidget(),
+        Column(
+          children: [
+            Expanded(child: child),
+            SafeArea(
+              top: false,
+              minimum: const EdgeInsets.only(bottom: 4),
+              child: const AdBannerWidget(),
+            ),
+          ],
+        ),
+        // AI 채팅 오버레이
+        AiChatOverlay(
+          simId: simId,
+          title: simInfo?.title ?? simId,
+          description: simInfo?.summary ?? '',
+          category: simInfo?.category.labelEn ?? '',
+          formula: simInfo?.formula,
         ),
       ],
     );

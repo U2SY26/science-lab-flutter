@@ -4,7 +4,7 @@ import '../../core/services/subscription_service.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/providers/language_provider.dart';
 
-/// 구독 구매 다이얼로그
+/// 구독 구매 다이얼로그 (3-tier)
 class SubscriptionDialog extends ConsumerWidget {
   const SubscriptionDialog({super.key});
 
@@ -24,9 +24,9 @@ class SubscriptionDialog extends ConsumerWidget {
     final isKorean = ref.watch(isKoreanProvider);
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.card,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: const EdgeInsets.all(24),
       child: SafeArea(
@@ -42,56 +42,23 @@ class SubscriptionDialog extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // 아이콘
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                subscription.isSubscribed ? Icons.check_circle : Icons.block,
-                size: 48,
-                color: AppColors.accent,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // 제목
+            // 타이틀
             Text(
-              subscription.isSubscribed
-                  ? (isKorean ? '광고 제거 활성화됨' : 'Ads Removed')
-                  : (isKorean ? '광고 제거' : 'Remove Ads'),
+              isKorean ? '구독 플랜' : 'Subscription Plans',
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 8),
-
-            // 설명
+            const SizedBox(height: 6),
             Text(
-              subscription.isSubscribed
-                  ? (isKorean ? '광고 없이 앱을 즐기고 계십니다' : 'You are enjoying the app ad-free')
-                  : (isKorean ? '월 990원으로 모든 광고를 제거하세요' : 'Remove all ads for \u20a9990/month'),
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.muted,
-              ),
-              textAlign: TextAlign.center,
+              isKorean ? '학습 경험을 업그레이드하세요' : 'Upgrade your learning experience',
+              style: TextStyle(fontSize: 13, color: AppColors.muted),
             ),
-            const SizedBox(height: 24),
-
-            // 혜택 목록
-            if (!subscription.isSubscribed) ...[
-              _buildBenefit(Icons.block, isKorean ? '배너 광고 제거' : 'Remove banner ads'),
-              _buildBenefit(Icons.speed, isKorean ? '더 빠른 앱 실행' : 'Faster app performance'),
-              _buildBenefit(Icons.favorite, isKorean ? '개발자 지원' : 'Support the developer'),
-              const SizedBox(height: 24),
-            ],
+            const SizedBox(height: 20),
 
             // 에러 메시지
             if (subscription.errorMessage != null) ...[
@@ -107,103 +74,250 @@ class SubscriptionDialog extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 16),
-            ],
-
-            // 버튼
-            if (!subscription.isSubscribed) ...[
-              // 구독 버튼
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: subscription.isLoading
-                      ? null
-                      : () => notifier.purchaseSubscription(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: subscription.isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          isKorean ? '월 \u20a9990 구독하기' : 'Subscribe \u20a9990/month',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-              ),
               const SizedBox(height: 12),
-
-              // 구매 복원 버튼
-              TextButton(
-                onPressed: subscription.isLoading
-                    ? null
-                    : () => notifier.restorePurchases(),
-                child: Text(
-                  isKorean ? '구매 복원' : 'Restore Purchases',
-                  style: TextStyle(color: AppColors.muted),
-                ),
-              ),
-            ] else ...[
-              // 닫기 버튼
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(isKorean ? '확인' : 'OK'),
-                ),
-              ),
             ],
 
-            const SizedBox(height: 8),
+            // Tier 1: 광고 제거
+            _SubscriptionTier(
+              icon: Icons.block,
+              iconColor: AppColors.accent,
+              title: isKorean ? '광고 제거' : 'Remove Ads',
+              price: isKorean ? '월 ₩990' : '₩990/mo',
+              benefits: [
+                isKorean ? '배너·전면 광고 제거' : 'Remove banner & interstitial ads',
+                isKorean ? '더 깔끔한 학습 환경' : 'Cleaner learning experience',
+              ],
+              isActive: subscription.isSubscribed,
+              isLoading: subscription.isLoading,
+              onTap: () => notifier.purchaseSubscription(),
+              activeLabel: isKorean ? '활성화됨' : 'Active',
+            ),
+            const SizedBox(height: 12),
+
+            // Tier 2: AI 해설 무제한
+            _SubscriptionTier(
+              icon: Icons.auto_awesome,
+              iconColor: const Color(0xFF7C3AED),
+              title: isKorean ? 'AI 해설 무제한' : 'AI Unlimited',
+              price: isKorean ? '월 ₩2,990' : '₩2,990/mo',
+              benefits: [
+                isKorean ? 'AI 해설 무제한 사용' : 'Unlimited AI explanations',
+                isKorean ? '4단계 수준별 해설' : '4-level explanations',
+              ],
+              isActive: subscription.isAiUnlimited && !subscription.isAiAssist,
+              isLoading: subscription.isLoading,
+              onTap: () => notifier.purchaseAiUnlimited(),
+              activeLabel: isKorean ? '활성화됨' : 'Active',
+            ),
+            const SizedBox(height: 12),
+
+            // Tier 3: AI 챗봇 (추천)
+            _SubscriptionTier(
+              icon: Icons.smart_toy,
+              iconColor: const Color(0xFF3B82F6),
+              title: isKorean ? 'AI 챗봇' : 'AI Chatbot',
+              price: isKorean ? '월 ₩4,990' : '₩4,990/mo',
+              benefits: [
+                isKorean ? 'AI 해설 무제한 포함' : 'Includes unlimited AI explanations',
+                isKorean ? 'AI 채팅 에이전트' : 'AI chat agent',
+                isKorean ? '시뮬레이션 맞춤 Q&A' : 'Simulation-aware Q&A',
+              ],
+              isActive: subscription.isAiAssist,
+              isLoading: subscription.isLoading,
+              onTap: () => notifier.purchaseAiAssist(),
+              isRecommended: true,
+              activeLabel: isKorean ? '활성화됨' : 'Active',
+            ),
+            const SizedBox(height: 16),
+
+            // 구매 복원
+            TextButton(
+              onPressed: subscription.isLoading
+                  ? null
+                  : () => notifier.restorePurchases(),
+              child: Text(
+                isKorean ? '구매 복원' : 'Restore Purchases',
+                style: TextStyle(color: AppColors.muted, fontSize: 13),
+              ),
+            ),
 
             // 약관
-            if (!subscription.isSubscribed)
-              Text(
-                isKorean ? '구독은 언제든지 취소할 수 있습니다' : 'You can cancel your subscription at any time',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.muted.withValues(alpha: 0.7),
-                ),
+            Text(
+              isKorean ? '구독은 언제든지 취소할 수 있습니다' : 'You can cancel your subscription at any time',
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.muted.withValues(alpha: 0.7),
               ),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildBenefit(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
+/// 구독 티어 카드
+class _SubscriptionTier extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String price;
+  final List<String> benefits;
+  final bool isActive;
+  final bool isLoading;
+  final VoidCallback onTap;
+  final bool isRecommended;
+  final String activeLabel;
+
+  const _SubscriptionTier({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.price,
+    required this.benefits,
+    required this.isActive,
+    required this.isLoading,
+    required this.onTap,
+    this.isRecommended = false,
+    required this.activeLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isRecommended
+            ? const Color(0xFF3B82F6).withValues(alpha: 0.08)
+            : AppColors.bg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isActive
+              ? iconColor.withValues(alpha: 0.6)
+              : isRecommended
+                  ? const Color(0xFF3B82F6).withValues(alpha: 0.3)
+                  : AppColors.cardBorder,
+          width: isActive || isRecommended ? 1.5 : 1,
+        ),
+      ),
+      child: Column(
         children: [
-          Icon(icon, size: 20, color: AppColors.accent),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
+          Row(
+            children: [
+              // 아이콘
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 22, color: iconColor),
+              ),
+              const SizedBox(width: 12),
+              // 타이틀 + 가격
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (isRecommended) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3B82F6),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'BEST',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      price,
+                      style: TextStyle(
+                        color: iconColor,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // 버튼
+              if (isActive)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    activeLabel,
+                    style: TextStyle(
+                      color: iconColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  height: 34,
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : onTap,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: iconColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 16, height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Icon(Icons.arrow_forward, size: 18),
+                  ),
+                ),
+            ],
           ),
+          const SizedBox(height: 10),
+          // 혜택 목록
+          ...benefits.map((b) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_outline, size: 14, color: iconColor.withValues(alpha: 0.7)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        b,
+                        style: TextStyle(color: AppColors.muted, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
         ],
       ),
     );
