@@ -98,6 +98,17 @@ class AnalyticsService {
     );
   }
 
+  /// 딥링크로 시뮬레이션 열기 이벤트
+  static Future<void> logDeepLinkOpen(String simId, String source) async {
+    await _analytics.logEvent(
+      name: 'deep_link_open',
+      parameters: {
+        'sim_id': simId,
+        'source': source,
+      },
+    );
+  }
+
   /// 사용자 속성 설정
   static Future<void> setUserProperty(String name, String value) async {
     await _analytics.setUserProperty(name: name, value: value);

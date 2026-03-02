@@ -14,6 +14,7 @@ import 'core/services/iap_service.dart';
 import 'core/services/force_update_service.dart';
 import 'core/services/whats_new_service.dart';
 import 'core/services/analytics_service.dart';
+import 'core/services/deep_link_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,7 @@ void main() async {
     await IAPService().initialize();
     await ForceUpdateService().initialize();
     await WhatsNewService().initialize();
+    await DeepLinkService().initialize();
   }
 
   runApp(
@@ -58,6 +60,28 @@ class ScienceLabApp extends ConsumerStatefulWidget {
 }
 
 class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
+  @override
+  void initState() {
+    super.initState();
+    // 딥링크 수신 시 GoRouter로 네비게이션
+    DeepLinkService().onDeepLink = (String path) {
+      appRouter.go(path);
+    };
+    // 콜드 스타트 딥링크: 스플래시 이후 처리되도록 딜레이
+    final initialRoute = DeepLinkService().getInitialRoute();
+    if (initialRoute != null) {
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) appRouter.go(initialRoute);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    DeepLinkService().onDeepLink = null;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Watch language state to rebuild when language changes

@@ -54,6 +54,9 @@ dependencies:
   # AI (OpenAI GPT)
   http: ^1.2.2
 
+  # Deep Links
+  app_links: ^6.3.2
+
   # Internationalization
   intl: any
 
