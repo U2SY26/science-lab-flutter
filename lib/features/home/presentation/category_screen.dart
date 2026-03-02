@@ -202,34 +202,67 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           ),
           const SizedBox(height: 8),
 
-          // 시뮬레이션 목록 (네이티브 광고 포함)
+          // 시뮬레이션 목록 (태블릿: 2열 그리드, 폰: 1열 리스트)
           Expanded(
             child: simulations.isEmpty
                 ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: simulations.length + (simulations.length ~/ 5),
-                    itemBuilder: (context, index) {
-                      // 매 6번째 아이템(index 5, 11, 17...)에 네이티브 광고 삽입
-                      final adCount = index ~/ 6;
-                      final isAd = index > 0 && (index + 1) % 6 == 0;
-                      if (isAd) {
-                        return const NativeAdWidget();
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
+                      if (isTablet) {
+                        // 태블릿: 2열 그리드
+                        return GridView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 2.4,
+                          ),
+                          itemCount: simulations.length,
+                          itemBuilder: (context, index) {
+                            final sim = simulations[index];
+                            return _SimulationCard(
+                              sim: sim,
+                              isKorean: isKorean,
+                              isFavorite: _favorites.contains(sim.simId),
+                              isCompleted: _completed.contains(sim.simId),
+                              categoryColor: _categoryColor,
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                context.push('/simulation/${sim.simId}');
+                              },
+                              onFavoriteToggle: () => _toggleFavorite(sim.simId),
+                            );
+                          },
+                        );
                       }
-                      final simIndex = index - adCount;
-                      if (simIndex >= simulations.length) return const SizedBox.shrink();
-                      final sim = simulations[simIndex];
-                      return _SimulationCard(
-                        sim: sim,
-                        isKorean: isKorean,
-                        isFavorite: _favorites.contains(sim.simId),
-                        isCompleted: _completed.contains(sim.simId),
-                        categoryColor: _categoryColor,
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          context.push('/simulation/${sim.simId}');
+                      // 폰: 1열 리스트 (기존)
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: simulations.length + (simulations.length ~/ 5),
+                        itemBuilder: (context, index) {
+                          final adCount = index ~/ 6;
+                          final isAd = index > 0 && (index + 1) % 6 == 0;
+                          if (isAd) {
+                            return const NativeAdWidget();
+                          }
+                          final simIndex = index - adCount;
+                          if (simIndex >= simulations.length) return const SizedBox.shrink();
+                          final sim = simulations[simIndex];
+                          return _SimulationCard(
+                            sim: sim,
+                            isKorean: isKorean,
+                            isFavorite: _favorites.contains(sim.simId),
+                            isCompleted: _completed.contains(sim.simId),
+                            categoryColor: _categoryColor,
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              context.push('/simulation/${sim.simId}');
+                            },
+                            onFavoriteToggle: () => _toggleFavorite(sim.simId),
+                          );
                         },
-                        onFavoriteToggle: () => _toggleFavorite(sim.simId),
                       );
                     },
                   ),

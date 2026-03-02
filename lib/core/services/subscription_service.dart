@@ -33,6 +33,12 @@ final isAiAssistProvider = Provider<bool>((ref) {
   return sub.isAiAssist;
 });
 
+/// 편의 Provider: AI PRO 여부 (Gemini Pro 모델 사용)
+final isAiProProvider = Provider<bool>((ref) {
+  final sub = ref.watch(subscriptionProvider);
+  return sub.isAiAssist;
+});
+
 /// 구독 상태
 class SubscriptionState {
   final bool isSubscribed;    // 광고 제거 구독

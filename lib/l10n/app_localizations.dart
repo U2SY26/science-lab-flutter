@@ -6037,6 +6037,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got it!'**
   String get whatsNewDismiss;
+
+  /// No description provided for @xrView3D.
+  ///
+  /// In en, this message translates to:
+  /// **'3D View'**
+  String get xrView3D;
+
+  /// No description provided for @xrLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading 3D...'**
+  String get xrLoading;
+
+  /// No description provided for @xrRequiresInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Internet connection required for 3D viewer'**
+  String get xrRequiresInternet;
+
+  /// No description provided for @xrGyroHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Gyro button for motion control'**
+  String get xrGyroHint;
 }
 
 class _AppLocalizationsDelegate

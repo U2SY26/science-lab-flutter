@@ -1250,5 +1250,10 @@
   },
 
   "whatsNewTitle": "What's New",
-  "whatsNewDismiss": "Got it!"
+  "whatsNewDismiss": "Got it!",
+
+  "xrView3D": "3D View",
+  "xrLoading": "Loading 3D...",
+  "xrRequiresInternet": "Internet connection required for 3D viewer",
+  "xrGyroHint": "Tap Gyro button for motion control"
 }

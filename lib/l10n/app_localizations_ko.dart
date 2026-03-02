@@ -3146,4 +3146,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get whatsNewDismiss => '확인';
+
+  @override
+  String get xrView3D => '3D 보기';
+
+  @override
+  String get xrLoading => '3D 로딩 중...';
+
+  @override
+  String get xrRequiresInternet => '3D 뷰어를 사용하려면 인터넷 연결이 필요합니다';
+
+  @override
+  String get xrGyroHint => '자이로 버튼으로 동작 제어';
 }

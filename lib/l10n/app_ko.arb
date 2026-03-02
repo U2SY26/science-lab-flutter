@@ -1235,5 +1235,10 @@
   "optionalUpdateDescription": "새 버전(v{version})이 출시되었습니다. 개선사항과 새 기능이 포함되어 있습니다.",
 
   "whatsNewTitle": "새로운 소식",
-  "whatsNewDismiss": "확인"
+  "whatsNewDismiss": "확인",
+
+  "xrView3D": "3D 보기",
+  "xrLoading": "3D 로딩 중...",
+  "xrRequiresInternet": "3D 뷰어를 사용하려면 인터넷 연결이 필요합니다",
+  "xrGyroHint": "자이로 버튼으로 동작 제어"
 }

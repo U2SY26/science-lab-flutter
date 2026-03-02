@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/app_colors.dart';
-import '../../core/services/gemini_service.dart';
+import '../../core/services/firebase_ai_service.dart';
 import '../../core/services/ad_service.dart';
 import '../../core/services/subscription_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +18,7 @@ bool _isKoreanLocale(BuildContext context) {
 
 const int _maxAiUses = 3;
 const String _aiRemainingKey = 'ai_explanation_remaining';
+const String _aiDateKey = 'ai_explanation_date';
 
 /// S-001~S-030: 개선된 시뮬레이션 컨테이너 위젯
 class SimulationContainer extends StatefulWidget {
@@ -72,6 +73,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
   // AI usage limit
   int _aiRemaining = _maxAiUses;
   bool _isAiUnlimited = false;
+  bool _isAiExhausted = false;
 
   @override
   void initState() {
@@ -98,9 +100,20 @@ class _SimulationContainerState extends State<SimulationContainer> {
 
   Future<void> _loadAiRemaining() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _aiRemaining = prefs.getInt(_aiRemainingKey) ?? _maxAiUses;
-    });
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    final storedDate = prefs.getString(_aiDateKey);
+    if (storedDate != today) {
+      // 새 날 → 3회 리셋
+      await prefs.setString(_aiDateKey, today);
+      await prefs.setInt(_aiRemainingKey, _maxAiUses);
+      if (mounted) setState(() => _aiRemaining = _maxAiUses);
+    } else {
+      if (mounted) {
+        setState(() {
+          _aiRemaining = prefs.getInt(_aiRemainingKey) ?? _maxAiUses;
+        });
+      }
+    }
   }
 
   Future<void> _saveAiRemaining(int value) async {
@@ -126,8 +139,8 @@ class _SimulationContainerState extends State<SimulationContainer> {
     if (_aiCache.containsKey(targetLevel)) return;
 
     if (!_consumeAiUse()) {
-      // 사용 횟수 소진 - 보상형 광고 다이얼로그 표시
-      _showRewardedAdDialog();
+      // 사용 횟수 소진 - 인라인 패널에서 표시
+      setState(() => _isAiExhausted = true);
       return;
     }
 
@@ -138,7 +151,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
 
     final langCode = Localizations.localeOf(context).languageCode;
 
-    final result = await GeminiService().explainSimulation(
+    final result = await FirebaseAiService().explainSimulation(
       simId: widget.simId ?? widget.title,
       title: widget.title,
       description: widget.formulaDescription ?? widget.title,
@@ -166,80 +179,6 @@ class _SimulationContainerState extends State<SimulationContainer> {
     });
   }
 
-  void _showRewardedAdDialog() {
-    final isKo = _isKoreanLocale(context);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          isKo ? 'AI 해설 횟수 소진' : 'AI Explanations Used Up',
-          style: const TextStyle(color: AppColors.ink, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isKo
-                  ? '무료 AI 해설 횟수를 모두 사용했습니다.'
-                  : 'You\'ve used all free AI explanations.',
-              style: const TextStyle(color: AppColors.muted, fontSize: 14, height: 1.5),
-            ),
-            const SizedBox(height: 16),
-            // 보상형 광고 버튼
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  _watchRewardedAd();
-                },
-                icon: const Icon(Icons.play_circle_outline, size: 18),
-                label: Text(isKo ? '광고 보고 3회 충전' : 'Watch ad for 3 more'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF7C3AED),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // AI 구독 유도 버튼
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  _showAiSubscriptionDialog();
-                },
-                icon: const Icon(Icons.auto_awesome, size: 18),
-                label: Text(isKo ? 'AI 무제한 구독 (₩2,990/월)' : 'Unlimited AI (₩2,990/mo)'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFC4B5FD),
-                  side: BorderSide(color: const Color(0xFF7C3AED).withValues(alpha: 0.5)),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(
-              isKo ? '취소' : 'Cancel',
-              style: TextStyle(color: AppColors.muted),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showAiSubscriptionDialog() {
     showModalBottomSheet(
       context: context,
@@ -254,6 +193,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
       onRewarded: () {
         _rechargeAiUses();
         if (mounted) {
+          setState(() => _isAiExhausted = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(_isKoreanLocale(context) ? 'AI 해설 3회 충전 완료!' : '3 AI explanations recharged!'),
@@ -267,7 +207,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
       onFailed: () {
         // 광고 로드 실패 시 무료로 1회 제공
         if (mounted) {
-          setState(() => _aiRemaining = 1);
+          setState(() { _aiRemaining = 1; _isAiExhausted = false; });
           _saveAiRemaining(1);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -417,7 +357,7 @@ class _SimulationContainerState extends State<SimulationContainer> {
           ),
 
           // AI 해설 영역: 수준 선택 + 버튼 + 패널
-          if (GeminiService().isAvailable)
+          if (FirebaseAiService().isAvailable)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -449,7 +389,10 @@ class _SimulationContainerState extends State<SimulationContainer> {
               explanation: _aiCache[_aiLevel],
               error: _aiError,
               onRetry: _fetchAiExplanation,
-              onClose: () => setState(() => _isAiOpen = false),
+              onClose: () => setState(() { _isAiOpen = false; _isAiExhausted = false; }),
+              isExhausted: _isAiExhausted && !_isAiUnlimited,
+              onWatchAd: _watchRewardedAd,
+              onSubscribe: _showAiSubscriptionDialog,
             ),
 
           // S-013~S-017: 수식 표시 (접을 수 있는 섹션)
@@ -696,6 +639,9 @@ class _AiExplanationPanel extends StatelessWidget {
   final String? error;
   final VoidCallback onRetry;
   final VoidCallback onClose;
+  final bool isExhausted;
+  final VoidCallback? onWatchAd;
+  final VoidCallback? onSubscribe;
 
   const _AiExplanationPanel({
     required this.isLoading,
@@ -703,6 +649,9 @@ class _AiExplanationPanel extends StatelessWidget {
     this.error,
     required this.onRetry,
     required this.onClose,
+    this.isExhausted = false,
+    this.onWatchAd,
+    this.onSubscribe,
   });
 
   @override
@@ -745,7 +694,51 @@ class _AiExplanationPanel extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Content
-            if (isLoading)
+            if (isExhausted)
+              Column(
+                children: [
+                  Text(
+                    isKo ? '오늘의 무료 AI 해설을 모두 사용했어요' : "You've used today's free AI explanations",
+                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isKo ? '내일 다시 3회 충전됩니다' : 'Resets daily with 3 free uses',
+                    style: TextStyle(color: AppColors.muted, fontSize: 11),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: onWatchAd,
+                      icon: const Icon(Icons.play_circle_outline, size: 16),
+                      label: Text(isKo ? '광고 보고 3회 충전' : 'Watch ad for 3 more', style: const TextStyle(fontSize: 12)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7C3AED),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: onSubscribe,
+                      icon: const Icon(Icons.auto_awesome, size: 16),
+                      label: Text(isKo ? 'AI 무제한 구독' : 'Unlimited AI subscription', style: const TextStyle(fontSize: 12)),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFC4B5FD),
+                        side: BorderSide(color: const Color(0xFF7C3AED).withValues(alpha: 0.4)),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else if (isLoading)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -802,7 +795,7 @@ class _AiExplanationPanel extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      'Powered by GPT',
+                      'Powered by Firebase AI',
                       style: TextStyle(
                         color: const Color(0xFF7C3AED).withValues(alpha: 0.5),
                         fontSize: 11,

@@ -3224,4 +3224,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whatsNewDismiss => 'Got it!';
+
+  @override
+  String get xrView3D => '3D View';
+
+  @override
+  String get xrLoading => 'Loading 3D...';
+
+  @override
+  String get xrRequiresInternet => 'Internet connection required for 3D viewer';
+
+  @override
+  String get xrGyroHint => 'Tap Gyro button for motion control';
 }

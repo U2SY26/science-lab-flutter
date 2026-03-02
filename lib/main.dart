@@ -5,22 +5,34 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/language_provider.dart';
+import 'core/providers/ai_chat_provider.dart';
 import 'core/services/ad_service.dart';
 import 'core/services/iap_service.dart';
 import 'core/services/force_update_service.dart';
 import 'core/services/whats_new_service.dart';
 import 'core/services/analytics_service.dart';
 import 'core/services/deep_link_service.dart';
+import 'core/services/firebase_ai_service.dart';
+import 'core/services/stt_service.dart';
+import 'core/services/tts_service.dart';
+import 'shared/widgets/ai_chat_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Firebase 초기화
   await Firebase.initializeApp();
+
+  // Firebase 익명 인증 (firebase_ai 필수, 개인정보 수집 없음)
+  await FirebaseAuth.instance.signInAnonymously();
+
+  // Firebase AI (Gemini) 초기화
+  FirebaseAiService().initialize();
 
   // 앱 시작 이벤트 로깅
   AnalyticsService.logAppOpen();
@@ -42,6 +54,10 @@ void main() async {
     await ForceUpdateService().initialize();
     await WhatsNewService().initialize();
     await DeepLinkService().initialize();
+
+    // STT / TTS 초기화
+    await SttService().initialize();
+    await TtsService().initialize();
   }
 
   runApp(
@@ -84,8 +100,8 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch language state to rebuild when language changes
     final effectiveLocale = ref.watch(effectiveLocaleProvider);
+    final showAiOverlay = ref.watch(showAiOverlayProvider);
 
     return MaterialApp.router(
       title: 'Visual Science Lab',
@@ -93,6 +109,16 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
       theme: AppTheme.darkTheme,
       routerConfig: appRouter,
       locale: effectiveLocale,
+
+      // 글로벌 AI 튜터 오버레이 (인트로 이후에만 표시)
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child!,
+            if (showAiOverlay) const AiChatOverlay(),
+          ],
+        );
+      },
 
       // Localization
       localizationsDelegates: const [
@@ -102,8 +128,8 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en'), // English
-        Locale('ko'), // Korean
+        Locale('en'),
+        Locale('ko'),
       ],
     );
   }

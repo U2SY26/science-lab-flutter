@@ -98,6 +98,16 @@ class AnalyticsService {
     );
   }
 
+  /// XR 3D 뷰어 열기 이벤트
+  static Future<void> logXrViewerOpen(String simId) async {
+    await _analytics.logEvent(
+      name: 'xr_viewer_open',
+      parameters: {
+        'sim_id': simId,
+      },
+    );
+  }
+
   /// 딥링크로 시뮬레이션 열기 이벤트
   static Future<void> logDeepLinkOpen(String simId, String source) async {
     await _analytics.logEvent(

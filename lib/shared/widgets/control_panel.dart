@@ -245,7 +245,7 @@ class SimButton extends StatelessWidget {
 
     final buttonStyle = ButtonStyle(
       minimumSize: WidgetStatePropertyAll(
-        Size(width ?? 0, 40), // S-026: 최소 높이 40px
+        Size(width ?? 0, 48), // S-026: 최소 높이 48px (Material 터치 타겟)
       ),
       padding: const WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: 16, vertical: 8),

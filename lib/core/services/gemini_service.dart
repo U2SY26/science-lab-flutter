@@ -237,6 +237,89 @@ Rules:
     }
   }
 
+  /// 범용 AI 채팅: 시뮬레이션 컨텍스트 없이 앱 전반 대화
+  Future<String> chatGeneral({
+    required String userMessage,
+    required String languageCode,
+    required List<ChatMessage> history,
+    String? personaPrompt,
+  }) async {
+    final systemPrompt = _generalChatSystemPrompt(
+      langCode: languageCode,
+      personaPrompt: personaPrompt,
+    );
+
+    final messages = <Map<String, String>>[
+      {'role': 'system', 'content': systemPrompt},
+      ...history.take(20).map((m) => m.toApiMessage()),
+      {'role': 'user', 'content': userMessage},
+    ];
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          'model': 'gpt-4o',
+          'messages': messages,
+          'max_tokens': 500,
+        }),
+      ).timeout(_requestTimeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['choices'][0]['message']['content'] ??
+            'Could not generate response.';
+      } else {
+        debugPrint('[GeminiService] General chat API error: ${response.statusCode}');
+        return _mapHttpError(response.statusCode);
+      }
+    } on TimeoutException {
+      return 'Error:TIMEOUT';
+    } catch (e) {
+      debugPrint('[GeminiService] General chat exception: $e');
+      if (!isAvailable) return 'Error:NO_KEY';
+      if (e.toString().contains('SocketException') ||
+          e.toString().contains('HandshakeException')) {
+        return 'Error:NETWORK';
+      }
+      return 'Error:UNKNOWN';
+    }
+  }
+
+  static String _generalChatSystemPrompt({
+    required String langCode,
+    String? personaPrompt,
+  }) {
+    final persona = personaPrompt ?? 'You are a friendly, encouraging science tutor.';
+    return '''$persona
+
+You are the AI guide for "Visual Science Lab", an interactive science simulation education app with 256+ simulations across 14 categories:
+- Physics (mechanics, waves, thermodynamics, electromagnetism)
+- Mathematics (calculus, geometry, algebra, statistics)
+- Chemistry (reactions, molecular structure, periodic table)
+- Biology (cells, genetics, ecology, evolution)
+- Quantum Mechanics (wave functions, tunneling, entanglement)
+- Chaos Theory (Lorenz attractor, double pendulum, fractals)
+- Astronomy (solar system, black holes, gravitational waves)
+- Relativity (spacetime curvature, gravitational lensing)
+- Earth Science (plate tectonics, weather, climate)
+- AI/Deep Learning (neural networks, gradient descent)
+- Machine Learning (clustering, regression, classification)
+- Semiconductors, Materials Science, Battery/Energy
+
+Rules:
+- Help users find simulations by topic ("Do you have quantum simulations?" → recommend specific ones)
+- Answer general science questions concisely
+- Be concise (under 200 words per response)
+- Write formulas in plain text using basic Unicode only (e.g. E = mc², F = ma)
+- NEVER use LaTeX or markdown math notation
+- You MUST respond in the language with code "$langCode". If unsure, use English.''';
+  }
+
   static String _chatSystemPrompt({
     required String simId,
     required String title,

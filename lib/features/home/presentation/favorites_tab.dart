@@ -127,6 +127,32 @@ class _FavoritesTabState extends ConsumerState<FavoritesTab> {
 
   Widget _buildFavoritesList(bool isKorean) {
     final favorites = _favoriteSimulations;
+    final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
+
+    if (isTablet) {
+      return GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 12,
+          childAspectRatio: 3.2,
+        ),
+        itemCount: favorites.length,
+        itemBuilder: (context, index) {
+          final sim = favorites[index];
+          return _FavoriteCard(
+            sim: sim,
+            isKorean: isKorean,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              context.push('/simulation/${sim.simId}');
+            },
+            onRemove: () => _removeFavorite(sim.simId),
+          );
+        },
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),

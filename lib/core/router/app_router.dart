@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../animations/animations.dart';
+import '../providers/ai_chat_provider.dart';
+import '../services/analytics_service.dart';
 import '../../shared/widgets/ad_banner.dart';
-import '../../shared/widgets/ai_chat_overlay.dart';
+import '../../shared/widgets/xr_webview_viewer.dart';
 import '../../features/home/data/simulation_data.dart';
+import '../../features/home/data/xr_sim_ids.dart';
 import '../../features/onboarding/presentation/splash_screen.dart';
 import '../../features/onboarding/presentation/promo_video_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
@@ -541,26 +545,55 @@ final appRouter = GoRouter(
   ],
 );
 
-/// 시뮬레이션 화면을 배너 광고 + AI 채팅 오버레이와 함께 표시하는 래퍼
-class _SimulationAdWrapper extends StatelessWidget {
+/// 시뮬레이션 화면을 배너 광고 + XR 버튼과 함께 표시하는 래퍼
+/// AI 채팅 오버레이는 main.dart builder에서 글로벌로 제공됨
+class _SimulationAdWrapper extends ConsumerStatefulWidget {
   final String simId;
   final Widget child;
   const _SimulationAdWrapper({required this.simId, required this.child});
 
   @override
+  ConsumerState<_SimulationAdWrapper> createState() => _SimulationAdWrapperState();
+}
+
+class _SimulationAdWrapperState extends ConsumerState<_SimulationAdWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // 시뮬레이션 컨텍스트를 글로벌 AI 채팅 프로바이더에 설정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final sims = getSimulations();
+      final simInfo = sims.cast<SimulationInfo?>().firstWhere(
+        (s) => s!.simId == widget.simId,
+        orElse: () => null,
+      );
+      ref.read(currentSimContextProvider.notifier).state = AiChatParams(
+        simId: widget.simId,
+        title: simInfo?.title ?? widget.simId,
+        description: simInfo?.summary ?? '',
+        category: simInfo?.category.labelEn ?? '',
+        formula: simInfo?.formula,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    // 시뮬레이션 페이지 벗어날 때 컨텍스트 클리어
+    ref.read(currentSimContextProvider.notifier).state = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // simId로 시뮬레이션 메타데이터 조회
-    final sims = getSimulations();
-    final simInfo = sims.cast<SimulationInfo?>().firstWhere(
-      (s) => s!.simId == simId,
-      orElse: () => null,
-    );
+    final showXr = hasXrSupport(widget.simId);
 
     return Stack(
       children: [
         Column(
           children: [
-            Expanded(child: child),
+            Expanded(child: widget.child),
             SafeArea(
               top: false,
               minimum: const EdgeInsets.only(bottom: 4),
@@ -568,14 +601,45 @@ class _SimulationAdWrapper extends StatelessWidget {
             ),
           ],
         ),
-        // AI 채팅 오버레이
-        AiChatOverlay(
-          simId: simId,
-          title: simInfo?.title ?? simId,
-          description: simInfo?.summary ?? '',
-          category: simInfo?.category.labelEn ?? '',
-          formula: simInfo?.formula,
-        ),
+        // XR 3D 뷰어 버튼 (XR 지원 시뮬레이션만)
+        if (showXr)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            left: 12,
+            child: GestureDetector(
+              onTap: () {
+                AnalyticsService.logXrViewerOpen(widget.simId);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => XrWebViewViewer(simId: widget.simId),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF00D4FF), width: 1),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.view_in_ar, color: Color(0xFF00D4FF), size: 18),
+                    SizedBox(width: 4),
+                    Text(
+                      '3D',
+                      style: TextStyle(
+                        color: Color(0xFF00D4FF),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

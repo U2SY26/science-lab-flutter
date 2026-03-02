@@ -160,12 +160,12 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
           ),
         ),
 
-        // 카테고리 그리드
+        // 카테고리 그리드 (태블릿: 3열, 폰: 2열)
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.shortestSide >= 600 ? 3 : 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
               childAspectRatio: 1.3,

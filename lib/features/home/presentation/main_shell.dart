@@ -29,6 +29,10 @@ class _MainShellState extends ConsumerState<MainShell> {
     SettingsTab(),
   ];
 
+  /// 태블릿 감지: shortestSide >= 600dp
+  bool _isTablet(BuildContext context) =>
+      MediaQuery.of(context).size.shortestSide >= 600;
+
   @override
   Widget build(BuildContext context) {
     final isKorean = ref.watch(isKoreanProvider);
@@ -69,12 +73,12 @@ class _MainShellState extends ConsumerState<MainShell> {
         }
       },
       child: orientation == Orientation.landscape
-          ? _buildLandscapeLayout(isKorean)
+          ? _buildLandscapeLayout(isKorean, _isTablet(context))
           : _buildPortraitLayout(isKorean),
     );
   }
 
-  /// Portrait 모드: 기존 하단 네비게이션 바 레이아웃 (변경 없음)
+  /// Portrait 모드: 기존 하단 네비게이션 바 레이아웃
   Widget _buildPortraitLayout(bool isKorean) {
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -134,9 +138,7 @@ class _MainShellState extends ConsumerState<MainShell> {
   }
 
   /// Landscape 모드: NavigationRail 왼쪽 + 콘텐츠 가운데 + 설정 패널 오른쪽
-  Widget _buildLandscapeLayout(bool isKorean) {
-    // Landscape에서는 설정 탭을 별도 패널로 표시하므로
-    // rail 인덱스는 0,1,2 (Simulations, Favorites, Resources)만 사용
+  Widget _buildLandscapeLayout(bool isKorean, bool isTablet) {
     final railIndex = _currentIndex.clamp(0, 2);
 
     return Scaffold(
@@ -144,11 +146,11 @@ class _MainShellState extends ConsumerState<MainShell> {
       body: SafeArea(
         child: Row(
           children: [
-            // 왼쪽: NavigationRail
             _LandscapeNavigationRail(
               selectedIndex: railIndex,
               isSettingsOpen: _settingsPanelOpen,
               isKorean: isKorean,
+              isTablet: isTablet,
               onTabSelected: (index) {
                 HapticFeedback.selectionClick();
                 setState(() {
@@ -162,8 +164,6 @@ class _MainShellState extends ConsumerState<MainShell> {
                 });
               },
             ),
-
-            // 가운데: 메인 콘텐츠
             Expanded(
               child: BottomAdBanner(
                 child: IndexedStack(
@@ -176,12 +176,10 @@ class _MainShellState extends ConsumerState<MainShell> {
                 ),
               ),
             ),
-
-            // 오른쪽: 설정 사이드 패널 (토글)
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              width: _settingsPanelOpen ? 320 : 0,
+              width: _settingsPanelOpen ? (isTablet ? 380 : 320) : 0,
               child: _settingsPanelOpen
                   ? _LandscapeSettingsPanel(
                       onClose: () {
@@ -207,6 +205,7 @@ class _LandscapeNavigationRail extends StatelessWidget {
   final int selectedIndex;
   final bool isSettingsOpen;
   final bool isKorean;
+  final bool isTablet;
   final ValueChanged<int> onTabSelected;
   final VoidCallback onSettingsToggle;
 
@@ -214,14 +213,16 @@ class _LandscapeNavigationRail extends StatelessWidget {
     required this.selectedIndex,
     required this.isSettingsOpen,
     required this.isKorean,
+    this.isTablet = false,
     required this.onTabSelected,
     required this.onSettingsToggle,
   });
 
   @override
   Widget build(BuildContext context) {
+    final railWidth = isTablet ? 88.0 : 72.0;
     return Container(
-      width: 72,
+      width: railWidth,
       decoration: BoxDecoration(
         color: AppColors.card,
         border: Border(
@@ -251,6 +252,7 @@ class _LandscapeNavigationRail extends StatelessWidget {
             activeIcon: Icons.science,
             label: isKorean ? '시뮬레이션' : 'Sims',
             isSelected: selectedIndex == 0,
+            isTablet: isTablet,
             onTap: () => onTabSelected(0),
           ),
           _RailItem(
@@ -258,6 +260,7 @@ class _LandscapeNavigationRail extends StatelessWidget {
             activeIcon: Icons.favorite,
             label: isKorean ? '즐겨찾기' : 'Favs',
             isSelected: selectedIndex == 1,
+            isTablet: isTablet,
             onTap: () => onTabSelected(1),
           ),
           _RailItem(
@@ -265,6 +268,7 @@ class _LandscapeNavigationRail extends StatelessWidget {
             activeIcon: Icons.menu_book,
             label: isKorean ? '자료' : 'Resources',
             isSelected: selectedIndex == 2,
+            isTablet: isTablet,
             onTap: () => onTabSelected(2),
           ),
           const Spacer(),
@@ -274,6 +278,7 @@ class _LandscapeNavigationRail extends StatelessWidget {
             activeIcon: Icons.settings,
             label: isKorean ? '설정' : 'Settings',
             isSelected: isSettingsOpen,
+            isTablet: isTablet,
             onTap: onSettingsToggle,
           ),
           const SizedBox(height: 12),
@@ -289,6 +294,7 @@ class _RailItem extends StatelessWidget {
   final IconData activeIcon;
   final String label;
   final bool isSelected;
+  final bool isTablet;
   final VoidCallback onTap;
 
   const _RailItem({
@@ -296,11 +302,16 @@ class _RailItem extends StatelessWidget {
     required this.activeIcon,
     required this.label,
     required this.isSelected,
+    this.isTablet = false,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final itemWidth = isTablet ? 72.0 : 56.0;
+    final iconSize = isTablet ? 26.0 : 22.0;
+    final fontSize = isTablet ? 11.0 : 9.0;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: GestureDetector(
@@ -308,8 +319,8 @@ class _RailItem extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          width: 56,
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          width: itemWidth,
+          padding: EdgeInsets.symmetric(vertical: isTablet ? 10 : 8),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.accent.withValues(alpha: 0.15)
@@ -322,14 +333,14 @@ class _RailItem extends StatelessWidget {
               Icon(
                 isSelected ? activeIcon : icon,
                 color: isSelected ? AppColors.accent : AppColors.muted,
-                size: 22,
+                size: iconSize,
               ),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
                   color: isSelected ? AppColors.accent : AppColors.muted,
-                  fontSize: 9,
+                  fontSize: fontSize,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
                 textAlign: TextAlign.center,
@@ -352,9 +363,10 @@ class _LandscapeSettingsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final panelWidth = MediaQuery.of(context).size.shortestSide >= 600 ? 380.0 : 320.0;
     return ClipRect(
       child: Container(
-        width: 320,
+        width: panelWidth,
         decoration: BoxDecoration(
           color: AppColors.bg,
           border: Border(

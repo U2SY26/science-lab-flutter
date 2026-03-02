@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
 import '../models/ai_persona.dart';
-import '../services/gemini_service.dart';
+import '../services/firebase_ai_service.dart';
+import '../services/subscription_service.dart';
 
 /// AI 채팅 상태
 class AiChatState {
@@ -11,7 +12,7 @@ class AiChatState {
   final bool isLoading;
   final bool isOpen;
   final String? error;
-  final String personaId;  // 현재 선택된 페르소나
+  final String personaId;
 
   const AiChatState({
     this.messages = const [],
@@ -47,6 +48,7 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
   final String description;
   final String category;
   final String? formula;
+  final Ref _ref;
 
   AiChatNotifier({
     required this.simId,
@@ -54,7 +56,9 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     required this.description,
     required this.category,
     this.formula,
-  }) : super(const AiChatState()) {
+    required Ref ref,
+  })  : _ref = ref,
+        super(const AiChatState()) {
     _loadHistory();
   }
 
@@ -114,18 +118,32 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
 
     final isKo = languageCode == 'ko';
     final personaPrompt = state.persona.systemPrompt(isKo);
+    final historyMessages = state.messages.where((m) => m != userMsg).toList();
+    final isPro = _ref.read(isAiProProvider);
 
-    final result = await GeminiService().chatWithSimulation(
-      simId: simId,
-      title: title,
-      description: description,
-      category: category,
-      languageCode: languageCode,
-      userMessage: text.trim(),
-      history: state.messages.where((m) => m != userMsg).toList(),
-      formula: formula,
-      personaPrompt: personaPrompt,
-    );
+    final String result;
+    if (simId == '_general_') {
+      result = await FirebaseAiService().chatGeneral(
+        userMessage: text.trim(),
+        languageCode: languageCode,
+        history: historyMessages,
+        personaPrompt: personaPrompt,
+        isPro: isPro,
+      );
+    } else {
+      result = await FirebaseAiService().chatWithSimulation(
+        simId: simId,
+        title: title,
+        description: description,
+        category: category,
+        languageCode: languageCode,
+        userMessage: text.trim(),
+        history: historyMessages,
+        formula: formula,
+        personaPrompt: personaPrompt,
+        isPro: isPro,
+      );
+    }
 
     if (!mounted) return;
 
@@ -159,6 +177,7 @@ final aiChatProvider = StateNotifierProvider.family<AiChatNotifier, AiChatState,
     description: params.description,
     category: params.category,
     formula: params.formula,
+    ref: ref,
   ),
 );
 
@@ -169,6 +188,15 @@ class AiChatParams {
   final String description;
   final String category;
   final String? formula;
+
+  static const general = AiChatParams(
+    simId: '_general_',
+    title: 'Visual Science Lab',
+    description: 'General science assistant',
+    category: 'general',
+  );
+
+  bool get isGeneral => simId == '_general_';
 
   const AiChatParams({
     required this.simId,
@@ -188,3 +216,14 @@ class AiChatParams {
   @override
   int get hashCode => simId.hashCode;
 }
+
+/// 현재 활성 시뮬레이션 컨텍스트
+final currentSimContextProvider = StateProvider<AiChatParams?>((ref) => null);
+
+/// 글로벌 AI 채팅 파라미터
+final globalAiChatParamsProvider = Provider<AiChatParams>((ref) {
+  return ref.watch(currentSimContextProvider) ?? AiChatParams.general;
+});
+
+/// AI 오버레이 표시 여부 (인트로 중 숨김)
+final showAiOverlayProvider = StateProvider<bool>((ref) => false);
