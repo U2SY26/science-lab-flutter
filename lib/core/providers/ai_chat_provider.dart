@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/chat_message.dart';
@@ -59,35 +58,18 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
     required Ref ref,
   })  : _ref = ref,
         super(const AiChatState()) {
-    _loadHistory();
+    // 히스토리를 로드하지 않음 — 앱 시작 시 항상 빈 대화로 시작
+    _clearPersistedHistory();
   }
 
-  static const int _maxMessages = 50;
   static const String _chatKeyPrefix = 'chat_history_';
 
-  Future<void> _loadHistory() async {
+  /// 이전 세션에서 저장된 히스토리 제거 (앱 재시작 시 깨끗한 상태 보장)
+  Future<void> _clearPersistedHistory() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final json = prefs.getString('$_chatKeyPrefix$simId');
-      if (json != null && json.isNotEmpty) {
-        final messages = ChatMessage.decodeList(json);
-        state = state.copyWith(messages: messages);
-      }
-    } catch (e) {
-      debugPrint('[AiChatNotifier] Failed to load history: $e');
-    }
-  }
-
-  Future<void> _saveHistory() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final trimmed = state.messages.length > _maxMessages
-          ? state.messages.sublist(state.messages.length - _maxMessages)
-          : state.messages;
-      await prefs.setString('$_chatKeyPrefix$simId', ChatMessage.encodeList(trimmed));
-    } catch (e) {
-      debugPrint('[AiChatNotifier] Failed to save history: $e');
-    }
+      await prefs.remove('$_chatKeyPrefix$simId');
+    } catch (_) {}
   }
 
   void toggleChat() {
@@ -158,14 +140,11 @@ class AiChatNotifier extends StateNotifier<AiChatState> {
         messages: [...state.messages, assistantMsg],
         isLoading: false,
       );
-      await _saveHistory();
     }
   }
 
-  void clearHistory() async {
+  void clearHistory() {
     state = state.copyWith(messages: [], error: null);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('$_chatKeyPrefix$simId');
   }
 }
 
@@ -227,3 +206,28 @@ final globalAiChatParamsProvider = Provider<AiChatParams>((ref) {
 
 /// AI 오버레이 표시 여부 (인트로 중 숨김)
 final showAiOverlayProvider = StateProvider<bool>((ref) => false);
+
+/// 전역 페르소나 선택 Provider (설정에서 변경, SharedPreferences 영속화)
+final selectedPersonaIdProvider = StateNotifierProvider<SelectedPersonaNotifier, String>((ref) {
+  return SelectedPersonaNotifier();
+});
+
+class SelectedPersonaNotifier extends StateNotifier<String> {
+  static const _key = 'selected_persona_id';
+
+  SelectedPersonaNotifier() : super('tutor') {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString(_key);
+    if (saved != null && mounted) state = saved;
+  }
+
+  Future<void> select(String personaId) async {
+    state = personaId;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, personaId);
+  }
+}

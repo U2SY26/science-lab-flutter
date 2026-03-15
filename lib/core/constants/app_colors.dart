@@ -6,7 +6,7 @@ class AppColors {
   AppColors._();
 
   // 배경색
-  static const Color bg = Color(0xFF0A0A0F);
+  static const Color bg = Color(0xFF000000);
   static const Color bgSoft = Color(0xFF0D0D14);
 
   // 텍스트 색상

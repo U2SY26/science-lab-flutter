@@ -59,11 +59,7 @@ class _PythagoreanScreenState extends State<PythagoreanScreen> {
           simulation: SizedBox(
             height: 300,
             child: CustomPaint(
-              painter: _PythagoreanPainter(
-                proof: _proof,
-                a: _a,
-                b: _b,
-              ),
+              painter: _PythagoreanPainter(proof: _proof, a: _a, b: _b),
               size: Size.infinite,
             ),
           ),
@@ -83,26 +79,65 @@ class _PythagoreanScreenState extends State<PythagoreanScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: 'a', value: _a.toStringAsFixed(1), color: Colors.red),
-                        _InfoItem(label: 'b', value: _b.toStringAsFixed(1), color: Colors.green),
-                        _InfoItem(label: 'c', value: _c.toStringAsFixed(2), color: Colors.blue),
+                        _InfoItem(
+                          label: 'a',
+                          value: _a.toStringAsFixed(1),
+                          color: Colors.red,
+                        ),
+                        _InfoItem(
+                          label: 'b',
+                          value: _b.toStringAsFixed(1),
+                          color: Colors.green,
+                        ),
+                        _InfoItem(
+                          label: 'c',
+                          value: _c.toStringAsFixed(2),
+                          color: Colors.blue,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('${(_a * _a).toStringAsFixed(1)}', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                        const Text(' + ', style: TextStyle(color: AppColors.muted)),
-                        Text('${(_b * _b).toStringAsFixed(1)}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-                        const Text(' = ', style: TextStyle(color: AppColors.muted)),
-                        Text('${(_c * _c).toStringAsFixed(1)}', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                        Text(
+                          (_a * _a).toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          ' + ',
+                          style: TextStyle(color: AppColors.muted),
+                        ),
+                        Text(
+                          (_b * _b).toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          ' = ',
+                          style: TextStyle(color: AppColors.muted),
+                        ),
+                        Text(
+                          (_c * _c).toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'a² + b² = c²',
-                      style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: AppColors.accent,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -176,14 +211,33 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold)),
-        Text(value, style: TextStyle(color: color, fontSize: 20, fontWeight: FontWeight.w600, fontFamily: 'monospace')),
+        Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'monospace',
+          ),
+        ),
       ],
     );
   }
@@ -226,7 +280,10 @@ class _PythagoreanPainter extends CustomPainter {
       ..lineTo(offsetX, offsetY)
       ..close();
 
-    canvas.drawPath(triPath, Paint()..color = Colors.purple.withValues(alpha: 0.3));
+    canvas.drawPath(
+      triPath,
+      Paint()..color = Colors.purple.withValues(alpha: 0.3),
+    );
     canvas.drawPath(
       triPath,
       Paint()
@@ -242,7 +299,10 @@ class _PythagoreanPainter extends CustomPainter {
     );
     canvas.drawRect(
       Rect.fromLTWH(offsetX - a * scale, offsetY, a * scale, a * scale),
-      Paint()..color = Colors.red..strokeWidth = 2..style = PaintingStyle.stroke,
+      Paint()
+        ..color = Colors.red
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
 
     // b² 정사각형
@@ -252,7 +312,10 @@ class _PythagoreanPainter extends CustomPainter {
     );
     canvas.drawRect(
       Rect.fromLTWH(offsetX, offsetY + a * scale, b * scale, b * scale),
-      Paint()..color = Colors.green..strokeWidth = 2..style = PaintingStyle.stroke,
+      Paint()
+        ..color = Colors.green
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
 
     // c² 정사각형 (회전된 상태)
@@ -269,13 +332,31 @@ class _PythagoreanPainter extends CustomPainter {
     );
     canvas.drawRect(
       Rect.fromLTWH(-c * scale / 2, -c * scale / 2, c * scale, c * scale),
-      Paint()..color = Colors.blue..strokeWidth = 2..style = PaintingStyle.stroke,
+      Paint()
+        ..color = Colors.blue
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
     canvas.restore();
 
     // 레이블
-    _drawText(canvas, 'a²', Offset(offsetX - a * scale / 2 - 8, offsetY + a * scale / 2 - 8), Colors.red, fontSize: 14);
-    _drawText(canvas, 'b²', Offset(offsetX + b * scale / 2 - 8, offsetY + a * scale + b * scale / 2 - 8), Colors.green, fontSize: 14);
+    _drawText(
+      canvas,
+      'a²',
+      Offset(offsetX - a * scale / 2 - 8, offsetY + a * scale / 2 - 8),
+      Colors.red,
+      fontSize: 14,
+    );
+    _drawText(
+      canvas,
+      'b²',
+      Offset(
+        offsetX + b * scale / 2 - 8,
+        offsetY + a * scale + b * scale / 2 - 8,
+      ),
+      Colors.green,
+      fontSize: 14,
+    );
     _drawText(canvas, 'c²', Offset(cx - 8, cy - 8), Colors.blue, fontSize: 14);
   }
 
@@ -289,14 +370,41 @@ class _PythagoreanPainter extends CustomPainter {
 
     canvas.drawRect(
       Rect.fromLTWH(leftX, leftY, side * scale, side * scale),
-      Paint()..color = AppColors.muted..strokeWidth = 2..style = PaintingStyle.stroke,
+      Paint()
+        ..color = AppColors.muted
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
 
     // 4개의 삼각형
     _drawTriangle(canvas, leftX, leftY, a * scale, b * scale, Colors.purple);
-    _drawTriangle(canvas, leftX + b * scale, leftY, a * scale, b * scale, Colors.purple, rotated: 1);
-    _drawTriangle(canvas, leftX + side * scale, leftY + a * scale, a * scale, b * scale, Colors.purple, rotated: 2);
-    _drawTriangle(canvas, leftX + a * scale, leftY + side * scale, a * scale, b * scale, Colors.purple, rotated: 3);
+    _drawTriangle(
+      canvas,
+      leftX + b * scale,
+      leftY,
+      a * scale,
+      b * scale,
+      Colors.purple,
+      rotated: 1,
+    );
+    _drawTriangle(
+      canvas,
+      leftX + side * scale,
+      leftY + a * scale,
+      a * scale,
+      b * scale,
+      Colors.purple,
+      rotated: 2,
+    );
+    _drawTriangle(
+      canvas,
+      leftX + a * scale,
+      leftY + side * scale,
+      a * scale,
+      b * scale,
+      Colors.purple,
+      rotated: 3,
+    );
 
     // 중앙 c² 정사각형
     final cSquarePath = Path()
@@ -306,8 +414,17 @@ class _PythagoreanPainter extends CustomPainter {
       ..lineTo(leftX, leftY + b * scale)
       ..close();
 
-    canvas.drawPath(cSquarePath, Paint()..color = Colors.blue.withValues(alpha: 0.3));
-    canvas.drawPath(cSquarePath, Paint()..color = Colors.blue..strokeWidth = 2..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      cSquarePath,
+      Paint()..color = Colors.blue.withValues(alpha: 0.3),
+    );
+    canvas.drawPath(
+      cSquarePath,
+      Paint()
+        ..color = Colors.blue
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
+    );
 
     // 오른쪽: a² + b² 정사각형
     final rightX = 3 * size.width / 4 - side * scale / 2;
@@ -315,7 +432,10 @@ class _PythagoreanPainter extends CustomPainter {
 
     canvas.drawRect(
       Rect.fromLTWH(rightX, rightY, side * scale, side * scale),
-      Paint()..color = AppColors.muted..strokeWidth = 2..style = PaintingStyle.stroke,
+      Paint()
+        ..color = AppColors.muted
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
 
     // a²
@@ -325,30 +445,87 @@ class _PythagoreanPainter extends CustomPainter {
     );
     canvas.drawRect(
       Rect.fromLTWH(rightX, rightY, a * scale, a * scale),
-      Paint()..color = Colors.red..strokeWidth = 2..style = PaintingStyle.stroke,
+      Paint()
+        ..color = Colors.red
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
 
     // b²
     canvas.drawRect(
-      Rect.fromLTWH(rightX + a * scale, rightY + a * scale, b * scale, b * scale),
+      Rect.fromLTWH(
+        rightX + a * scale,
+        rightY + a * scale,
+        b * scale,
+        b * scale,
+      ),
       Paint()..color = Colors.green.withValues(alpha: 0.3),
     );
     canvas.drawRect(
-      Rect.fromLTWH(rightX + a * scale, rightY + a * scale, b * scale, b * scale),
-      Paint()..color = Colors.green..strokeWidth = 2..style = PaintingStyle.stroke,
+      Rect.fromLTWH(
+        rightX + a * scale,
+        rightY + a * scale,
+        b * scale,
+        b * scale,
+      ),
+      Paint()
+        ..color = Colors.green
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
     );
 
     // 4개의 삼각형 (같은 위치)
-    _drawTriangle(canvas, rightX + a * scale, rightY, a * scale, b * scale, Colors.purple);
-    _drawTriangle(canvas, rightX, rightY + a * scale, a * scale, b * scale, Colors.purple, rotated: 3);
+    _drawTriangle(
+      canvas,
+      rightX + a * scale,
+      rightY,
+      a * scale,
+      b * scale,
+      Colors.purple,
+    );
+    _drawTriangle(
+      canvas,
+      rightX,
+      rightY + a * scale,
+      a * scale,
+      b * scale,
+      Colors.purple,
+      rotated: 3,
+    );
 
     // = 표시
-    _drawText(canvas, '=', Offset(size.width / 2 - 10, size.height / 2 - 15), AppColors.ink, fontSize: 30);
-    _drawText(canvas, 'c²', Offset(leftX + side * scale / 2 - 8, leftY + side * scale + 10), Colors.blue, fontSize: 12);
-    _drawText(canvas, 'a² + b²', Offset(rightX + side * scale / 2 - 20, rightY + side * scale + 10), AppColors.ink, fontSize: 12);
+    _drawText(
+      canvas,
+      '=',
+      Offset(size.width / 2 - 10, size.height / 2 - 15),
+      AppColors.ink,
+      fontSize: 30,
+    );
+    _drawText(
+      canvas,
+      'c²',
+      Offset(leftX + side * scale / 2 - 8, leftY + side * scale + 10),
+      Colors.blue,
+      fontSize: 12,
+    );
+    _drawText(
+      canvas,
+      'a² + b²',
+      Offset(rightX + side * scale / 2 - 20, rightY + side * scale + 10),
+      AppColors.ink,
+      fontSize: 12,
+    );
   }
 
-  void _drawTriangle(Canvas canvas, double x, double y, double aLen, double bLen, Color color, {int rotated = 0}) {
+  void _drawTriangle(
+    Canvas canvas,
+    double x,
+    double y,
+    double aLen,
+    double bLen,
+    Color color, {
+    int rotated = 0,
+  }) {
     final path = Path();
     switch (rotated) {
       case 0:
@@ -375,7 +552,13 @@ class _PythagoreanPainter extends CustomPainter {
     path.close();
 
     canvas.drawPath(path, Paint()..color = color.withValues(alpha: 0.3));
-    canvas.drawPath(path, Paint()..color = color..strokeWidth = 1..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..strokeWidth = 1
+        ..style = PaintingStyle.stroke,
+    );
   }
 
   void _drawEuclidProof(Canvas canvas, Size size) {
@@ -388,9 +571,22 @@ class _PythagoreanPainter extends CustomPainter {
     final B = Offset(offsetX + b * scale, offsetY);
     final C = Offset(offsetX, offsetY - a * scale);
 
-    final triPath = Path()..moveTo(A.dx, A.dy)..lineTo(B.dx, B.dy)..lineTo(C.dx, C.dy)..close();
-    canvas.drawPath(triPath, Paint()..color = Colors.purple.withValues(alpha: 0.2));
-    canvas.drawPath(triPath, Paint()..color = Colors.purple..strokeWidth = 2..style = PaintingStyle.stroke);
+    final triPath = Path()
+      ..moveTo(A.dx, A.dy)
+      ..lineTo(B.dx, B.dy)
+      ..lineTo(C.dx, C.dy)
+      ..close();
+    canvas.drawPath(
+      triPath,
+      Paint()..color = Colors.purple.withValues(alpha: 0.2),
+    );
+    canvas.drawPath(
+      triPath,
+      Paint()
+        ..color = Colors.purple
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
+    );
 
     // 빗변 위의 정사각형
     final angle = math.atan2(a, b);
@@ -404,19 +600,32 @@ class _PythagoreanPainter extends CustomPainter {
       ..lineTo(C.dx + dx, C.dy - dy)
       ..close();
 
-    canvas.drawPath(cSquare, Paint()..color = Colors.blue.withValues(alpha: 0.2));
-    canvas.drawPath(cSquare, Paint()..color = Colors.blue..strokeWidth = 2..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      cSquare,
+      Paint()..color = Colors.blue.withValues(alpha: 0.2),
+    );
+    canvas.drawPath(
+      cSquare,
+      Paint()
+        ..color = Colors.blue
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke,
+    );
 
     // 수선
     final h = a * b / c;
-    final footX = A.dx + (b * b / (c * c)) * (B.dx - A.dx) + (a * b / (c * c)) * (C.dx - A.dx);
-    final footY = A.dy + (b * b / (c * c)) * (B.dy - A.dy) + (a * b / (c * c)) * (C.dy - A.dy);
 
     // 빗변에서 꼭짓점으로 수선
     canvas.drawLine(
       A,
-      Offset(A.dx + (C.dx - A.dx) * (a / c) + (B.dx - A.dx) * (b / c), A.dy - h * scale * 0.8),
-      Paint()..color = Colors.orange..strokeWidth = 1.5..style = PaintingStyle.stroke,
+      Offset(
+        A.dx + (C.dx - A.dx) * (a / c) + (B.dx - A.dx) * (b / c),
+        A.dy - h * scale * 0.8,
+      ),
+      Paint()
+        ..color = Colors.orange
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
     );
 
     // 점 표시
@@ -427,12 +636,30 @@ class _PythagoreanPainter extends CustomPainter {
     _drawText(canvas, 'A', A + const Offset(-15, 5), Colors.red);
     _drawText(canvas, 'B', B + const Offset(5, 5), Colors.red);
     _drawText(canvas, 'C', C + const Offset(-15, -5), Colors.red);
-    _drawText(canvas, 'c²', Offset((C.dx + B.dx) / 2 + dx / 2 - 10, (C.dy + B.dy) / 2 - dy / 2), Colors.blue);
+    _drawText(
+      canvas,
+      'c²',
+      Offset((C.dx + B.dx) / 2 + dx / 2 - 10, (C.dy + B.dy) / 2 - dy / 2),
+      Colors.blue,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.bold)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

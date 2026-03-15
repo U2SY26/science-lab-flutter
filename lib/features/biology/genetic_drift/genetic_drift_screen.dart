@@ -112,7 +112,7 @@ class _GeneticDriftScreenState extends State<GeneticDriftScreen>
                 max: 0.9,
                 step: 0.05,
                 defaultValue: 0.5,
-                formatValue: (v) => '${v.toStringAsFixed(2)}',
+                formatValue: (v) => v.toStringAsFixed(2),
                 onChanged: (v) => setState(() => _initFreq = v),
               ),
               ],
@@ -274,8 +274,11 @@ class _GeneticDriftScreenPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round;
       final path = Path();
       for (int i = 0; i < points.length; i++) {
-        if (i == 0) path.moveTo(points[i].dx, points[i].dy);
-        else path.lineTo(points[i].dx, points[i].dy);
+        if (i == 0) {
+          path.moveTo(points[i].dx, points[i].dy);
+        } else {
+          path.lineTo(points[i].dx, points[i].dy);
+        }
       }
       canvas.drawPath(path, linePaint);
     }

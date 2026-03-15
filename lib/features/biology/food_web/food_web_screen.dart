@@ -90,7 +90,7 @@ class _FoodWebScreenState extends State<FoodWebScreen>
                 max: 50000,
                 step: 1000,
                 defaultValue: 10000,
-                formatValue: (v) => v.toStringAsFixed(0) + ' kcal',
+                formatValue: (v) => '${v.toStringAsFixed(0)} kcal',
                 onChanged: (v) => setState(() => _primaryProd = v),
               ),
               
@@ -104,9 +104,9 @@ class _FoodWebScreenState extends State<FoodWebScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('2차 소비', _level2.toStringAsFixed(0) + ' kcal'),
-          _V('3차 소비', _level3.toStringAsFixed(0) + ' kcal'),
-          _V('4차 소비', _level4.toStringAsFixed(0) + ' kcal'),
+          _V('2차 소비', '${_level2.toStringAsFixed(0)} kcal'),
+          _V('3차 소비', '${_level3.toStringAsFixed(0)} kcal'),
+          _V('4차 소비', '${_level4.toStringAsFixed(0)} kcal'),
                 ]),
               ),
             ],

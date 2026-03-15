@@ -89,7 +89,7 @@ class _ActionPotentialSynapseScreenState extends State<ActionPotentialSynapseScr
                 max: 5,
                 step: 0.1,
                 defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1) + ' mM',
+                formatValue: (v) => '${v.toStringAsFixed(1)} mM',
                 onChanged: (v) => setState(() => _neurotransmitter = v),
               ),
               
@@ -103,9 +103,9 @@ class _ActionPotentialSynapseScreenState extends State<ActionPotentialSynapseScr
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('V_m', _postV.toStringAsFixed(1) + ' mV'),
-          _V('EPSP', _epsp.toStringAsFixed(1) + ' mV'),
-          _V('NT', _neurotransmitter.toStringAsFixed(1) + ' mM'),
+          _V('V_m', '${_postV.toStringAsFixed(1)} mV'),
+          _V('EPSP', '${_epsp.toStringAsFixed(1)} mV'),
+          _V('NT', '${_neurotransmitter.toStringAsFixed(1)} mM'),
                 ]),
               ),
             ],

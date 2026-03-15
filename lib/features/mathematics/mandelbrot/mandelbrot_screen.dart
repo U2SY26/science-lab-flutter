@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -134,12 +133,22 @@ class _MandelbrotScreenState extends State<MandelbrotScreen> {
       case 'fire':
         return HSLColor.fromAHSL(1.0, t * 60, 1.0, 0.5).toColor();
       case 'ocean':
-        return HSLColor.fromAHSL(1.0, 180 + t * 60, 0.8, 0.3 + t * 0.4).toColor();
+        return HSLColor.fromAHSL(
+          1.0,
+          180 + t * 60,
+          0.8,
+          0.3 + t * 0.4,
+        ).toColor();
       case 'rainbow':
         return HSLColor.fromAHSL(1.0, t * 360, 0.9, 0.5).toColor();
       case 'classic':
       default:
-        return HSLColor.fromAHSL(1.0, (t * 360 + 200) % 360, 0.8, 0.5).toColor();
+        return HSLColor.fromAHSL(
+          1.0,
+          (t * 360 + 200) % 360,
+          0.8,
+          0.5,
+        ).toColor();
     }
   }
 
@@ -218,7 +227,10 @@ class _MandelbrotScreenState extends State<MandelbrotScreen> {
               final tapY = details.localPosition.dy / 350;
               setState(() {
                 centerX = centerX - scale + tapX * scale * 2;
-                centerY = centerY - scale * 350 / size.width + tapY * scale * 2 * 350 / size.width;
+                centerY =
+                    centerY -
+                    scale * 350 / size.width +
+                    tapY * scale * 2 * 350 / size.width;
                 zoom *= 2;
                 _selectedPreset = null;
               });
@@ -253,7 +265,10 @@ class _MandelbrotScreenState extends State<MandelbrotScreen> {
                             SizedBox(height: 8),
                             Text(
                               '렌더링 중...',
-                              style: TextStyle(color: AppColors.muted, fontSize: 12),
+                              style: TextStyle(
+                                color: AppColors.muted,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -264,7 +279,10 @@ class _MandelbrotScreenState extends State<MandelbrotScreen> {
                     left: 8,
                     bottom: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.bg.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(4),
@@ -389,16 +407,8 @@ class _MandelbrotScreenState extends State<MandelbrotScreen> {
                 isPrimary: true,
                 onPressed: _zoomIn,
               ),
-              SimButton(
-                label: '축소',
-                icon: Icons.zoom_out,
-                onPressed: _zoomOut,
-              ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '축소', icon: Icons.zoom_out, onPressed: _zoomOut),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -504,12 +514,22 @@ class MandelbrotPainter extends CustomPainter {
       case 'fire':
         return HSLColor.fromAHSL(1.0, t * 60, 1.0, 0.5).toColor();
       case 'ocean':
-        return HSLColor.fromAHSL(1.0, 180 + t * 60, 0.8, 0.3 + t * 0.4).toColor();
+        return HSLColor.fromAHSL(
+          1.0,
+          180 + t * 60,
+          0.8,
+          0.3 + t * 0.4,
+        ).toColor();
       case 'rainbow':
         return HSLColor.fromAHSL(1.0, t * 360, 0.9, 0.5).toColor();
       case 'classic':
       default:
-        return HSLColor.fromAHSL(1.0, (t * 360 + 200) % 360, 0.8, 0.5).toColor();
+        return HSLColor.fromAHSL(
+          1.0,
+          (t * 360 + 200) % 360,
+          0.8,
+          0.5,
+        ).toColor();
     }
   }
 

@@ -23,8 +23,10 @@ class _ThermohalineScreenState extends State<ThermohalineScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -41,12 +43,16 @@ class _ThermohalineScreenState extends State<ThermohalineScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _time = 0;
-      _tempDiff = 20.0; _salinity = 35.0;
+      _tempDiff = 20.0;
+      _salinity = 35.0;
     });
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +60,27 @@ class _ThermohalineScreenState extends State<ThermohalineScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('지구과학 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('열염순환', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '지구과학 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '열염순환',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -81,30 +103,30 @@ class _ThermohalineScreenState extends State<ThermohalineScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '온도차 (°C)',
-                value: _tempDiff,
-                min: 0,
-                max: 40,
-                step: 1,
-                defaultValue: 20,
-                formatValue: (v) => v.toStringAsFixed(0) + ' °C',
-                onChanged: (v) => setState(() => _tempDiff = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '온도차 (°C)',
+                  value: _tempDiff,
+                  min: 0,
+                  max: 40,
+                  step: 1,
+                  defaultValue: 20,
+                  formatValue: (v) => '${v.toStringAsFixed(0)} °C',
+                  onChanged: (v) => setState(() => _tempDiff = v),
+                ),
+                advancedControls: [
+                  SimSlider(
+                    label: '염도 (psu)',
+                    value: _salinity,
+                    min: 30,
+                    max: 40,
+                    step: 0.5,
+                    defaultValue: 35,
+                    formatValue: (v) => '${v.toStringAsFixed(1)} psu',
+                    onChanged: (v) => setState(() => _salinity = v),
+                  ),
+                ],
               ),
-              advancedControls: [
-            SimSlider(
-                label: '염도 (psu)',
-                value: _salinity,
-                min: 30,
-                max: 40,
-                step: 0.5,
-                defaultValue: 35,
-                formatValue: (v) => v.toStringAsFixed(1) + ' psu',
-                onChanged: (v) => setState(() => _salinity = v),
-              ),
-              ],
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -113,23 +135,31 @@ class _ThermohalineScreenState extends State<ThermohalineScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('밀도', _density.toStringAsFixed(1) + ' kg/m³'),
-          _V('유속', _flowSpeed.toStringAsFixed(3) + ' m/s'),
-          _V('염도', _salinity.toStringAsFixed(1) + ' psu'),
-                ]),
+                child: Row(
+                  children: [
+                    _V('밀도', '${_density.toStringAsFixed(1)} kg/m³'),
+                    _V('유속', '${_flowSpeed.toStringAsFixed(3)} m/s'),
+                    _V('염도', '${_salinity.toStringAsFixed(1)} psu'),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -140,11 +170,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _ThermohalineScreenPainter extends CustomPainter {
@@ -158,7 +203,13 @@ class _ThermohalineScreenPainter extends CustomPainter {
     required this.salinity,
   });
 
-  void _drawArrow(Canvas canvas, Offset from, Offset to, Paint paint, {double arrowSize = 7}) {
+  void _drawArrow(
+    Canvas canvas,
+    Offset from,
+    Offset to,
+    Paint paint, {
+    double arrowSize = 7,
+  }) {
     canvas.drawLine(from, to, paint);
     final dir = to - from;
     final len = dir.distance;
@@ -167,8 +218,14 @@ class _ThermohalineScreenPainter extends CustomPainter {
     final perp = Offset(-u.dy, u.dx);
     final p1 = to - u * arrowSize + perp * arrowSize * 0.4;
     final p2 = to - u * arrowSize - perp * arrowSize * 0.4;
-    final path = Path()..moveTo(to.dx, to.dy)..lineTo(p1.dx, p1.dy)..lineTo(p2.dx, p2.dy)..close();
-    final fill = Paint()..color = paint.color..style = PaintingStyle.fill;
+    final path = Path()
+      ..moveTo(to.dx, to.dy)
+      ..lineTo(p1.dx, p1.dy)
+      ..lineTo(p2.dx, p2.dy)
+      ..close();
+    final fill = Paint()
+      ..color = paint.color
+      ..style = PaintingStyle.fill;
     canvas.drawPath(path, fill);
   }
 
@@ -182,7 +239,10 @@ class _ThermohalineScreenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width;
     final h = size.height;
@@ -190,39 +250,71 @@ class _ThermohalineScreenPainter extends CustomPainter {
 
     // === World map outline (simplified rectangle regions) ===
     // Draw ocean background
-    final oceanPaint = Paint()..color = const Color(0xFF0A2A3A)..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(
-      Rect.fromLTRB(pad, pad + 14, w - pad, h - pad),
-      const Radius.circular(6),
-    ), oceanPaint);
+    final oceanPaint = Paint()
+      ..color = const Color(0xFF0A2A3A)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTRB(pad, pad + 14, w - pad, h - pad),
+        const Radius.circular(6),
+      ),
+      oceanPaint,
+    );
 
     // Land masses (simplified)
-    final landPaint = Paint()..color = const Color(0xFF1F3D1A)..style = PaintingStyle.fill;
+    final landPaint = Paint()
+      ..color = const Color(0xFF1F3D1A)
+      ..style = PaintingStyle.fill;
     // North America
-    canvas.drawRRect(RRect.fromRectAndRadius(
-      Rect.fromLTRB(pad + 4, pad + 18, w * 0.28, h * 0.52),
-      const Radius.circular(4),
-    ), landPaint);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTRB(pad + 4, pad + 18, w * 0.28, h * 0.52),
+        const Radius.circular(4),
+      ),
+      landPaint,
+    );
     // Europe/Africa
-    canvas.drawRRect(RRect.fromRectAndRadius(
-      Rect.fromLTRB(w * 0.38, pad + 18, w * 0.54, h * 0.72),
-      const Radius.circular(4),
-    ), landPaint);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTRB(w * 0.38, pad + 18, w * 0.54, h * 0.72),
+        const Radius.circular(4),
+      ),
+      landPaint,
+    );
     // Asia
-    canvas.drawRRect(RRect.fromRectAndRadius(
-      Rect.fromLTRB(w * 0.55, pad + 18, w - pad - 4, h * 0.50),
-      const Radius.circular(4),
-    ), landPaint);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTRB(w * 0.55, pad + 18, w - pad - 4, h * 0.50),
+        const Radius.circular(4),
+      ),
+      landPaint,
+    );
     // Antarctica
-    canvas.drawRRect(RRect.fromRectAndRadius(
-      Rect.fromLTRB(pad + 4, h * 0.82, w - pad - 4, h - pad - 2),
-      const Radius.circular(4),
-    ), landPaint);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTRB(pad + 4, h * 0.82, w - pad - 4, h - pad - 2),
+        const Radius.circular(4),
+      ),
+      landPaint,
+    );
 
     // Region labels
-    void drawLabel(String text, double x, double y, Color color, double fontSize) {
+    void drawLabel(
+      String text,
+      double x,
+      double y,
+      Color color,
+      double fontSize,
+    ) {
       final tp = TextPainter(
-        text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.w600)),
+        text: TextSpan(
+          text: text,
+          style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       tp.paint(canvas, Offset(x - tp.width / 2, y - tp.height / 2));
@@ -235,15 +327,15 @@ class _ThermohalineScreenPainter extends CustomPainter {
     // === Warm surface current path (orange/red) ===
     final speedFactor = (tempDiff / 40.0).clamp(0.2, 1.0);
     final warmPath = [
-      Offset(w * 0.30, h * 0.58),  // Gulf of Mexico
-      Offset(w * 0.32, h * 0.35),  // N Atlantic
-      Offset(w * 0.42, h * 0.25),  // Nordic seas
-      Offset(w * 0.50, h * 0.30),  // NADW sinking
-      Offset(w * 0.60, h * 0.42),  // Indian ocean
-      Offset(w * 0.72, h * 0.60),  // Pacific
-      Offset(w * 0.55, h * 0.72),  // South pacific
-      Offset(w * 0.35, h * 0.72),  // South atlantic
-      Offset(w * 0.30, h * 0.58),  // back to start
+      Offset(w * 0.30, h * 0.58), // Gulf of Mexico
+      Offset(w * 0.32, h * 0.35), // N Atlantic
+      Offset(w * 0.42, h * 0.25), // Nordic seas
+      Offset(w * 0.50, h * 0.30), // NADW sinking
+      Offset(w * 0.60, h * 0.42), // Indian ocean
+      Offset(w * 0.72, h * 0.60), // Pacific
+      Offset(w * 0.55, h * 0.72), // South pacific
+      Offset(w * 0.35, h * 0.72), // South atlantic
+      Offset(w * 0.30, h * 0.58), // back to start
     ];
 
     final warmPaint = Paint()
@@ -259,11 +351,11 @@ class _ThermohalineScreenPainter extends CustomPainter {
 
     // === Cold deep current path (cyan/blue) ===
     final coldPath = [
-      Offset(w * 0.50, h * 0.30),  // NADW sinking
-      Offset(w * 0.48, h * 0.60),  // deep atlantic
-      Offset(w * 0.42, h * 0.78),  // circumpolar
-      Offset(w * 0.65, h * 0.78),  // deep circumpolar
-      Offset(w * 0.72, h * 0.60),  // upwelling pacific
+      Offset(w * 0.50, h * 0.30), // NADW sinking
+      Offset(w * 0.48, h * 0.60), // deep atlantic
+      Offset(w * 0.42, h * 0.78), // circumpolar
+      Offset(w * 0.65, h * 0.78), // deep circumpolar
+      Offset(w * 0.72, h * 0.60), // upwelling pacific
     ];
 
     final coldPaint = Paint()
@@ -277,7 +369,9 @@ class _ThermohalineScreenPainter extends CustomPainter {
     }
 
     // === NADW sinking point ===
-    final sinkingPaint = Paint()..color = const Color(0xFFFFD700)..style = PaintingStyle.fill;
+    final sinkingPaint = Paint()
+      ..color = const Color(0xFFFFD700)
+      ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset(w * 0.50, h * 0.30), 5, sinkingPaint);
     drawLabel('NADW 침강', w * 0.50, h * 0.22, const Color(0xFFFFD700), 8);
 
@@ -300,11 +394,21 @@ class _ThermohalineScreenPainter extends CustomPainter {
     // === Legend ===
     final legX = pad + 6.0;
     final legY = h * 0.53;
-    canvas.drawLine(Offset(legX, legY), Offset(legX + 18, legY),
-      Paint()..color = const Color(0xFFFF6B35)..strokeWidth = 2.5);
+    canvas.drawLine(
+      Offset(legX, legY),
+      Offset(legX + 18, legY),
+      Paint()
+        ..color = const Color(0xFFFF6B35)
+        ..strokeWidth = 2.5,
+    );
     drawLabel('표층류(따뜻)', legX + 36, legY, const Color(0xFFFF6B35), 7.5);
-    canvas.drawLine(Offset(legX, legY + 12), Offset(legX + 18, legY + 12),
-      Paint()..color = const Color(0xFF00D4FF)..strokeWidth = 2);
+    canvas.drawLine(
+      Offset(legX, legY + 12),
+      Offset(legX + 18, legY + 12),
+      Paint()
+        ..color = const Color(0xFF00D4FF)
+        ..strokeWidth = 2,
+    );
     drawLabel('심층류(차가움)', legX + 38, legY + 12, const Color(0xFF00D4FF), 7.5);
 
     // Title

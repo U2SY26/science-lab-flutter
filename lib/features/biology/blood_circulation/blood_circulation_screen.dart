@@ -90,7 +90,7 @@ class _BloodCirculationScreenState extends State<BloodCirculationScreen>
                 max: 200,
                 step: 1,
                 defaultValue: 72,
-                formatValue: (v) => v.toStringAsFixed(0) + ' bpm',
+                formatValue: (v) => '${v.toStringAsFixed(0)} bpm',
                 onChanged: (v) => setState(() => _heartRate = v),
               ),
               
@@ -104,9 +104,9 @@ class _BloodCirculationScreenState extends State<BloodCirculationScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('CO', _cardiacOutput.toStringAsFixed(1) + ' L/min'),
-          _V('SV', _strokeVol.toStringAsFixed(0) + ' mL'),
-          _V('BP', _bp.toStringAsFixed(0) + ' mmHg'),
+          _V('CO', '${_cardiacOutput.toStringAsFixed(1)} L/min'),
+          _V('SV', '${_strokeVol.toStringAsFixed(0)} mL'),
+          _V('BP', '${_bp.toStringAsFixed(0)} mmHg'),
                 ]),
               ),
             ],

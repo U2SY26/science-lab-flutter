@@ -103,8 +103,8 @@ class _EquilibriumConstantScreenState extends State<EquilibriumConstantScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('생성물', (_products * 100).toStringAsFixed(1) + '%'),
-          _V('반응물', (_reactants * 100).toStringAsFixed(1) + '%'),
+          _V('생성물', '${(_products * 100).toStringAsFixed(1)}%'),
+          _V('반응물', '${(_reactants * 100).toStringAsFixed(1)}%'),
           _V('K', _kValue.toStringAsFixed(2)),
                 ]),
               ),

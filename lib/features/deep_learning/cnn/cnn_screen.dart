@@ -37,9 +37,9 @@ class _CnnScreenState extends ConsumerState<CnnScreen>
   List<List<double>> _pooledOutput = [];
 
   // Parameters
-  int _kernelSize = 3;
-  int _stride = 1;
-  int _poolSize = 2;
+  final int _kernelSize = 3;
+  final int _stride = 1;
+  final int _poolSize = 2;
   String _poolType = 'max';
   double _animationProgress = 0.0;
   int _currentConvX = 0;
@@ -614,26 +614,40 @@ class _CnnPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final arrowY = 60 + cellSize * 4;
-    _drawArrow(canvas, Offset(padding + sectionWidth, arrowY),
-        Offset(padding + sectionWidth + padding / 2, arrowY), arrowPaint);
     _drawArrow(
-        canvas,
-        Offset(padding + (sectionWidth + padding) * 2 - padding / 2, arrowY),
-        Offset(padding + (sectionWidth + padding) * 2, arrowY),
-        arrowPaint);
+      canvas,
+      Offset(padding + sectionWidth, arrowY),
+      Offset(padding + sectionWidth + padding / 2, arrowY),
+      arrowPaint,
+    );
     _drawArrow(
-        canvas,
-        Offset(padding + (sectionWidth + padding) * 3 - padding / 2, arrowY),
-        Offset(padding + (sectionWidth + padding) * 3, arrowY),
-        arrowPaint);
+      canvas,
+      Offset(padding + (sectionWidth + padding) * 2 - padding / 2, arrowY),
+      Offset(padding + (sectionWidth + padding) * 2, arrowY),
+      arrowPaint,
+    );
+    _drawArrow(
+      canvas,
+      Offset(padding + (sectionWidth + padding) * 3 - padding / 2, arrowY),
+      Offset(padding + (sectionWidth + padding) * 3, arrowY),
+      arrowPaint,
+    );
 
     // Draw labels
-    _drawText(canvas, 'Conv', Offset(padding + sectionWidth + padding / 4, arrowY - 15),
-        AppColors.accent,
-        fontSize: 10);
-    _drawText(canvas, 'Pool',
-        Offset(padding + (sectionWidth + padding) * 3 - padding / 2, arrowY - 15), AppColors.accent,
-        fontSize: 10);
+    _drawText(
+      canvas,
+      'Conv',
+      Offset(padding + sectionWidth + padding / 4, arrowY - 15),
+      AppColors.accent,
+      fontSize: 10,
+    );
+    _drawText(
+      canvas,
+      'Pool',
+      Offset(padding + (sectionWidth + padding) * 3 - padding / 2, arrowY - 15),
+      AppColors.accent,
+      fontSize: 10,
+    );
   }
 
   void _drawGrid(
@@ -650,8 +664,13 @@ class _CnnPainter extends CustomPainter {
     if (data.isEmpty) return;
 
     // Draw label
-    _drawText(canvas, label, Offset(origin.dx, origin.dy - 20), AppColors.ink,
-        fontSize: 11);
+    _drawText(
+      canvas,
+      label,
+      Offset(origin.dx, origin.dy - 20),
+      AppColors.ink,
+      fontSize: 11,
+    );
 
     for (int i = 0; i < data.length; i++) {
       for (int j = 0; j < data[i].length; j++) {
@@ -706,8 +725,13 @@ class _CnnPainter extends CustomPainter {
     double cellSize,
     String label,
   ) {
-    _drawText(canvas, label, Offset(origin.dx, origin.dy - 20), AppColors.ink,
-        fontSize: 11);
+    _drawText(
+      canvas,
+      label,
+      Offset(origin.dx, origin.dy - 20),
+      AppColors.ink,
+      fontSize: 11,
+    );
 
     for (int i = 0; i < data.length; i++) {
       for (int j = 0; j < data[i].length; j++) {
@@ -719,9 +743,13 @@ class _CnnPainter extends CustomPainter {
         final value = data[i][j];
         Color cellColor;
         if (value > 0) {
-          cellColor = Colors.green.withValues(alpha: (value.abs() / 10).clamp(0.2, 1.0));
+          cellColor = Colors.green.withValues(
+            alpha: (value.abs() / 10).clamp(0.2, 1.0),
+          );
         } else if (value < 0) {
-          cellColor = Colors.red.withValues(alpha: (value.abs() / 10).clamp(0.2, 1.0));
+          cellColor = Colors.red.withValues(
+            alpha: (value.abs() / 10).clamp(0.2, 1.0),
+          );
         } else {
           cellColor = Colors.grey.shade800;
         }
@@ -735,7 +763,9 @@ class _CnnPainter extends CustomPainter {
         );
 
         // Draw value
-        final valueText = value.toStringAsFixed(value == value.roundToDouble() ? 0 : 1);
+        final valueText = value.toStringAsFixed(
+          value == value.roundToDouble() ? 0 : 1,
+        );
         _drawText(
           canvas,
           valueText,
@@ -769,8 +799,13 @@ class _CnnPainter extends CustomPainter {
     );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color,
-      {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,

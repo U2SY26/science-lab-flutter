@@ -34,7 +34,7 @@ class _ProjectileScreenState extends State<ProjectileScreen>
   double _time = 0;
   double _x = 0;
   double _y = 0;
-  List<Offset> _trail = [];
+  final List<Offset> _trail = [];
 
   // 프리셋
   String? _selectedPreset;
@@ -302,11 +302,7 @@ class _ProjectileScreenState extends State<ProjectileScreen>
                 isPrimary: true,
                 onPressed: _isRunning ? _reset : _launch,
               ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
               SimButton(
                 label: _showTrajectory ? '궤적 숨김' : '궤적 표시',
                 icon: Icons.timeline,
@@ -382,7 +378,7 @@ class _ProjectileInfo extends StatelessWidget {
               Expanded(
                 child: _InfoChip(
                   label: 'Vx',
-                  value: '${vx.toStringAsFixed(1)}',
+                  value: vx.toStringAsFixed(1),
                   icon: Icons.arrow_forward,
                   color: AppColors.accent,
                 ),
@@ -391,7 +387,7 @@ class _ProjectileInfo extends StatelessWidget {
               Expanded(
                 child: _InfoChip(
                   label: 'Vy',
-                  value: '${vy.toStringAsFixed(1)}',
+                  value: vy.toStringAsFixed(1),
                   icon: Icons.arrow_upward,
                   color: AppColors.accent2,
                 ),
@@ -565,10 +561,7 @@ class ProjectilePainter extends CustomPainter {
     final scale = math.min(scaleX, scaleY);
 
     Offset toScreen(double px, double py) {
-      return Offset(
-        padding + px * scale,
-        size.height - padding - py * scale,
-      );
+      return Offset(padding + px * scale, size.height - padding - py * scale);
     }
 
     // 그리드
@@ -579,8 +572,16 @@ class ProjectilePainter extends CustomPainter {
     for (int i = 0; i <= 10; i++) {
       final px = padding + i * graphWidth / 10;
       final py = padding + i * graphHeight / 10;
-      canvas.drawLine(Offset(px, padding), Offset(px, size.height - padding), gridPaint);
-      canvas.drawLine(Offset(padding, py), Offset(size.width - padding, py), gridPaint);
+      canvas.drawLine(
+        Offset(px, padding),
+        Offset(px, size.height - padding),
+        gridPaint,
+      );
+      canvas.drawLine(
+        Offset(padding, py),
+        Offset(size.width - padding, py),
+        gridPaint,
+      );
     }
 
     // 지면
@@ -628,7 +629,10 @@ class ProjectilePainter extends CustomPainter {
     // 실제 궤적 (글로우)
     if (trail.length > 1) {
       final trailPath = Path();
-      trailPath.moveTo(toScreen(trail[0].dx, trail[0].dy).dx, toScreen(trail[0].dx, trail[0].dy).dy);
+      trailPath.moveTo(
+        toScreen(trail[0].dx, trail[0].dy).dx,
+        toScreen(trail[0].dx, trail[0].dy).dy,
+      );
 
       for (int i = 1; i < trail.length; i++) {
         final p = toScreen(trail[i].dx, trail[i].dy);
@@ -668,17 +672,16 @@ class ProjectilePainter extends CustomPainter {
       );
 
       // 발사체
-      canvas.drawCircle(
-        pos,
-        8,
-        Paint()..color = AppColors.accent2,
-      );
+      canvas.drawCircle(pos, 8, Paint()..color = AppColors.accent2);
 
       // 속도 벡터
-      final currentVy = velocity * math.sin(angle * math.pi / 180) - gravity * (trail.length * 0.016);
+      final currentVy =
+          velocity * math.sin(angle * math.pi / 180) -
+          gravity * (trail.length * 0.016);
       final currentVx = velocity * math.cos(angle * math.pi / 180);
       final vLength = 20.0;
-      final vScale = vLength / math.sqrt(currentVx * currentVx + currentVy * currentVy);
+      final vScale =
+          vLength / math.sqrt(currentVx * currentVx + currentVy * currentVy);
 
       canvas.drawLine(
         pos,
@@ -707,7 +710,11 @@ class ProjectilePainter extends CustomPainter {
     );
 
     // 축 레이블
-    _drawText(canvas, 'x (m)', Offset(size.width - padding - 20, size.height - padding + 20));
+    _drawText(
+      canvas,
+      'x (m)',
+      Offset(size.width - padding - 20, size.height - padding + 20),
+    );
     _drawText(canvas, 'y (m)', Offset(padding - 30, padding - 5));
   }
 

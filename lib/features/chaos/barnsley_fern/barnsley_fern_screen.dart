@@ -112,7 +112,7 @@ class _BarnsleyFernScreenState extends State<BarnsleyFernScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('총 점', '${_totalPoints}'),
+          _V('총 점', '$_totalPoints'),
                 ]),
               ),
             ],

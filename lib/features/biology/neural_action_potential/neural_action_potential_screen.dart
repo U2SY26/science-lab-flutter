@@ -24,7 +24,7 @@ class _NeuralActionPotentialScreenState extends ConsumerState<NeuralActionPotent
   double _stimulus = 10.0; // Applied current (uA/cm^2)
   double _gNa = 120.0; // Sodium conductance
   double _gK = 36.0; // Potassium conductance
-  double _gL = 0.3; // Leak conductance
+  final double _gL = 0.3; // Leak conductance
 
   // Reversal potentials (mV)
   static const double _eNa = 50.0;

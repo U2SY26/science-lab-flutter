@@ -46,7 +46,7 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
 
   // Autoencoder type
   String _aeType = 'standard'; // 'standard', 'denoising', 'variational'
-  double _noiseLevel = 0.2;
+  final double _noiseLevel = 0.2;
 
   @override
   void initState() {
@@ -67,11 +67,13 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
 
     _encoderWeights1 = List.generate(
       16,
-      (_) => List.generate(64, (_) => (_random.nextDouble() - 0.5) * 2 * scale1),
+      (_) =>
+          List.generate(64, (_) => (_random.nextDouble() - 0.5) * 2 * scale1),
     );
     _encoderWeights2 = List.generate(
       4,
-      (_) => List.generate(16, (_) => (_random.nextDouble() - 0.5) * 2 * scale2),
+      (_) =>
+          List.generate(16, (_) => (_random.nextDouble() - 0.5) * 2 * scale2),
     );
     _decoderWeights1 = List.generate(
       16,
@@ -79,7 +81,8 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
     );
     _decoderWeights2 = List.generate(
       64,
-      (_) => List.generate(16, (_) => (_random.nextDouble() - 0.5) * 2 * scale1),
+      (_) =>
+          List.generate(16, (_) => (_random.nextDouble() - 0.5) * 2 * scale1),
     );
 
     _encoded1 = List.filled(16, 0.0);
@@ -122,7 +125,10 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
     // Add noise for denoising autoencoder
     if (_aeType == 'denoising') {
       input = input.map((v) {
-        return (v + (_random.nextDouble() - 0.5) * 2 * _noiseLevel).clamp(0.0, 1.0);
+        return (v + (_random.nextDouble() - 0.5) * 2 * _noiseLevel).clamp(
+          0.0,
+          1.0,
+        );
       }).toList();
     }
 
@@ -186,12 +192,16 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
       final reconstructedFlat = _flatten(_reconstructed);
 
       // Calculate error
-      final errors = List.generate(64, (i) => original[i] - reconstructedFlat[i]);
+      final errors = List.generate(
+        64,
+        (i) => original[i] - reconstructedFlat[i],
+      );
 
       // Update decoder weights (simplified backprop)
       for (int i = 0; i < 64; i++) {
         for (int j = 0; j < 16; j++) {
-          _decoderWeights2[i][j] += _learningRate * errors[i] * _decoded1[j] * 0.01;
+          _decoderWeights2[i][j] +=
+              _learningRate * errors[i] * _decoded1[j] * 0.01;
         }
       }
 
@@ -243,14 +253,19 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
         case 'circle':
           _inputImage = List.generate(8, (i) {
             return List.generate(8, (j) {
-              final dist = math.sqrt(math.pow(i - 3.5, 2) + math.pow(j - 3.5, 2));
+              final dist = math.sqrt(
+                math.pow(i - 3.5, 2) + math.pow(j - 3.5, 2),
+              );
               return dist < 3 ? 1.0 : 0.0;
             });
           });
           break;
         case 'random':
           _inputImage = List.generate(8, (i) {
-            return List.generate(8, (j) => _random.nextDouble() > 0.5 ? 1.0 : 0.0);
+            return List.generate(
+              8,
+              (j) => _random.nextDouble() > 0.5 ? 1.0 : 0.0,
+            );
           });
           break;
       }
@@ -457,7 +472,8 @@ class _AutoencoderScreenState extends ConsumerState<AutoencoderScreen>
                                   height: 50,
                                   decoration: BoxDecoration(
                                     color: Colors.purple.withValues(
-                                        alpha: _latentSpace[i].clamp(0.1, 1.0)),
+                                      alpha: _latentSpace[i].clamp(0.1, 1.0),
+                                    ),
                                     borderRadius: BorderRadius.circular(4),
                                     border: Border.all(color: Colors.purple),
                                   ),
@@ -538,7 +554,10 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
@@ -666,12 +685,22 @@ class _AutoencoderPainter extends CustomPainter {
     );
 
     // Labels
-    _drawText(canvas, isKorean ? '인코더' : 'Encoder',
-        Offset(padding + imageSize + 40, 20), AppColors.accent,
-        fontSize: 10, fontWeight: FontWeight.bold);
-    _drawText(canvas, isKorean ? '디코더' : 'Decoder',
-        Offset(size.width - padding - imageSize - 70, 20), Colors.green,
-        fontSize: 10, fontWeight: FontWeight.bold);
+    _drawText(
+      canvas,
+      isKorean ? '인코더' : 'Encoder',
+      Offset(padding + imageSize + 40, 20),
+      AppColors.accent,
+      fontSize: 10,
+      fontWeight: FontWeight.bold,
+    );
+    _drawText(
+      canvas,
+      isKorean ? '디코더' : 'Decoder',
+      Offset(size.width - padding - imageSize - 70, 20),
+      Colors.green,
+      fontSize: 10,
+      fontWeight: FontWeight.bold,
+    );
   }
 
   void _drawImage(
@@ -709,8 +738,13 @@ class _AutoencoderPainter extends CustomPainter {
     );
 
     // Label
-    _drawText(canvas, label, Offset(origin.dx, origin.dy + size + 5), borderColor,
-        fontSize: 10);
+    _drawText(
+      canvas,
+      label,
+      Offset(origin.dx, origin.dy + size + 5),
+      borderColor,
+      fontSize: 10,
+    );
   }
 
   void _drawLayer(
@@ -740,16 +774,31 @@ class _AutoencoderPainter extends CustomPainter {
     }
 
     // Label
-    _drawText(canvas, label, Offset(origin.dx - 5, origin.dy + height + 5), color,
-        fontSize: 9);
+    _drawText(
+      canvas,
+      label,
+      Offset(origin.dx - 5, origin.dy + height + 5),
+      color,
+      fontSize: 9,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color,
-      {double fontSize = 12, FontWeight fontWeight = FontWeight.normal}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color, {
+    double fontSize = 12,
+    FontWeight fontWeight = FontWeight.normal,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
       ),
       textDirection: TextDirection.ltr,
     );

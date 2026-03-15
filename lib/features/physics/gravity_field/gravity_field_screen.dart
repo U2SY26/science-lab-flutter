@@ -22,7 +22,7 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
   String _visualization = 'field';
   bool _showVectors = true;
   bool _showEquipotential = false;
-  double _testMass = 1.0;
+  final double _testMass = 1.0;
   Offset? _testPosition;
 
   static const double G = 6.674e-11;
@@ -37,8 +37,16 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
 
     // 기본 질량 배치
     _masses = [
-      _MassObject(position: const Offset(0.3, 0.5), mass: 5e12, color: Colors.orange),
-      _MassObject(position: const Offset(0.7, 0.5), mass: 3e12, color: Colors.blue),
+      _MassObject(
+        position: const Offset(0.3, 0.5),
+        mass: 5e12,
+        color: Colors.orange,
+      ),
+      _MassObject(
+        position: const Offset(0.7, 0.5),
+        mass: 3e12,
+        color: Colors.blue,
+      ),
     ];
   }
 
@@ -52,11 +60,18 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
     if (_masses.length < 5) {
       HapticFeedback.mediumImpact();
       setState(() {
-        _masses.add(_MassObject(
-          position: position,
-          mass: 2e12 + math.Random().nextDouble() * 3e12,
-          color: [Colors.red, Colors.green, Colors.purple, Colors.teal][_masses.length % 4],
-        ));
+        _masses.add(
+          _MassObject(
+            position: position,
+            mass: 2e12 + math.Random().nextDouble() * 3e12,
+            color: [
+              Colors.red,
+              Colors.green,
+              Colors.purple,
+              Colors.teal,
+            ][_masses.length % 4],
+          ),
+        );
       });
     }
   }
@@ -65,8 +80,16 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _masses = [
-        _MassObject(position: const Offset(0.3, 0.5), mass: 5e12, color: Colors.orange),
-        _MassObject(position: const Offset(0.7, 0.5), mass: 3e12, color: Colors.blue),
+        _MassObject(
+          position: const Offset(0.3, 0.5),
+          mass: 5e12,
+          color: Colors.orange,
+        ),
+        _MassObject(
+          position: const Offset(0.7, 0.5),
+          mass: 3e12,
+          color: Colors.blue,
+        ),
       ];
       _testPosition = null;
     });
@@ -76,7 +99,10 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
     double fx = 0, fy = 0;
 
     for (var mass in _masses) {
-      final massPos = Offset(mass.position.dx * size.width, mass.position.dy * size.height);
+      final massPos = Offset(
+        mass.position.dx * size.width,
+        mass.position.dy * size.height,
+      );
       final dx = massPos.dx - point.dx;
       final dy = massPos.dy - point.dy;
       final r = math.sqrt(dx * dx + dy * dy);
@@ -95,7 +121,10 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
     double potential = 0;
 
     for (var mass in _masses) {
-      final massPos = Offset(mass.position.dx * size.width, mass.position.dy * size.height);
+      final massPos = Offset(
+        mass.position.dx * size.width,
+        mass.position.dy * size.height,
+      );
       final dx = massPos.dx - point.dx;
       final dy = massPos.dy - point.dy;
       final r = math.sqrt(dx * dx + dy * dy);
@@ -199,7 +228,10 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
                   children: [
                     Text(
                       '질량 수: ${_masses.length}/5',
-                      style: const TextStyle(color: AppColors.ink, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
@@ -258,7 +290,9 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
                     child: _OptionChip(
                       label: '등전위선',
                       isSelected: _showEquipotential,
-                      onTap: () => setState(() => _showEquipotential = !_showEquipotential),
+                      onTap: () => setState(
+                        () => _showEquipotential = !_showEquipotential,
+                      ),
                     ),
                   ),
                 ],
@@ -268,11 +302,7 @@ class _GravityFieldScreenState extends State<GravityFieldScreen>
           buttons: SimButtonGroup(
             expanded: true,
             buttons: [
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -286,7 +316,11 @@ class _MassObject {
   final double mass;
   final Color color;
 
-  _MassObject({required this.position, required this.mass, required this.color});
+  _MassObject({
+    required this.position,
+    required this.mass,
+    required this.color,
+  });
 }
 
 class _OptionChip extends StatelessWidget {
@@ -310,14 +344,21 @@ class _OptionChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.accent.withValues(alpha: 0.2) : AppColors.simBg,
+          color: isSelected
+              ? AppColors.accent.withValues(alpha: 0.2)
+              : AppColors.simBg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? AppColors.accent : AppColors.cardBorder),
+          border: Border.all(
+            color: isSelected ? AppColors.accent : AppColors.cardBorder,
+          ),
         ),
         child: Center(
           child: Text(
             label,
-            style: TextStyle(color: isSelected ? AppColors.accent : AppColors.muted, fontSize: 12),
+            style: TextStyle(
+              color: isSelected ? AppColors.accent : AppColors.muted,
+              fontSize: 12,
+            ),
           ),
         ),
       ),
@@ -350,7 +391,10 @@ class _GravityFieldPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0a0a1a));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0a0a1a),
+    );
 
     // 등전위선 또는 필드 강도 색상맵
     if (visualization == 'potential' || showEquipotential) {
@@ -364,7 +408,10 @@ class _GravityFieldPainter extends CustomPainter {
 
     // 질량 객체
     for (var mass in masses) {
-      final pos = Offset(mass.position.dx * size.width, mass.position.dy * size.height);
+      final pos = Offset(
+        mass.position.dx * size.width,
+        mass.position.dy * size.height,
+      );
       final radius = 8 + (mass.mass / 1e12) * 3;
 
       // 글로우 효과
@@ -389,9 +436,14 @@ class _GravityFieldPainter extends CustomPainter {
 
     // 테스트 질량
     if (visualization == 'test' && testPosition != null) {
-      final testPos = Offset(testPosition!.dx * size.width, testPosition!.dy * size.height);
+      final testPos = Offset(
+        testPosition!.dx * size.width,
+        testPosition!.dy * size.height,
+      );
       final field = calculateFieldAt(testPos, size);
-      final fieldMagnitude = math.sqrt(field.dx * field.dx + field.dy * field.dy);
+      final fieldMagnitude = math.sqrt(
+        field.dx * field.dx + field.dy * field.dy,
+      );
 
       // 테스트 질량
       canvas.drawCircle(testPos, 6, Paint()..color = Colors.white);
@@ -503,9 +555,22 @@ class _GravityFieldPainter extends CustomPainter {
     }
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.bold)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

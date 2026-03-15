@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -18,14 +17,16 @@ class _ZeemanEffectScreenState extends State<ZeemanEffectScreen>
   double _time = 0;
   bool _isRunning = true;
   double _bField = 1;
-  
+
   double _splitting = 0, _numLines = 3;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -47,7 +48,10 @@ class _ZeemanEffectScreenState extends State<ZeemanEffectScreen>
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +59,27 @@ class _ZeemanEffectScreenState extends State<ZeemanEffectScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('양자역학 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('제만 효과', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '양자역학 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '제만 효과',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -71,29 +91,25 @@ class _ZeemanEffectScreenState extends State<ZeemanEffectScreen>
           simulation: SizedBox(
             height: 350,
             child: CustomPaint(
-              painter: _ZeemanEffectScreenPainter(
-                time: _time,
-                bField: _bField,
-              ),
+              painter: _ZeemanEffectScreenPainter(time: _time, bField: _bField),
               size: Size.infinite,
             ),
           ),
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '자기장 (T)',
-                value: _bField,
-                min: 0,
-                max: 10,
-                step: 0.1,
-                defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1) + ' T',
-                onChanged: (v) => setState(() => _bField = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '자기장 (T)',
+                  value: _bField,
+                  min: 0,
+                  max: 10,
+                  step: 0.1,
+                  defaultValue: 1,
+                  formatValue: (v) => '${v.toStringAsFixed(1)} T',
+                  onChanged: (v) => setState(() => _bField = v),
+                ),
               ),
-              
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -102,23 +118,31 @@ class _ZeemanEffectScreenState extends State<ZeemanEffectScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('ΔE', _splitting.toStringAsFixed(4) + ' eV'),
-          _V('선 수', _numLines.toInt().toString()),
-          _V('B', _bField.toStringAsFixed(1) + ' T'),
-                ]),
+                child: Row(
+                  children: [
+                    _V('ΔE', '${_splitting.toStringAsFixed(4)} eV'),
+                    _V('선 수', _numLines.toInt().toString()),
+                    _V('B', '${_bField.toStringAsFixed(1)} T'),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -129,26 +153,46 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _ZeemanEffectScreenPainter extends CustomPainter {
   final double time;
   final double bField;
 
-  _ZeemanEffectScreenPainter({
-    required this.time,
-    required this.bField,
-  });
+  _ZeemanEffectScreenPainter({required this.time, required this.bField});
 
-  void _drawLabel(Canvas canvas, String text, Offset offset,
-      {double fontSize = 10, Color color = const Color(0xFF5A8A9A)}) {
+  void _drawLabel(
+    Canvas canvas,
+    String text,
+    Offset offset, {
+    double fontSize = 10,
+    Color color = const Color(0xFF5A8A9A),
+  }) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, offset);
@@ -157,7 +201,10 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width;
     final h = size.height;
@@ -192,7 +239,13 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
       Offset(gCenterX + gLineW / 2, gBaseY),
       levelPaint,
     );
-    _drawLabel(canvas, 'L=0 (s)', Offset(levelAreaLeft, gBaseY - 14), color: const Color(0xFF00D4FF), fontSize: 9);
+    _drawLabel(
+      canvas,
+      'L=0 (s)',
+      Offset(levelAreaLeft, gBaseY - 14),
+      color: const Color(0xFF00D4FF),
+      fontSize: 9,
+    );
 
     // Excited state: L=1, splits into mL=-1,0,+1
     final mLValues = [-1, 0, 1];
@@ -215,11 +268,21 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
         Offset(gCenterX + lineW / 2, ly),
         levelPaint,
       );
-      _drawLabel(canvas, mLLabels[i], Offset(levelAreaLeft - 4, ly - 8),
-          color: mLColors[i], fontSize: 8);
+      _drawLabel(
+        canvas,
+        mLLabels[i],
+        Offset(levelAreaLeft - 4, ly - 8),
+        color: mLColors[i],
+        fontSize: 8,
+      );
     }
-    _drawLabel(canvas, 'L=1 (p)', Offset(levelAreaLeft, eBaseY - splitPx - 14),
-        color: const Color(0xFF5A8A9A), fontSize: 9);
+    _drawLabel(
+      canvas,
+      'L=1 (p)',
+      Offset(levelAreaLeft, eBaseY - splitPx - 14),
+      color: const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // Draw transition arrows + labels
     for (int i = 0; i < 3; i++) {
@@ -233,7 +296,11 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
         ..color = mLColors[i].withValues(alpha: 0.7)
         ..strokeWidth = 1.2
         ..style = PaintingStyle.stroke;
-      canvas.drawLine(Offset(arrowX, startY), Offset(arrowX, endY - 6), arrowPaint);
+      canvas.drawLine(
+        Offset(arrowX, startY),
+        Offset(arrowX, endY - 6),
+        arrowPaint,
+      );
       // arrowhead
       final arrowFill = Paint()..color = mLColors[i].withValues(alpha: 0.7);
       final arrowPath = Path()
@@ -242,13 +309,23 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
         ..lineTo(arrowX + 3, endY - 7)
         ..close();
       canvas.drawPath(arrowPath, arrowFill);
-      _drawLabel(canvas, mLTransLabels[i], Offset(arrowX + 4, (startY + endY) / 2 - 5),
-          color: mLColors[i], fontSize: 8);
+      _drawLabel(
+        canvas,
+        mLTransLabels[i],
+        Offset(arrowX + 4, (startY + endY) / 2 - 5),
+        color: mLColors[i],
+        fontSize: 8,
+      );
     }
 
     // Section label
-    _drawLabel(canvas, '에너지 준위', Offset(levelAreaLeft, 8),
-        color: const Color(0xFF5A8A9A), fontSize: 9);
+    _drawLabel(
+      canvas,
+      '에너지 준위',
+      Offset(levelAreaLeft, 8),
+      color: const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // Divider
     final divPaint = Paint()
@@ -264,24 +341,42 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
     final specTop = h * 0.15;
     final specBottom = specTop + specH;
 
-    _drawLabel(canvas, '스펙트럼', Offset(specLeft, 8),
-        color: const Color(0xFF5A8A9A), fontSize: 9);
+    _drawLabel(
+      canvas,
+      '스펙트럼',
+      Offset(specLeft, 8),
+      color: const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // No-field label
-    _drawLabel(canvas, 'B=0', Offset(specLeft, specTop - 2),
-        color: const Color(0xFF5A8A9A), fontSize: 9);
+    _drawLabel(
+      canvas,
+      'B=0',
+      Offset(specLeft, specTop - 2),
+      color: const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // Single line without field (leftmost)
     final singleX = specLeft + (specRight - specLeft) * 0.25;
     final noFieldPaint = Paint()
       ..color = const Color(0xFF00D4FF)
       ..strokeWidth = 2.5;
-    canvas.drawLine(Offset(singleX, specTop + 4), Offset(singleX, specBottom), noFieldPaint);
+    canvas.drawLine(
+      Offset(singleX, specTop + 4),
+      Offset(singleX, specBottom),
+      noFieldPaint,
+    );
 
     // With field label
-    _drawLabel(canvas, 'B=${bField.toStringAsFixed(1)}T',
-        Offset(specLeft + (specRight - specLeft) * 0.5, specTop - 2),
-        color: const Color(0xFF5A8A9A), fontSize: 9);
+    _drawLabel(
+      canvas,
+      'B=${bField.toStringAsFixed(1)}T',
+      Offset(specLeft + (specRight - specLeft) * 0.5, specTop - 2),
+      color: const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // Three split lines
     final splitOffsets = [-splitPx * 0.15, 0.0, splitPx * 0.15];
@@ -291,22 +386,40 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
       final linePaint = Paint()
         ..color = mLColors[i]
         ..strokeWidth = bField > 0.01 ? 2.0 : 2.5;
-      canvas.drawLine(Offset(sx, specTop + 4), Offset(sx, specBottom), linePaint);
+      canvas.drawLine(
+        Offset(sx, specTop + 4),
+        Offset(sx, specBottom),
+        linePaint,
+      );
     }
 
     // Wavelength axis
     final axisPaint = Paint()
       ..color = const Color(0xFF1A3040)
       ..strokeWidth = 1;
-    canvas.drawLine(Offset(specLeft, specBottom), Offset(specRight, specBottom), axisPaint);
-    _drawLabel(canvas, 'λ (파장)', Offset(specCx - 20, specBottom + 4),
-        color: const Color(0xFF5A8A9A), fontSize: 9);
+    canvas.drawLine(
+      Offset(specLeft, specBottom),
+      Offset(specRight, specBottom),
+      axisPaint,
+    );
+    _drawLabel(
+      canvas,
+      'λ (파장)',
+      Offset(specCx - 20, specBottom + 4),
+      color: const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // DeltaE label
     if (bField > 0.1) {
       final deStr = 'ΔE=${(deltaE * 1e3).toStringAsFixed(3)}meV';
-      _drawLabel(canvas, deStr, Offset(specLeft, specBottom + 18),
-          color: const Color(0xFF64FF8C), fontSize: 9);
+      _drawLabel(
+        canvas,
+        deStr,
+        Offset(specLeft, specBottom + 18),
+        color: const Color(0xFF64FF8C),
+        fontSize: 9,
+      );
     }
 
     // B field arrow (right side indicator)
@@ -317,15 +430,27 @@ class _ZeemanEffectScreenPainter extends CustomPainter {
     final bPaint = Paint()
       ..color = const Color(0xFFFF6B35).withValues(alpha: 0.5 + 0.5 * bStrength)
       ..strokeWidth = 2;
-    canvas.drawLine(Offset(bArrowX, bArrowBot), Offset(bArrowX, bArrowTop + 8), bPaint);
+    canvas.drawLine(
+      Offset(bArrowX, bArrowBot),
+      Offset(bArrowX, bArrowTop + 8),
+      bPaint,
+    );
     final bHeadPath = Path()
       ..moveTo(bArrowX, bArrowTop)
       ..lineTo(bArrowX - 3, bArrowTop + 8)
       ..lineTo(bArrowX + 3, bArrowTop + 8)
       ..close();
-    canvas.drawPath(bHeadPath, Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.7));
-    _drawLabel(canvas, 'B', Offset(bArrowX - 4, bArrowTop - 12),
-        color: const Color(0xFFFF6B35), fontSize: 10);
+    canvas.drawPath(
+      bHeadPath,
+      Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.7),
+    );
+    _drawLabel(
+      canvas,
+      'B',
+      Offset(bArrowX - 4, bArrowTop - 12),
+      color: const Color(0xFFFF6B35),
+      fontSize: 10,
+    );
   }
 
   @override

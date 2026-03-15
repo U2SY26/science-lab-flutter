@@ -89,7 +89,7 @@ class _CelestialSphereScreenState extends State<CelestialSphereScreen>
                 max: 90,
                 step: 1,
                 defaultValue: 37,
-                formatValue: (v) => v.toStringAsFixed(0) + '°',
+                formatValue: (v) => '${v.toStringAsFixed(0)}°',
                 onChanged: (v) => setState(() => _latitude = v),
               ),
               
@@ -103,9 +103,9 @@ class _CelestialSphereScreenState extends State<CelestialSphereScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('북극성고도', _polarAlt.toStringAsFixed(0) + '°'),
-          _V('천구적도', _equatorAlt.toStringAsFixed(0) + '°'),
-          _V('위도', _latitude.toStringAsFixed(0) + '°'),
+          _V('북극성고도', '${_polarAlt.toStringAsFixed(0)}°'),
+          _V('천구적도', '${_equatorAlt.toStringAsFixed(0)}°'),
+          _V('위도', '${_latitude.toStringAsFixed(0)}°'),
                 ]),
               ),
             ],

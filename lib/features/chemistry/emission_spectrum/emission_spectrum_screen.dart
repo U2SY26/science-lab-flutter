@@ -272,7 +272,7 @@ class _EmissionSpectrumScreenState extends ConsumerState<EmissionSpectrumScreen>
                   Switch(
                     value: _showAbsorption,
                     onChanged: (v) => setState(() => _showAbsorption = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                   Text(
                     isKorean ? '흡수 스펙트럼 표시' : 'Show Absorption Spectrum',

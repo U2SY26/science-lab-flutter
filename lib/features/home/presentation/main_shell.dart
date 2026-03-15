@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/language_provider.dart';
+import '../../../core/providers/ai_chat_provider.dart';
 import '../../../shared/widgets/ad_banner.dart';
 import 'simulations_tab.dart';
 import 'favorites_tab.dart';
 import 'resources_tab.dart';
 import 'settings_tab.dart';
+import '../../community/presentation/community_tab.dart';
 
 /// 메인 쉘 - 하단 네비게이션 바 포함 (portrait/landscape 반응형)
 class MainShell extends ConsumerStatefulWidget {
@@ -22,9 +24,16 @@ class _MainShellState extends ConsumerState<MainShell> {
   DateTime? _lastBackPress;
   bool _settingsPanelOpen = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // AI 튜터 디폴트 OFF — 하단 메뉴에서 토글
+  }
+
   final List<Widget> _tabs = const [
     SimulationsTab(),
     FavoritesTab(),
+    CommunityTab(),
     ResourcesTab(),
     SettingsTab(),
   ];
@@ -99,36 +108,74 @@ class _MainShellState extends ConsumerState<MainShell> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _NavItem(
+                Expanded(child: _NavItem(
                   icon: Icons.science_outlined,
                   activeIcon: Icons.science,
-                  label: isKorean ? '시뮬레이션' : 'Simulations',
+                  label: isKorean ? '시뮬레이션' : 'Sims',
                   isSelected: _currentIndex == 0,
                   onTap: () => _selectTab(0),
-                ),
-                _NavItem(
+                )),
+                Expanded(child: _NavItem(
                   icon: Icons.favorite_border,
                   activeIcon: Icons.favorite,
-                  label: isKorean ? '즐겨찾기' : 'Favorites',
+                  label: isKorean ? '즐겨찾기' : 'Favs',
                   isSelected: _currentIndex == 1,
                   onTap: () => _selectTab(1),
-                ),
-                _NavItem(
+                )),
+                Expanded(child: _NavItem(
+                  icon: Icons.forum_outlined,
+                  activeIcon: Icons.forum,
+                  label: isKorean ? '커뮤니티' : 'Community',
+                  isSelected: _currentIndex == 2,
+                  onTap: () => _selectTab(2),
+                )),
+                Expanded(child: _NavItem(
                   icon: Icons.menu_book_outlined,
                   activeIcon: Icons.menu_book,
                   label: isKorean ? '자료' : 'Resources',
-                  isSelected: _currentIndex == 2,
-                  onTap: () => _selectTab(2),
-                ),
-                _NavItem(
+                  isSelected: _currentIndex == 3,
+                  onTap: () => _selectTab(3),
+                )),
+                Expanded(child: Consumer(builder: (context, ref, _) {
+                  final isActive = ref.watch(showAiOverlayProvider);
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      ref.read(showAiOverlayProvider.notifier).state = !isActive;
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isActive ? Icons.smart_toy : Icons.smart_toy_outlined,
+                            color: isActive ? const Color(0xFF7C3AED) : AppColors.muted,
+                            size: 22,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            isKorean ? 'AI 튜터' : 'AI Tutor',
+                            style: TextStyle(
+                              color: isActive ? const Color(0xFF7C3AED) : AppColors.muted,
+                              fontSize: 10,
+                              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                })),
+                Expanded(child: _NavItem(
                   icon: Icons.settings_outlined,
                   activeIcon: Icons.settings,
                   label: isKorean ? '설정' : 'Settings',
-                  isSelected: _currentIndex == 3,
-                  onTap: () => _selectTab(3),
-                ),
+                  isSelected: _currentIndex == 4,
+                  onTap: () => _selectTab(4),
+                )),
               ],
             ),
           ),
@@ -139,7 +186,7 @@ class _MainShellState extends ConsumerState<MainShell> {
 
   /// Landscape 모드: NavigationRail 왼쪽 + 콘텐츠 가운데 + 설정 패널 오른쪽
   Widget _buildLandscapeLayout(bool isKorean, bool isTablet) {
-    final railIndex = _currentIndex.clamp(0, 2);
+    final railIndex = _currentIndex.clamp(0, 3);
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -171,6 +218,7 @@ class _MainShellState extends ConsumerState<MainShell> {
                   children: const [
                     SimulationsTab(),
                     FavoritesTab(),
+                    CommunityTab(),
                     ResourcesTab(),
                   ],
                 ),
@@ -179,7 +227,13 @@ class _MainShellState extends ConsumerState<MainShell> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              width: _settingsPanelOpen ? (isTablet ? 380 : 320) : 0,
+              width: _settingsPanelOpen
+                  ? () {
+                      if (!isTablet) return 320.0;
+                      final sw = MediaQuery.of(context).size.width;
+                      return (sw * 0.28).clamp(360.0, 520.0);
+                    }()
+                  : 0,
               child: _settingsPanelOpen
                   ? _LandscapeSettingsPanel(
                       onClose: () {
@@ -264,14 +318,25 @@ class _LandscapeNavigationRail extends StatelessWidget {
             onTap: () => onTabSelected(1),
           ),
           _RailItem(
-            icon: Icons.menu_book_outlined,
-            activeIcon: Icons.menu_book,
-            label: isKorean ? '자료' : 'Resources',
+            icon: Icons.forum_outlined,
+            activeIcon: Icons.forum,
+            label: isKorean ? '커뮤니티' : 'Community',
             isSelected: selectedIndex == 2,
             isTablet: isTablet,
             onTap: () => onTabSelected(2),
           ),
+          _RailItem(
+            icon: Icons.menu_book_outlined,
+            activeIcon: Icons.menu_book,
+            label: isKorean ? '자료' : 'Resources',
+            isSelected: selectedIndex == 3,
+            isTablet: isTablet,
+            onTap: () => onTabSelected(3),
+          ),
           const Spacer(),
+          // AI 튜터 토글 (Landscape)
+          _AiTutorToggle(isKorean: isKorean),
+          const SizedBox(height: 4),
           // 설정 토글 버튼 (하단 고정)
           _RailItem(
             icon: Icons.settings_outlined,
@@ -461,7 +526,7 @@ class _NavItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.accent.withValues(alpha: 0.15)
@@ -474,15 +539,68 @@ class _NavItem extends StatelessWidget {
             Icon(
               isSelected ? activeIcon : icon,
               color: isSelected ? AppColors.accent : AppColors.muted,
-              size: 24,
+              size: 22,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
                 color: isSelected ? AppColors.accent : AppColors.muted,
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// AI 튜터 토글 버튼 — 페이지 분기 없이 오버레이 ON/OFF
+class _AiTutorToggle extends ConsumerWidget {
+  final bool isKorean;
+
+  const _AiTutorToggle({required this.isKorean});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isActive = ref.watch(showAiOverlayProvider);
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        ref.read(showAiOverlayProvider.notifier).state = !isActive;
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFF7C3AED).withValues(alpha: 0.2)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: isActive
+              ? Border.all(color: const Color(0xFF7C3AED).withValues(alpha: 0.4))
+              : null,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isActive ? Icons.smart_toy : Icons.smart_toy_outlined,
+              color: isActive ? const Color(0xFF7C3AED) : AppColors.muted,
+              size: 22,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              isKorean ? 'AI 튜터' : 'AI Tutor',
+              style: TextStyle(
+                color: isActive ? const Color(0xFF7C3AED) : AppColors.muted,
+                fontSize: 10,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],

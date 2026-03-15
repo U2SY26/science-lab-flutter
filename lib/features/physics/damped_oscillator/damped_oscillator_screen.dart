@@ -20,11 +20,11 @@ class _DampedOscillatorScreenState extends State<DampedOscillatorScreen>
 
   double _dampingRatio = 0.1; // 감쇠비 (ζ)
   double _naturalFrequency = 2.0; // 고유진동수 (ω₀)
-  double _initialAmplitude = 100;
+  final double _initialAmplitude = 100;
   bool _isRunning = true;
 
   double _time = 0;
-  List<Offset> _trajectory = [];
+  final List<Offset> _trajectory = [];
 
   // 감쇠 유형
   String get _dampingType {
@@ -46,11 +46,17 @@ class _DampedOscillatorScreenState extends State<DampedOscillatorScreen>
           math.cos(_dampedFrequency * t);
     } else if (_dampingRatio == 1) {
       // 임계감쇠
-      return _initialAmplitude * (1 + _naturalFrequency * t) * math.exp(-_naturalFrequency * t);
+      return _initialAmplitude *
+          (1 + _naturalFrequency * t) *
+          math.exp(-_naturalFrequency * t);
     } else {
       // 과대감쇠
-      final r1 = -_naturalFrequency * (_dampingRatio + math.sqrt(_dampingRatio * _dampingRatio - 1));
-      final r2 = -_naturalFrequency * (_dampingRatio - math.sqrt(_dampingRatio * _dampingRatio - 1));
+      final r1 =
+          -_naturalFrequency *
+          (_dampingRatio + math.sqrt(_dampingRatio * _dampingRatio - 1));
+      final r2 =
+          -_naturalFrequency *
+          (_dampingRatio - math.sqrt(_dampingRatio * _dampingRatio - 1));
       return _initialAmplitude * 0.5 * (math.exp(r1 * t) + math.exp(r2 * t));
     }
   }
@@ -180,14 +186,17 @@ class _DampedOscillatorScreenState extends State<DampedOscillatorScreen>
                             color: _dampingRatio < 1
                                 ? Colors.blue
                                 : _dampingRatio == 1
-                                    ? Colors.green
-                                    : Colors.orange,
+                                ? Colors.green
+                                : Colors.orange,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           't = ${_time.toStringAsFixed(2)} s',
-                          style: const TextStyle(color: AppColors.muted, fontFamily: 'monospace'),
+                          style: const TextStyle(
+                            color: AppColors.muted,
+                            fontFamily: 'monospace',
+                          ),
                         ),
                       ],
                     ),
@@ -195,10 +204,24 @@ class _DampedOscillatorScreenState extends State<DampedOscillatorScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: '감쇠비 ζ', value: _dampingRatio.toStringAsFixed(2), color: AppColors.accent),
-                        _InfoItem(label: 'ω₀', value: '${_naturalFrequency.toStringAsFixed(1)} rad/s', color: Colors.orange),
+                        _InfoItem(
+                          label: '감쇠비 ζ',
+                          value: _dampingRatio.toStringAsFixed(2),
+                          color: AppColors.accent,
+                        ),
+                        _InfoItem(
+                          label: 'ω₀',
+                          value:
+                              '${_naturalFrequency.toStringAsFixed(1)} rad/s',
+                          color: Colors.orange,
+                        ),
                         if (_dampingRatio < 1)
-                          _InfoItem(label: 'ω_d', value: '${_dampedFrequency.toStringAsFixed(2)} rad/s', color: Colors.cyan),
+                          _InfoItem(
+                            label: 'ω_d',
+                            value:
+                                '${_dampedFrequency.toStringAsFixed(2)} rad/s',
+                            color: Colors.cyan,
+                          ),
                       ],
                     ),
                   ],
@@ -293,11 +316,7 @@ class _DampedOscillatorScreenState extends State<DampedOscillatorScreen>
                   setState(() => _isRunning = !_isRunning);
                 },
               ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -311,14 +330,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -349,12 +382,20 @@ class _OscillatorPainter extends CustomPainter {
     // 스프링
     final springTop = 10.0;
     final objectY = centerY + displacement * 0.5;
-    _drawSpring(canvas, Offset(centerX, springTop), Offset(centerX, objectY - 20));
+    _drawSpring(
+      canvas,
+      Offset(centerX, springTop),
+      Offset(centerX, objectY - 20),
+    );
 
     // 물체
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: Offset(centerX, objectY), width: 40, height: 40),
+        Rect.fromCenter(
+          center: Offset(centerX, objectY),
+          width: 40,
+          height: 40,
+        ),
         const Radius.circular(4),
       ),
       Paint()..color = AppColors.accent,
@@ -362,7 +403,12 @@ class _OscillatorPainter extends CustomPainter {
 
     // 변위 라벨
     if (displacement.abs() > 5) {
-      _drawText(canvas, 'x', Offset(centerX + 30, objectY - 5), AppColors.muted);
+      _drawText(
+        canvas,
+        'x',
+        Offset(centerX + 30, objectY - 5),
+        AppColors.muted,
+      );
     }
   }
 
@@ -396,7 +442,10 @@ class _OscillatorPainter extends CustomPainter {
 
   void _drawText(Canvas canvas, String text, Offset pos, Color color) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: 12)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: 12),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
@@ -414,7 +463,11 @@ class _GraphPainter extends CustomPainter {
   final double maxAmplitude;
   final double dampingRatio;
 
-  _GraphPainter({required this.trajectory, required this.maxAmplitude, required this.dampingRatio});
+  _GraphPainter({
+    required this.trajectory,
+    required this.maxAmplitude,
+    required this.dampingRatio,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -451,8 +504,20 @@ class _GraphPainter extends CustomPainter {
         }
       }
 
-      canvas.drawPath(envelopePath, Paint()..color = Colors.red.withValues(alpha: 0.3)..strokeWidth = 1..style = PaintingStyle.stroke);
-      canvas.drawPath(envelopePathNeg, Paint()..color = Colors.red.withValues(alpha: 0.3)..strokeWidth = 1..style = PaintingStyle.stroke);
+      canvas.drawPath(
+        envelopePath,
+        Paint()
+          ..color = Colors.red.withValues(alpha: 0.3)
+          ..strokeWidth = 1
+          ..style = PaintingStyle.stroke,
+      );
+      canvas.drawPath(
+        envelopePathNeg,
+        Paint()
+          ..color = Colors.red.withValues(alpha: 0.3)
+          ..strokeWidth = 1
+          ..style = PaintingStyle.stroke,
+      );
     }
 
     // 궤적
@@ -462,7 +527,8 @@ class _GraphPainter extends CustomPainter {
 
       for (int i = 0; i < trajectory.length; i++) {
         final x = padding + (trajectory[i].dx - startX);
-        final y = centerY - trajectory[i].dy * graphHeight / (maxAmplitude * 2.5);
+        final y =
+            centerY - trajectory[i].dy * graphHeight / (maxAmplitude * 2.5);
 
         if (x > padding && x < size.width - padding) {
           if (i == 0 || (padding + (trajectory[i - 1].dx - startX)) < padding) {
@@ -483,13 +549,34 @@ class _GraphPainter extends CustomPainter {
     }
 
     // 라벨
-    _drawText(canvas, 'x(t)', Offset(padding - 25, centerY - 10), AppColors.muted, fontSize: 10);
-    _drawText(canvas, 't', Offset(size.width - padding + 5, centerY - 5), AppColors.muted, fontSize: 10);
+    _drawText(
+      canvas,
+      'x(t)',
+      Offset(padding - 25, centerY - 10),
+      AppColors.muted,
+      fontSize: 10,
+    );
+    _drawText(
+      canvas,
+      't',
+      Offset(size.width - padding + 5, centerY - 5),
+      AppColors.muted,
+      fontSize: 10,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

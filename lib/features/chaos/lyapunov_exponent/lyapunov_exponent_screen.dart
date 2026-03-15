@@ -73,7 +73,7 @@ class _LyapunovExponentScreenState extends State<LyapunovExponentScreen>
         child: SimulationContainer(
           category: '카오스 시뮬레이션',
           title: '리아푸노프 지수',
-          formula: "λ = lim (1/n)Σ ln|f\'(x_i)|",
+          formula: "λ = lim (1/n)Σ ln|f'(x_i)|",
           formulaDescription: '리아푸노프 지수로 카오스 정도를 측정합니다.',
           simulation: SizedBox(
             height: 350,
@@ -158,7 +158,9 @@ class _LyapunovExponentScreenPainter extends CustomPainter {
     double sum = 0;
     const warmup = 100;
     const iters = 200;
-    for (int i = 0; i < warmup; i++) x = r * x * (1 - x);
+    for (int i = 0; i < warmup; i++) {
+      x = r * x * (1 - x);
+    }
     for (int i = 0; i < iters; i++) {
       x = r * x * (1 - x);
       final d = (r * (1 - 2 * x)).abs();
@@ -247,7 +249,9 @@ class _LyapunovExponentScreenPainter extends CustomPainter {
     for (int c = 0; c < cols; c += 2) {
       final r = rMin + (rMax - rMin) * c / cols;
       double x = 0.5 + rng.nextDouble() * 0.01;
-      for (int i = 0; i < 300; i++) x = r * x * (1 - x);
+      for (int i = 0; i < 300; i++) {
+        x = r * x * (1 - x);
+      }
       for (int i = 0; i < 40; i++) {
         x = r * x * (1 - x);
         final px = c * colW;

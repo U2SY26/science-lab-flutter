@@ -202,22 +202,24 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
           ),
           const SizedBox(height: 8),
 
-          // 시뮬레이션 목록 (태블릿: 2열 그리드, 폰: 1열 리스트)
+          // 시뮬레이션 목록 (10인치+: 3열, 7인치+: 2열, 폰: 1열)
           Expanded(
             child: simulations.isEmpty
                 ? _buildEmptyState()
                 : LayoutBuilder(
                     builder: (context, constraints) {
-                      final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
+                      final shortestSide = MediaQuery.of(context).size.shortestSide;
+                      final isTablet = shortestSide >= 600;
+                      final isLargeTablet = shortestSide >= 800;
                       if (isTablet) {
-                        // 태블릿: 2열 그리드
+                        // 태블릿: 2열 or 3열 그리드
                         return GridView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: isLargeTablet ? 3 : 2,
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 12,
-                            childAspectRatio: 2.4,
+                            childAspectRatio: isLargeTablet ? 2.6 : 2.4,
                           ),
                           itemCount: simulations.length,
                           itemBuilder: (context, index) {

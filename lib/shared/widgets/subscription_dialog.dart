@@ -4,7 +4,7 @@ import '../../core/services/subscription_service.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/providers/language_provider.dart';
 
-/// 구독 구매 다이얼로그 (3-tier)
+/// 구독 구매 다이얼로그 (2-tier: 광고제거 / AI무제한+광고제거)
 class SubscriptionDialog extends ConsumerWidget {
   const SubscriptionDialog({super.key});
 
@@ -86,45 +86,30 @@ class SubscriptionDialog extends ConsumerWidget {
               benefits: [
                 isKorean ? '배너·전면 광고 제거' : 'Remove banner & interstitial ads',
                 isKorean ? '더 깔끔한 학습 환경' : 'Cleaner learning experience',
+                isKorean ? 'AI 해설 하루 3회' : 'AI explanations 3x/day',
               ],
-              isActive: subscription.isSubscribed,
+              isActive: subscription.isSubscribed && !subscription.isAiUnlimited,
               isLoading: subscription.isLoading,
               onTap: () => notifier.purchaseSubscription(),
               activeLabel: isKorean ? '활성화됨' : 'Active',
             ),
             const SizedBox(height: 12),
 
-            // Tier 2: AI 해설 무제한
+            // Tier 2: AI 무제한 + 광고 제거 (추천)
             _SubscriptionTier(
               icon: Icons.auto_awesome,
               iconColor: const Color(0xFF7C3AED),
-              title: isKorean ? 'AI 해설 무제한' : 'AI Unlimited',
+              title: isKorean ? 'AI 무제한 + 광고 제거' : 'AI Unlimited + No Ads',
               price: isKorean ? '월 ₩2,990' : '₩2,990/mo',
               benefits: [
                 isKorean ? 'AI 해설 무제한 사용' : 'Unlimited AI explanations',
-                isKorean ? '4단계 수준별 해설' : '4-level explanations',
+                isKorean ? 'Pro 모델 (gemini-1.5-pro)' : 'Pro model (gemini-1.5-pro)',
+                isKorean ? 'AI 챗봇 무제한 대화' : 'Unlimited AI chatbot',
+                isKorean ? '모든 광고 제거' : 'All ads removed',
               ],
-              isActive: subscription.isAiUnlimited && !subscription.isAiAssist,
+              isActive: subscription.isAiUnlimited,
               isLoading: subscription.isLoading,
               onTap: () => notifier.purchaseAiUnlimited(),
-              activeLabel: isKorean ? '활성화됨' : 'Active',
-            ),
-            const SizedBox(height: 12),
-
-            // Tier 3: AI 챗봇 (추천)
-            _SubscriptionTier(
-              icon: Icons.smart_toy,
-              iconColor: const Color(0xFF3B82F6),
-              title: isKorean ? 'AI 챗봇' : 'AI Chatbot',
-              price: isKorean ? '월 ₩4,990' : '₩4,990/mo',
-              benefits: [
-                isKorean ? 'AI 해설 무제한 포함' : 'Includes unlimited AI explanations',
-                isKorean ? 'AI 채팅 에이전트' : 'AI chat agent',
-                isKorean ? '시뮬레이션 맞춤 Q&A' : 'Simulation-aware Q&A',
-              ],
-              isActive: subscription.isAiAssist,
-              isLoading: subscription.isLoading,
-              onTap: () => notifier.purchaseAiAssist(),
               isRecommended: true,
               activeLabel: isKorean ? '활성화됨' : 'Active',
             ),
@@ -189,14 +174,14 @@ class _SubscriptionTier extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isRecommended
-            ? const Color(0xFF3B82F6).withValues(alpha: 0.08)
+            ? const Color(0xFF7C3AED).withValues(alpha: 0.08)
             : AppColors.bg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isActive
               ? iconColor.withValues(alpha: 0.6)
               : isRecommended
-                  ? const Color(0xFF3B82F6).withValues(alpha: 0.3)
+                  ? const Color(0xFF7C3AED).withValues(alpha: 0.3)
                   : AppColors.cardBorder,
           width: isActive || isRecommended ? 1.5 : 1,
         ),
@@ -222,12 +207,14 @@ class _SubscriptionTier extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                        Flexible(
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         if (isRecommended) ...[
@@ -235,7 +222,7 @@ class _SubscriptionTier extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6),
+                              color: const Color(0xFF7C3AED),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: const Text(

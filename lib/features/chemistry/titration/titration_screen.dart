@@ -21,27 +21,26 @@ class _TitrationScreenState extends State<TitrationScreen>
   // 적정 파라미터
   double _acidConcentration = 0.1; // M
   double _baseConcentration = 0.1; // M
-  double _acidVolume = 50.0; // mL
+  final double _acidVolume = 50.0; // mL
   double _addedBaseVolume = 0.0; // mL
   TitrationType _titrationType = TitrationType.strongStrong;
 
   // 애니메이션
   bool _isAnimating = false;
-  List<Offset> _titrationCurve = [];
+  final List<Offset> _titrationCurve = [];
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..addListener(() {
-        if (_isAnimating) {
-          setState(() {
-            _addedBaseVolume = _controller.value * 100;
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3))
+          ..addListener(() {
+            if (_isAnimating) {
+              setState(() {
+                _addedBaseVolume = _controller.value * 100;
+              });
+            }
           });
-        }
-      });
     _calculateCurve();
   }
 
@@ -112,7 +111,8 @@ class _TitrationScreenState extends State<TitrationScreen>
           final pOH = pKb + math.log(ratio) / math.ln10;
           return 14 - pOH;
         } else if (molesAcidAdded > molesBaseInit) {
-          final excessH = (molesAcidAdded - molesBaseInit) / (totalVolume / 1000);
+          final excessH =
+              (molesAcidAdded - molesBaseInit) / (totalVolume / 1000);
           return -math.log(excessH) / math.ln10;
         } else {
           return 5.28; // 당량점
@@ -236,7 +236,9 @@ class _TitrationScreenState extends State<TitrationScreen>
                 decoration: BoxDecoration(
                   color: _indicatorColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _indicatorColor.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: _indicatorColor.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -370,11 +372,7 @@ class _TitrationScreenState extends State<TitrationScreen>
                   });
                 },
               ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -383,11 +381,7 @@ class _TitrationScreenState extends State<TitrationScreen>
   }
 }
 
-enum TitrationType {
-  strongStrong,
-  weakStrong,
-  strongWeak,
-}
+enum TitrationType { strongStrong, weakStrong, strongWeak }
 
 class _InfoItem extends StatelessWidget {
   final String label;
@@ -437,10 +431,7 @@ class _TitrationCurvePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = AppColors.simBg,
-    );
+    canvas.drawRect(Offset.zero & size, Paint()..color = AppColors.simBg);
 
     final padding = 40.0;
     final graphWidth = size.width - padding * 2;
@@ -491,7 +482,10 @@ class _TitrationCurvePainter extends CustomPainter {
       final path = Path();
       for (int i = 0; i < curve.length; i++) {
         final x = padding + (curve[i].dx / 100) * graphWidth;
-        final y = size.height - padding - (curve[i].dy.clamp(0, 14) / 14) * graphHeight;
+        final y =
+            size.height -
+            padding -
+            (curve[i].dy.clamp(0, 14) / 14) * graphHeight;
         if (i == 0) {
           path.moveTo(x, y);
         } else {
@@ -511,7 +505,8 @@ class _TitrationCurvePainter extends CustomPainter {
 
     // 현재 위치
     final currentX = padding + (currentVolume / 100) * graphWidth;
-    final currentY = size.height - padding - (currentPH.clamp(0, 14) / 14) * graphHeight;
+    final currentY =
+        size.height - padding - (currentPH.clamp(0, 14) / 14) * graphHeight;
 
     canvas.drawCircle(
       Offset(currentX, currentY),
@@ -525,11 +520,29 @@ class _TitrationCurvePainter extends CustomPainter {
     );
 
     // 라벨
-    _drawText(canvas, 'pH', Offset(padding - 25, padding - 15), AppColors.muted, 11);
-    _drawText(canvas, 'Volume (mL)', Offset(size.width - 70, size.height - 15), AppColors.muted, 10);
+    _drawText(
+      canvas,
+      'pH',
+      Offset(padding - 25, padding - 15),
+      AppColors.muted,
+      11,
+    );
+    _drawText(
+      canvas,
+      'Volume (mL)',
+      Offset(size.width - 70, size.height - 15),
+      AppColors.muted,
+      10,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color, double fontSize) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color,
+    double fontSize,
+  ) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,

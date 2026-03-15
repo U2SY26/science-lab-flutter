@@ -23,7 +23,7 @@ class _EpidemicSirScreenState extends ConsumerState<EpidemicSirScreen>
   // SIR parameters
   double _beta = 0.3; // Transmission rate
   double _gamma = 0.1; // Recovery rate
-  double _totalPopulation = 1000;
+  final double _totalPopulation = 1000;
 
   // Population state (as fractions)
   double _susceptible = 0.99;

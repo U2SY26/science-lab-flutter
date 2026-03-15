@@ -45,13 +45,6 @@ class _BeatsScreenState extends State<BeatsScreen>
     });
   }
 
-  void _reset() {
-    HapticFeedback.mediumImpact();
-    setState(() {
-      _time = 0;
-    });
-  }
-
   @override
   void dispose() {
     _controller.dispose();

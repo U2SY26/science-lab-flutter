@@ -5,8 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/models/ai_persona.dart';
+import '../../../core/models/rive_character_mode.dart';
+import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/language_provider.dart';
+import '../../../core/providers/user_profile_provider.dart';
 import '../../../core/services/iap_service.dart';
+import '../../../core/services/subscription_service.dart';
+import '../../../shared/widgets/lottie_character.dart';
 import '../data/simulation_data.dart';
 
 /// Settings tab widget.
@@ -123,6 +129,12 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
               : (isKorean ? '\u20a9990 \uc77c\ud68c\uc131 \uad6c\ub9e4' : '\u20a9990 one-time purchase'),
           onTap: _adsRemoved ? () {} : _purchaseRemoveAds,
         ),
+        _AiSubscriptionCard(isKorean: isKorean),
+        const SizedBox(height: 24),
+
+        // AI 튜터 페르소나 선택
+        _SectionTitle(title: isKorean ? 'AI 튜터 페르소나' : 'AI Tutor Persona'),
+        _PersonaSelector(isKorean: isKorean),
         const SizedBox(height: 24),
 
         // App settings section
@@ -136,9 +148,47 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
         _SettingCard(
           icon: Icons.refresh,
           iconColor: Colors.orange,
-          title: isKorean ? '\ud559\uc2b5 \uae30\ub85d \ucd08\uae30\ud654' : 'Reset Progress',
-          subtitle: isKorean ? '\uc644\ub8cc \uae30\ub85d\uacfc \uc990\uaca8\ucc3e\uae30\ub97c \uc0ad\uc81c\ud569\ub2c8\ub2e4' : 'Delete all completed records and favorites',
+          title: isKorean ? '학습 기록 초기화' : 'Reset Progress',
+          subtitle: isKorean ? '완료 기록과 즐겨찾기를 삭제합니다' : 'Delete all completed records and favorites',
           onTap: () => _resetProgress(isKorean),
+        ),
+        const SizedBox(height: 24),
+
+        // 계정 & 구독 관리 섹션
+        _SectionTitle(title: isKorean ? '계정 & 구독 관리' : 'Account & Subscription'),
+        _SettingCard(
+          icon: Icons.restart_alt,
+          iconColor: const Color(0xFFEF4444),
+          title: isKorean ? '레벨 초기화' : 'Reset Level',
+          subtitle: isKorean ? 'XP와 레벨을 초기화합니다' : 'Reset XP and level to zero',
+          onTap: () => _resetLevel(isKorean),
+        ),
+        _SettingCard(
+          icon: Icons.credit_card_off,
+          iconColor: const Color(0xFFEF4444),
+          title: isKorean ? '구독 취소' : 'Cancel Subscription',
+          subtitle: isKorean
+              ? '취소 후에도 결제 기간 끝까지 이용 가능'
+              : 'Access until current billing period ends',
+          onTap: () => _cancelSubscription(isKorean),
+        ),
+        _SettingCard(
+          icon: Icons.delete_forever,
+          iconColor: const Color(0xFFDC2626),
+          title: isKorean ? '모든 데이터 삭제' : 'Delete All Data',
+          subtitle: isKorean
+              ? '학습 기록, 설정, 채팅 기록 등 모든 앱 데이터 삭제'
+              : 'Remove all app data including progress, settings, and chat',
+          onTap: () => _deleteAllData(isKorean),
+        ),
+        _SettingCard(
+          icon: Icons.person_remove,
+          iconColor: const Color(0xFF991B1B),
+          title: isKorean ? '계정 탈퇴' : 'Delete Account',
+          subtitle: isKorean
+              ? '구독 취소 + 모든 데이터 삭제 (복구 불가)'
+              : 'Cancel subscription + delete all data (irreversible)',
+          onTap: () => _deleteAccount(isKorean),
         ),
         const SizedBox(height: 24),
 
@@ -431,6 +481,255 @@ class _SettingsTabState extends ConsumerState<SettingsTab> {
             behavior: SnackBarBehavior.floating,
           ),
         );
+      }
+    }
+  }
+
+  /// 레벨 초기화
+  Future<void> _resetLevel(bool isKorean) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.restart_alt, color: Color(0xFFEF4444)),
+            const SizedBox(width: 8),
+            Text(
+              isKorean ? '레벨 초기화' : 'Reset Level',
+              style: const TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          isKorean
+              ? '정말 초기화하시겠습니까? XP와 레벨이 모두 0으로 초기화됩니다.'
+              : 'Are you sure? XP and level will be reset to 0.',
+          style: const TextStyle(color: AppColors.ink, fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(isKorean ? '취소' : 'Cancel', style: TextStyle(color: AppColors.muted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+            ),
+            child: Text(isKorean ? '초기화' : 'Reset'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      HapticFeedback.mediumImpact();
+      await ref.read(userProfileProvider.notifier).resetProfile();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isKorean ? 'XP와 레벨이 초기화되었습니다' : 'XP and level have been reset'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  /// 구독 취소 — Google Play 구독 관리 페이지로 이동
+  Future<void> _cancelSubscription(bool isKorean) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.credit_card_off, color: Color(0xFFEF4444)),
+            const SizedBox(width: 8),
+            Text(
+              isKorean ? '구독 취소' : 'Cancel Subscription',
+              style: const TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          isKorean
+              ? '구독을 취소하시겠습니까?\n\n• 취소 후에도 현재 결제 기간이 끝나는 날까지 모든 기능을 자유롭게 이용할 수 있습니다.\n• Google Play 구독 관리 페이지에서 취소할 수 있습니다.'
+              : 'Cancel your subscription?\n\n• You can still use all features until the end of your current billing period.\n• You will be redirected to Google Play subscription management.',
+          style: const TextStyle(color: AppColors.ink, fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(isKorean ? '돌아가기' : 'Go Back', style: TextStyle(color: AppColors.muted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+            ),
+            child: Text(isKorean ? '구독 관리 열기' : 'Open Subscriptions'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _launchUrl('https://play.google.com/store/account/subscriptions');
+    }
+  }
+
+  /// 모든 데이터 삭제 — SharedPreferences 전체 초기화
+  Future<void> _deleteAllData(bool isKorean) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.delete_forever, color: Color(0xFFDC2626)),
+            const SizedBox(width: 8),
+            Text(
+              isKorean ? '모든 데이터 삭제' : 'Delete All Data',
+              style: const TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          isKorean
+              ? '앱에 저장된 모든 데이터를 삭제합니다.\n\n삭제 항목:\n• 학습 완료 기록\n• 즐겨찾기\n• AI 채팅 기록\n• 언어 설정\n• 페르소나 설정\n\n이 작업은 되돌릴 수 없습니다.'
+              : 'Delete all data stored in the app.\n\nThis includes:\n• Completed records\n• Favorites\n• AI chat history\n• Language settings\n• Persona settings\n\nThis action cannot be undone.',
+          style: const TextStyle(color: AppColors.ink, fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(isKorean ? '취소' : 'Cancel', style: TextStyle(color: AppColors.muted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC2626),
+              foregroundColor: Colors.white,
+            ),
+            child: Text(isKorean ? '모두 삭제' : 'Delete All'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      HapticFeedback.mediumImpact();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      setState(() {
+        _completedCount = 0;
+        _favoritesCount = 0;
+        _adsRemoved = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isKorean ? '모든 데이터가 삭제되었습니다' : 'All data has been deleted'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  /// 계정 탈퇴 — 구독 취소 안내 + 모든 데이터 삭제
+  Future<void> _deleteAccount(bool isKorean) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.person_remove, color: Color(0xFF991B1B)),
+            const SizedBox(width: 8),
+            Text(
+              isKorean ? '계정 탈퇴' : 'Delete Account',
+              style: const TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          isKorean
+              ? '정말로 탈퇴하시겠습니까?\n\n다음 작업이 수행됩니다:\n1. 구독이 있는 경우 Google Play에서 직접 취소해주세요\n2. 앱 내 모든 데이터가 삭제됩니다\n3. 삭제 후 앱이 초기 상태로 리셋됩니다\n\n⚠️ 이 작업은 되돌릴 수 없습니다.'
+              : 'Are you sure you want to delete your account?\n\n1. If subscribed, please cancel on Google Play\n2. All app data will be deleted\n3. App will reset to initial state\n\n⚠️ This action cannot be undone.',
+          style: const TextStyle(color: AppColors.ink, fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(isKorean ? '취소' : 'Cancel', style: TextStyle(color: AppColors.muted)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF991B1B),
+              foregroundColor: Colors.white,
+            ),
+            child: Text(isKorean ? '탈퇴하기' : 'Delete Account'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      HapticFeedback.heavyImpact();
+      // 1. 모든 데이터 삭제
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      setState(() {
+        _completedCount = 0;
+        _favoritesCount = 0;
+        _adsRemoved = false;
+      });
+      if (mounted) {
+        // 2. 구독 관리 페이지로 이동 안내
+        final openSubs = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.card,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(
+              isKorean ? '데이터 삭제 완료' : 'Data Deleted',
+              style: const TextStyle(color: AppColors.ink, fontSize: 18),
+            ),
+            content: Text(
+              isKorean
+                  ? '모든 앱 데이터가 삭제되었습니다.\n\n구독 중이라면 Google Play에서 구독을 취소해주세요. 취소하지 않으면 자동 결제가 계속됩니다.'
+                  : 'All app data has been deleted.\n\nIf subscribed, please cancel on Google Play to stop automatic billing.',
+              style: const TextStyle(color: AppColors.ink, fontSize: 14, height: 1.5),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(isKorean ? '확인' : 'OK', style: TextStyle(color: AppColors.muted)),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(isKorean ? '구독 관리 열기' : 'Open Subscriptions'),
+              ),
+            ],
+          ),
+        );
+        if (openSubs == true) {
+          await _launchUrl('https://play.google.com/store/account/subscriptions');
+        }
       }
     }
   }
@@ -729,6 +1028,167 @@ class _LanguageSelector extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// AI 무제한 구독 카드 (₩2,990)
+class _AiSubscriptionCard extends ConsumerWidget {
+  final bool isKorean;
+  const _AiSubscriptionCard({required this.isKorean});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sub = ref.watch(subscriptionProvider);
+    final isAiPro = sub.isAiUnlimited;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: isAiPro ? Colors.green.withValues(alpha: 0.08) : AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: isAiPro
+              ? null
+              : () => ref.read(subscriptionProvider.notifier).purchaseAiUnlimited(),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isAiPro ? Colors.green.withValues(alpha: 0.3) : AppColors.accent.withValues(alpha: 0.4),
+                width: isAiPro ? 1 : 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isAiPro
+                        ? Colors.green.withValues(alpha: 0.15)
+                        : AppColors.accent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    isAiPro ? Icons.check_circle : Icons.auto_awesome,
+                    color: isAiPro ? Colors.green : AppColors.accent,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isKorean ? 'AI 무제한 + 광고 제거' : 'AI Unlimited + Ad-Free',
+                        style: TextStyle(
+                          color: AppColors.ink,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        isAiPro
+                            ? (isKorean ? '구독 중 — Pro 모델, AI 해설·튜터 무제한' : 'Active — Pro model, unlimited AI')
+                            : (isKorean ? '₩2,990/월 — GPT-4o Pro, AI 해설·튜터 무제한' : '₩2,990/mo — GPT-4o Pro, unlimited AI'),
+                        style: TextStyle(
+                          color: AppColors.muted,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (!isAiPro)
+                  Icon(Icons.chevron_right, color: AppColors.muted),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// AI 튜터 페르소나 선택기 (Lottie 캐릭터 미리보기) — 4열 그리드
+class _PersonaSelector extends ConsumerWidget {
+  final bool isKorean;
+
+  const _PersonaSelector({required this.isKorean});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedId = ref.watch(selectedPersonaIdProvider);
+
+    return GridView.count(
+      crossAxisCount: 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childAspectRatio: 0.75,
+      children: aiPersonas.map((persona) {
+        final isSelected = persona.id == selectedId;
+
+        return GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            ref.read(selectedPersonaIdProvider.notifier).select(persona.id);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? persona.color.withValues(alpha: 0.12)
+                  : AppColors.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isSelected
+                    ? persona.color.withValues(alpha: 0.6)
+                    : AppColors.cardBorder,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: LottieCharacter(
+                    personaId: persona.id,
+                    mode: RiveCharacterMode.idle,
+                    size: 40,
+                    visible: true,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  persona.name(isKorean),
+                  style: TextStyle(
+                    color: isSelected ? persona.color : AppColors.muted,
+                    fontSize: 10,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (isSelected)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Icon(Icons.check_circle, size: 12, color: persona.color),
+                  ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

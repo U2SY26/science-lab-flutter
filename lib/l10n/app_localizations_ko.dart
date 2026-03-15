@@ -3158,4 +3158,101 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get xrGyroHint => '자이로 버튼으로 동작 제어';
+
+  @override
+  String get community => '커뮤니티';
+
+  @override
+  String get comments => '댓글';
+
+  @override
+  String get writeComment => '댓글을 입력하세요...';
+
+  @override
+  String get beFirstToComment => '첫 번째 댓글을 남겨보세요!';
+
+  @override
+  String replyingTo(String nickname) {
+    return '$nickname 님에게 답글';
+  }
+
+  @override
+  String get report => '신고';
+
+  @override
+  String get reportConfirm => '이 콘텐츠를 신고하시겠습니까?';
+
+  @override
+  String get reportSuccess => '신고가 접수되었습니다.';
+
+  @override
+  String get moderationFailed => '커뮤니티 가이드라인에 위반되는 내용입니다.';
+
+  @override
+  String get accountRestricted => '커뮤니티 이용이 제한된 계정입니다.';
+
+  @override
+  String get levelUp => '레벨 업!';
+
+  @override
+  String levelLabel(int level) {
+    return '레벨 $level';
+  }
+
+  @override
+  String get tapToContinue => '탭하여 계속';
+
+  @override
+  String get quizChallenge => '퀴즈 챌린지';
+
+  @override
+  String get quizCompleted => '퀴즈 완료';
+
+  @override
+  String get quizGenerating => 'AI가 퀴즈를 생성 중...';
+
+  @override
+  String get quizFailed => '퀴즈 생성에 실패했습니다';
+
+  @override
+  String get quizCorrect => '정답입니다!';
+
+  @override
+  String get quizIncorrect => '오답입니다';
+
+  @override
+  String get submit => '제출';
+
+  @override
+  String get later => '나중에';
+
+  @override
+  String get forumGeneral => '자유';
+
+  @override
+  String get forumQuestion => '질문';
+
+  @override
+  String get forumTip => '팁';
+
+  @override
+  String get forumBug => '버그 제보';
+
+  @override
+  String get newPost => '새 글 작성';
+
+  @override
+  String get postTitle => '제목';
+
+  @override
+  String get postContent => '내용';
+
+  @override
+  String get noPosts => '아직 게시글이 없습니다. 첫 글을 작성해보세요!';
+
+  @override
+  String get cancel => '취소';
+
+  @override
+  String get post => '게시';
 }

@@ -19,7 +19,7 @@ class _FlockingScreenState extends State<FlockingScreen>
   bool _isRunning = true;
   double _separation = 1.5;
   double _alignment = 1;
-  double _cohesion = 1.0, _avgSpeed = 2.0;
+  double _avgSpeed = 2.0;
 
   @override
   void initState() {
@@ -34,7 +34,6 @@ class _FlockingScreenState extends State<FlockingScreen>
     setState(() {
       _time += 0.016;
       _avgSpeed = 2.0 + _alignment - _separation * 0.3;
-      _cohesion = 1.0;
     });
   }
 

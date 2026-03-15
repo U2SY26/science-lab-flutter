@@ -9,7 +9,8 @@ import '../../../shared/widgets/control_panel.dart';
 class BinomialDistributionScreen extends StatefulWidget {
   const BinomialDistributionScreen({super.key});
   @override
-  State<BinomialDistributionScreen> createState() => _BinomialDistributionScreenState();
+  State<BinomialDistributionScreen> createState() =>
+      _BinomialDistributionScreenState();
 }
 
 class _BinomialDistributionScreenState extends State<BinomialDistributionScreen>
@@ -24,8 +25,10 @@ class _BinomialDistributionScreenState extends State<BinomialDistributionScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -42,12 +45,16 @@ class _BinomialDistributionScreenState extends State<BinomialDistributionScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _time = 0;
-      _trials = 10; _probability = 0.5;
+      _trials = 10;
+      _probability = 0.5;
     });
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +62,27 @@ class _BinomialDistributionScreenState extends State<BinomialDistributionScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('수학 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('이항 분포', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '수학 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '이항 분포',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -82,30 +105,30 @@ class _BinomialDistributionScreenState extends State<BinomialDistributionScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '시행 횟수 n',
-                value: _trials,
-                min: 1,
-                max: 50,
-                step: 1,
-                defaultValue: 10,
-                formatValue: (v) => v.toStringAsFixed(0),
-                onChanged: (v) => setState(() => _trials = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '시행 횟수 n',
+                  value: _trials,
+                  min: 1,
+                  max: 50,
+                  step: 1,
+                  defaultValue: 10,
+                  formatValue: (v) => v.toStringAsFixed(0),
+                  onChanged: (v) => setState(() => _trials = v),
+                ),
+                advancedControls: [
+                  SimSlider(
+                    label: '성공 확률 p',
+                    value: _probability,
+                    min: 0.01,
+                    max: 0.99,
+                    step: 0.01,
+                    defaultValue: 0.5,
+                    formatValue: (v) => v.toStringAsFixed(2),
+                    onChanged: (v) => setState(() => _probability = v),
+                  ),
+                ],
               ),
-              advancedControls: [
-            SimSlider(
-                label: '성공 확률 p',
-                value: _probability,
-                min: 0.01,
-                max: 0.99,
-                step: 0.01,
-                defaultValue: 0.5,
-                formatValue: (v) => v.toStringAsFixed(2),
-                onChanged: (v) => setState(() => _probability = v),
-              ),
-              ],
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -114,23 +137,31 @@ class _BinomialDistributionScreenState extends State<BinomialDistributionScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('평균', _mean.toStringAsFixed(2)),
-          _V('분산', _variance.toStringAsFixed(2)),
-          _V('표준편차', math.sqrt(_variance).toStringAsFixed(2)),
-                ]),
+                child: Row(
+                  children: [
+                    _V('평균', _mean.toStringAsFixed(2)),
+                    _V('분산', _variance.toStringAsFixed(2)),
+                    _V('표준편차', math.sqrt(_variance).toStringAsFixed(2)),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -141,11 +172,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _BinomialDistributionScreenPainter extends CustomPainter {
@@ -153,28 +199,41 @@ class _BinomialDistributionScreenPainter extends CustomPainter {
   final double trials;
   final double probability;
 
-  _BinomialDistributionScreenPainter({required this.time, required this.trials, required this.probability});
+  _BinomialDistributionScreenPainter({
+    required this.time,
+    required this.trials,
+    required this.probability,
+  });
 
   // log-gamma for large factorials
   double _logGamma(int n) {
     if (n <= 1) return 0;
     double s = 0;
-    for (int i = 2; i <= n; i++) s += math.log(i);
+    for (int i = 2; i <= n; i++) {
+      s += math.log(i);
+    }
     return s;
   }
 
   double _binomialPmf(int k, int n, double p) {
     if (p <= 0) return k == 0 ? 1.0 : 0.0;
     if (p >= 1) return k == n ? 1.0 : 0.0;
-    final logP = _logGamma(n) - _logGamma(k) - _logGamma(n - k)
-        + k * math.log(p) + (n - k) * math.log(1 - p);
+    final logP =
+        _logGamma(n) -
+        _logGamma(k) -
+        _logGamma(n - k) +
+        k * math.log(p) +
+        (n - k) * math.log(1 - p);
     return math.exp(logP);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width < 10 || size.height < 10) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final n = trials.round().clamp(1, 50);
     final p = probability.clamp(0.01, 0.99);
@@ -210,13 +269,26 @@ class _BinomialDistributionScreenPainter extends CustomPainter {
       final barH = maxP > 0 ? (prob / maxP) * chartH * growFrac : 0.0;
       final distFromMean = (k - mean).abs() / (sigma + 0.01);
       final t = (distFromMean / 3).clamp(0.0, 1.0);
-      final col = Color.lerp(const Color(0xFF00D4FF), const Color(0xFF1A3040), t)!;
+      final col = Color.lerp(
+        const Color(0xFF00D4FF),
+        const Color(0xFF1A3040),
+        t,
+      )!;
       final x = padL + k * barW;
       final y = padT + chartH - barH;
-      canvas.drawRect(Rect.fromLTWH(x + 1, y, barW - 2, barH),
-        Paint()..color = col.withValues(alpha: 0.85)..style = PaintingStyle.fill);
-      canvas.drawRect(Rect.fromLTWH(x + 1, y, barW - 2, barH),
-        Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.3)..strokeWidth = 0.5..style = PaintingStyle.stroke);
+      canvas.drawRect(
+        Rect.fromLTWH(x + 1, y, barW - 2, barH),
+        Paint()
+          ..color = col.withValues(alpha: 0.85)
+          ..style = PaintingStyle.fill,
+      );
+      canvas.drawRect(
+        Rect.fromLTWH(x + 1, y, barW - 2, barH),
+        Paint()
+          ..color = const Color(0xFF00D4FF).withValues(alpha: 0.3)
+          ..strokeWidth = 0.5
+          ..style = PaintingStyle.stroke,
+      );
     }
 
     // Mean dashed vertical line
@@ -224,8 +296,11 @@ class _BinomialDistributionScreenPainter extends CustomPainter {
     const dashH = 6.0;
     for (double y = padT; y < padT + chartH; y += dashH * 2) {
       canvas.drawLine(
-        Offset(meanX, y), Offset(meanX, y + dashH),
-        Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.8)..strokeWidth = 1.2,
+        Offset(meanX, y),
+        Offset(meanX, y + dashH),
+        Paint()
+          ..color = const Color(0xFF00D4FF).withValues(alpha: 0.8)
+          ..strokeWidth = 1.2,
       );
     }
 
@@ -240,13 +315,20 @@ class _BinomialDistributionScreenPainter extends CustomPainter {
         final normH = maxP > 0 ? (normP / maxP) * chartH : 0.0;
         final x = padL + px.toDouble();
         final y = padT + chartH - normH;
-        if (!normStarted) { normPath.moveTo(x, y); normStarted = true; }
-        else { normPath.lineTo(x, y); }
+        if (!normStarted) {
+          normPath.moveTo(x, y);
+          normStarted = true;
+        } else {
+          normPath.lineTo(x, y);
+        }
       }
-      canvas.drawPath(normPath, Paint()
-        ..color = const Color(0xFFFF6B35).withValues(alpha: 0.9)
-        ..strokeWidth = 1.8
-        ..style = PaintingStyle.stroke);
+      canvas.drawPath(
+        normPath,
+        Paint()
+          ..color = const Color(0xFFFF6B35).withValues(alpha: 0.9)
+          ..strokeWidth = 1.8
+          ..style = PaintingStyle.stroke,
+      );
     }
 
     // Cumulative distribution (orange step function, right axis)
@@ -257,24 +339,40 @@ class _BinomialDistributionScreenPainter extends CustomPainter {
       cumP += probs[k];
       final x = padL + k * barW;
       final y = padT + chartH * (1 - cumP.clamp(0, 1));
-      if (!cumStarted) { cumPath.moveTo(x, y); cumStarted = true; }
-      else { cumPath.lineTo(x, y); }
+      if (!cumStarted) {
+        cumPath.moveTo(x, y);
+        cumStarted = true;
+      } else {
+        cumPath.lineTo(x, y);
+      }
       cumPath.lineTo(x + barW, y);
     }
-    canvas.drawPath(cumPath, Paint()
-      ..color = const Color(0xFFFF6B35).withValues(alpha: 0.45)
-      ..strokeWidth = 1.2
-      ..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      cumPath,
+      Paint()
+        ..color = const Color(0xFFFF6B35).withValues(alpha: 0.45)
+        ..strokeWidth = 1.2
+        ..style = PaintingStyle.stroke,
+    );
 
     // Y-axis ticks
-    final axPaint = Paint()..color = const Color(0xFF1A3040)..strokeWidth = 0.8;
+    final axPaint = Paint()
+      ..color = const Color(0xFF1A3040)
+      ..strokeWidth = 0.8;
     canvas.drawLine(Offset(padL, padT), Offset(padL, padT + chartH), axPaint);
-    canvas.drawLine(Offset(padL, padT + chartH), Offset(padL + chartW, padT + chartH), axPaint);
+    canvas.drawLine(
+      Offset(padL, padT + chartH),
+      Offset(padL + chartW, padT + chartH),
+      axPaint,
+    );
     for (int t = 0; t <= 4; t++) {
       final y = padT + chartH * (1 - t / 4);
       final lbl = (maxP * t / 4).toStringAsFixed(2);
       final tp = TextPainter(
-        text: TextSpan(text: lbl, style: const TextStyle(color: Color(0xFF5A8A9A), fontSize: 7)),
+        text: TextSpan(
+          text: lbl,
+          style: const TextStyle(color: Color(0xFF5A8A9A), fontSize: 7),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       tp.paint(canvas, Offset(0, y - tp.height / 2));
@@ -282,13 +380,17 @@ class _BinomialDistributionScreenPainter extends CustomPainter {
 
     // Labels
     final mtp = TextPainter(
-      text: TextSpan(text: 'μ=${mean.toStringAsFixed(1)}  σ=${sigma.toStringAsFixed(1)}',
-        style: const TextStyle(color: Color(0xFF00D4FF), fontSize: 9)),
+      text: TextSpan(
+        text: 'μ=${mean.toStringAsFixed(1)}  σ=${sigma.toStringAsFixed(1)}',
+        style: const TextStyle(color: Color(0xFF00D4FF), fontSize: 9),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     mtp.paint(canvas, Offset(padL + 4, 6));
   }
 
   @override
-  bool shouldRepaint(covariant _BinomialDistributionScreenPainter oldDelegate) => true;
+  bool shouldRepaint(
+    covariant _BinomialDistributionScreenPainter oldDelegate,
+  ) => true;
 }

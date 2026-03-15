@@ -9,7 +9,8 @@ import '../../../shared/widgets/control_panel.dart';
 class MagneticInductionScreen extends StatefulWidget {
   const MagneticInductionScreen({super.key});
   @override
-  State<MagneticInductionScreen> createState() => _MagneticInductionScreenState();
+  State<MagneticInductionScreen> createState() =>
+      _MagneticInductionScreenState();
 }
 
 class _MagneticInductionScreenState extends State<MagneticInductionScreen>
@@ -24,8 +25,10 @@ class _MagneticInductionScreenState extends State<MagneticInductionScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -41,12 +44,16 @@ class _MagneticInductionScreenState extends State<MagneticInductionScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _time = 0;
-      _mutualM = 0.5; _dIdt = 10.0;
+      _mutualM = 0.5;
+      _dIdt = 10.0;
     });
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +61,27 @@ class _MagneticInductionScreenState extends State<MagneticInductionScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('물리 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('상호 유도', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '물리 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '상호 유도',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -81,30 +104,30 @@ class _MagneticInductionScreenState extends State<MagneticInductionScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '상호 인덕턴스 (H)',
-                value: _mutualM,
-                min: 0.01,
-                max: 2,
-                step: 0.01,
-                defaultValue: 0.5,
-                formatValue: (v) => v.toStringAsFixed(2) + ' H',
-                onChanged: (v) => setState(() => _mutualM = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '상호 인덕턴스 (H)',
+                  value: _mutualM,
+                  min: 0.01,
+                  max: 2,
+                  step: 0.01,
+                  defaultValue: 0.5,
+                  formatValue: (v) => '${v.toStringAsFixed(2)} H',
+                  onChanged: (v) => setState(() => _mutualM = v),
+                ),
+                advancedControls: [
+                  SimSlider(
+                    label: 'dI/dt (A/s)',
+                    value: _dIdt,
+                    min: 1,
+                    max: 100,
+                    step: 1,
+                    defaultValue: 10,
+                    formatValue: (v) => '${v.toStringAsFixed(0)} A/s',
+                    onChanged: (v) => setState(() => _dIdt = v),
+                  ),
+                ],
               ),
-              advancedControls: [
-            SimSlider(
-                label: 'dI/dt (A/s)',
-                value: _dIdt,
-                min: 1,
-                max: 100,
-                step: 1,
-                defaultValue: 10,
-                formatValue: (v) => v.toStringAsFixed(0) + ' A/s',
-                onChanged: (v) => setState(() => _dIdt = v),
-              ),
-              ],
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -113,23 +136,31 @@ class _MagneticInductionScreenState extends State<MagneticInductionScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('EMF', _emf.toStringAsFixed(1) + ' V'),
-          _V('M', _mutualM.toStringAsFixed(2) + ' H'),
-          _V('dI/dt', _dIdt.toStringAsFixed(0) + ' A/s'),
-                ]),
+                child: Row(
+                  children: [
+                    _V('EMF', '${_emf.toStringAsFixed(1)} V'),
+                    _V('M', '${_mutualM.toStringAsFixed(2)} H'),
+                    _V('dI/dt', '${_dIdt.toStringAsFixed(0)} A/s'),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -140,11 +171,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _MagneticInductionScreenPainter extends CustomPainter {
@@ -161,7 +207,10 @@ class _MagneticInductionScreenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width <= 0 || size.height <= 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width;
     final h = size.height;
@@ -191,8 +240,12 @@ class _MagneticInductionScreenPainter extends CustomPainter {
       ..strokeWidth = 0.5;
 
     // Grid
-    for (double x = 0; x < w; x += 30) { canvas.drawLine(Offset(x, 0), Offset(x, h), gridPaint); }
-    for (double y = 0; y < h; y += 30) { canvas.drawLine(Offset(0, y), Offset(w, y), gridPaint); }
+    for (double x = 0; x < w; x += 30) {
+      canvas.drawLine(Offset(x, 0), Offset(x, h), gridPaint);
+    }
+    for (double y = 0; y < h; y += 30) {
+      canvas.drawLine(Offset(0, y), Offset(w, y), gridPaint);
+    }
 
     // --- Coil (solenoid cross-section) ---
     final coilW = w * 0.14;
@@ -205,7 +258,11 @@ class _MagneticInductionScreenPainter extends CustomPainter {
     // Outer coil box
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: Offset(coilCx, coilCy), width: coilW, height: coilH),
+        Rect.fromCenter(
+          center: Offset(coilCx, coilCy),
+          width: coilW,
+          height: coilH,
+        ),
         const Radius.circular(4),
       ),
       coilPaint..color = const Color(0xFF00D4FF).withValues(alpha: 0.4),
@@ -216,30 +273,59 @@ class _MagneticInductionScreenPainter extends CustomPainter {
       canvas.drawLine(
         Offset(coilCx - coilW / 2, ry),
         Offset(coilCx + coilW / 2, ry),
-        coilPaint..color = const Color(0xFF00D4FF).withValues(alpha: 0.5)..strokeWidth = 1,
+        coilPaint
+          ..color = const Color(0xFF00D4FF).withValues(alpha: 0.5)
+          ..strokeWidth = 1,
       );
       // Ring ellipses at edges
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(coilCx - coilW / 2, ry), width: 6, height: coilH / numRings * 0.7),
-        coilPaint..color = const Color(0xFF00D4FF).withValues(alpha: 0.7)..strokeWidth = 1.5,
+        Rect.fromCenter(
+          center: Offset(coilCx - coilW / 2, ry),
+          width: 6,
+          height: coilH / numRings * 0.7,
+        ),
+        coilPaint
+          ..color = const Color(0xFF00D4FF).withValues(alpha: 0.7)
+          ..strokeWidth = 1.5,
       );
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(coilCx + coilW / 2, ry), width: 6, height: coilH / numRings * 0.7),
-        coilPaint..color = const Color(0xFF00D4FF).withValues(alpha: 0.7)..strokeWidth = 1.5,
+        Rect.fromCenter(
+          center: Offset(coilCx + coilW / 2, ry),
+          width: 6,
+          height: coilH / numRings * 0.7,
+        ),
+        coilPaint
+          ..color = const Color(0xFF00D4FF).withValues(alpha: 0.7)
+          ..strokeWidth = 1.5,
       );
     }
 
     // --- B-field lines inside coil (density proportional to fieldStrength) ---
     final numFieldLines = (3 + fieldStrength * 4).round().clamp(3, 8);
     for (int i = 0; i < numFieldLines; i++) {
-      final fy = coilCy - coilH / 2 + 8 + i * (coilH - 16) / (numFieldLines - 1);
+      final fy =
+          coilCy - coilH / 2 + 8 + i * (coilH - 16) / (numFieldLines - 1);
       final arrowP = Paint()
-        ..color = const Color(0xFF00D4FF).withValues(alpha: 0.6 * fieldStrength.clamp(0.2, 1.0))
+        ..color = const Color(
+          0xFF00D4FF,
+        ).withValues(alpha: 0.6 * fieldStrength.clamp(0.2, 1.0))
         ..strokeWidth = 1;
-      canvas.drawLine(Offset(coilCx - coilW / 2 + 4, fy), Offset(coilCx + coilW / 2 - 4, fy), arrowP);
+      canvas.drawLine(
+        Offset(coilCx - coilW / 2 + 4, fy),
+        Offset(coilCx + coilW / 2 - 4, fy),
+        arrowP,
+      );
       // Arrowhead
-      canvas.drawLine(Offset(coilCx + coilW / 2 - 10, fy - 3), Offset(coilCx + coilW / 2 - 4, fy), arrowP);
-      canvas.drawLine(Offset(coilCx + coilW / 2 - 10, fy + 3), Offset(coilCx + coilW / 2 - 4, fy), arrowP);
+      canvas.drawLine(
+        Offset(coilCx + coilW / 2 - 10, fy - 3),
+        Offset(coilCx + coilW / 2 - 4, fy),
+        arrowP,
+      );
+      canvas.drawLine(
+        Offset(coilCx + coilW / 2 - 10, fy + 3),
+        Offset(coilCx + coilW / 2 - 4, fy),
+        arrowP,
+      );
     }
 
     // --- Bar magnet ---
@@ -257,11 +343,25 @@ class _MagneticInductionScreenPainter extends CustomPainter {
     );
     canvas.drawRect(
       Rect.fromLTWH(magnetX - magW / 2, magnetCy - magH / 2, magW, magH),
-      orangePaint..color = const Color(0xFFFF6B35)..strokeWidth = 1.5,
+      orangePaint
+        ..color = const Color(0xFFFF6B35)
+        ..strokeWidth = 1.5,
     );
     // N / S labels
-    _drawLabel(canvas, 'N', Offset(magnetX - magW / 4, magnetCy), const Color(0xFFFF6B35), 11);
-    _drawLabel(canvas, 'S', Offset(magnetX + magW / 4, magnetCy), const Color(0xFFE0F4FF), 11);
+    _drawLabel(
+      canvas,
+      'N',
+      Offset(magnetX - magW / 4, magnetCy),
+      const Color(0xFFFF6B35),
+      11,
+    );
+    _drawLabel(
+      canvas,
+      'S',
+      Offset(magnetX + magW / 4, magnetCy),
+      const Color(0xFFE0F4FF),
+      11,
+    );
 
     // --- Magnetic field lines from magnet to coil ---
     final numCurves = 4;
@@ -317,40 +417,91 @@ class _MagneticInductionScreenPainter extends CustomPainter {
     final vmCy = h * 0.82;
     final vmR = h * 0.08;
     canvas.drawArc(
-      Rect.fromCenter(center: Offset(vmCx, vmCy), width: vmR * 2, height: vmR * 2),
-      math.pi, math.pi,
+      Rect.fromCenter(
+        center: Offset(vmCx, vmCy),
+        width: vmR * 2,
+        height: vmR * 2,
+      ),
+      math.pi,
+      math.pi,
       false,
-      accentPaint..color = const Color(0xFF00D4FF).withValues(alpha: 0.5)..strokeWidth = 1.5,
+      accentPaint
+        ..color = const Color(0xFF00D4FF).withValues(alpha: 0.5)
+        ..strokeWidth = 1.5,
     );
     // Needle deflects with EMF
-    final needleAngle = math.pi + (emf / (mutualM * dIdt + 0.001)).clamp(0.0, 1.0) * math.pi;
+    final needleAngle =
+        math.pi + (emf / (mutualM * dIdt + 0.001)).clamp(0.0, 1.0) * math.pi;
     canvas.drawLine(
       Offset(vmCx, vmCy),
-      Offset(vmCx + vmR * 0.8 * math.cos(needleAngle), vmCy + vmR * 0.8 * math.sin(needleAngle)),
-      Paint()..color = const Color(0xFFFF6B35)..strokeWidth = 2,
+      Offset(
+        vmCx + vmR * 0.8 * math.cos(needleAngle),
+        vmCy + vmR * 0.8 * math.sin(needleAngle),
+      ),
+      Paint()
+        ..color = const Color(0xFFFF6B35)
+        ..strokeWidth = 2,
     );
-    canvas.drawCircle(Offset(vmCx, vmCy), 2, Paint()..color = const Color(0xFF00D4FF));
-    _drawLabel(canvas, 'V', Offset(vmCx, vmCy + vmR + 8), const Color(0xFF5A8A9A), 9);
+    canvas.drawCircle(
+      Offset(vmCx, vmCy),
+      2,
+      Paint()..color = const Color(0xFF00D4FF),
+    );
+    _drawLabel(
+      canvas,
+      'V',
+      Offset(vmCx, vmCy + vmR + 8),
+      const Color(0xFF5A8A9A),
+      9,
+    );
 
     // --- EMF value label ---
     final emfVal = (mutualM * dIdt).toStringAsFixed(1);
-    _drawLabel(canvas, 'ε = ${emfVal}V', Offset(w * 0.5, h * 0.88), const Color(0xFF00D4FF), 11);
+    _drawLabel(
+      canvas,
+      'ε = ${emfVal}V',
+      Offset(w * 0.5, h * 0.88),
+      const Color(0xFF00D4FF),
+      11,
+    );
 
     // --- Title ---
-    _drawLabel(canvas, '전자기 유도 (패러데이)', Offset(w / 2, 14), const Color(0xFF00D4FF), 12, bold: true);
+    _drawLabel(
+      canvas,
+      '전자기 유도 (패러데이)',
+      Offset(w / 2, 14),
+      const Color(0xFF00D4FF),
+      12,
+      bold: true,
+    );
   }
 
-  void _drawLabel(Canvas canvas, String text, Offset center, Color color, double fontSize, {bool bold = false}) {
+  void _drawLabel(
+    Canvas canvas,
+    String text,
+    Offset center,
+    Color color,
+    double fontSize, {
+    bool bold = false,
+  }) {
     final tp = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: bold ? FontWeight.bold : FontWeight.normal),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(canvas, Offset(center.dx - tp.width / 2, center.dy - tp.height / 2));
+    tp.paint(
+      canvas,
+      Offset(center.dx - tp.width / 2, center.dy - tp.height / 2),
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _MagneticInductionScreenPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _MagneticInductionScreenPainter oldDelegate) =>
+      true;
 }

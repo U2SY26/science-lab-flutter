@@ -43,8 +43,8 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
   int _totalRewards = 0;
   int _lastArm = -1;
   int _lastReward = 0;
-  List<double> _rewardHistory = [];
-  List<double> _regretHistory = [];
+  final List<double> _rewardHistory = [];
+  final List<double> _regretHistory = [];
 
   @override
   void initState() {
@@ -101,7 +101,8 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
 
     // UCB1: Q(a) + c * sqrt(ln(t) / N(a))
     for (int i = 0; i < _numArms; i++) {
-      _ucbValues[i] = _estimatedProbabilities[i] +
+      _ucbValues[i] =
+          _estimatedProbabilities[i] +
           _ucbC * math.sqrt(math.log(_totalPulls) / _pulls[i]);
     }
 
@@ -141,7 +142,8 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
   double _sampleGamma(double shape) {
     // Marsaglia and Tsang's method for gamma > 1
     if (shape < 1) {
-      return _sampleGamma(shape + 1) * math.pow(_random.nextDouble(), 1 / shape);
+      return _sampleGamma(shape + 1) *
+          math.pow(_random.nextDouble(), 1 / shape);
     }
 
     final d = shape - 1 / 3;
@@ -291,8 +293,8 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
           formula: _strategy == 'ucb'
               ? 'UCB: Q(a) + c*sqrt(ln(t)/N(a))'
               : (_strategy == 'thompson'
-                  ? 'Thompson: sample from Beta(alpha, beta)'
-                  : 'Epsilon-Greedy: P(explore) = epsilon'),
+                    ? 'Thompson: sample from Beta(alpha, beta)'
+                    : 'Epsilon-Greedy: P(explore) = epsilon'),
           formulaDescription: isKorean
               ? '탐색(Exploration)과 활용(Exploitation)의 균형을 맞추는 문제'
               : 'Balance exploration and exploitation to maximize rewards',
@@ -426,7 +428,10 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
                             const SizedBox(width: 4),
                             Text(
                               isKorean ? '실제' : 'True',
-                              style: const TextStyle(color: AppColors.muted, fontSize: 9),
+                              style: const TextStyle(
+                                color: AppColors.muted,
+                                fontSize: 9,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Container(
@@ -437,7 +442,10 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
                             const SizedBox(width: 4),
                             Text(
                               isKorean ? '추정' : 'Est',
-                              style: const TextStyle(color: AppColors.muted, fontSize: 9),
+                              style: const TextStyle(
+                                color: AppColors.muted,
+                                fontSize: 9,
+                              ),
                             ),
                           ],
                         ),
@@ -447,7 +455,8 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
                     Row(
                       children: List.generate(_numArms, (i) {
                         final isLastArm = i == _lastArm;
-                        final isBestArm = _trueProbabilities[i] ==
+                        final isBestArm =
+                            _trueProbabilities[i] ==
                             _trueProbabilities.reduce(math.max);
                         return Expanded(
                           child: Padding(
@@ -476,8 +485,8 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
                                       color: isLastArm
                                           ? AppColors.accent
                                           : (isBestArm
-                                              ? Colors.green
-                                              : AppColors.cardBorder),
+                                                ? Colors.green
+                                                : AppColors.cardBorder),
                                       width: isLastArm || isBestArm ? 2 : 1,
                                     ),
                                   ),
@@ -492,7 +501,9 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
                                           heightFactor: _trueProbabilities[i],
                                           alignment: Alignment.bottomCenter,
                                           child: Container(
-                                            color: Colors.green.withValues(alpha: 0.3),
+                                            color: Colors.green.withValues(
+                                              alpha: 0.3,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -502,10 +513,13 @@ class _MultiArmedBanditScreenState extends ConsumerState<MultiArmedBanditScreen>
                                         left: 0,
                                         right: 0,
                                         child: FractionallySizedBox(
-                                          heightFactor: _estimatedProbabilities[i],
+                                          heightFactor:
+                                              _estimatedProbabilities[i],
                                           alignment: Alignment.bottomCenter,
                                           child: Container(
-                                            color: AppColors.accent.withValues(alpha: 0.5),
+                                            color: AppColors.accent.withValues(
+                                              alpha: 0.5,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -575,7 +589,10 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
@@ -689,10 +706,7 @@ class _BanditPainter extends CustomPainter {
         ),
         const Radius.circular(4),
       );
-      canvas.drawRRect(
-        displayRect,
-        Paint()..color = Colors.black87,
-      );
+      canvas.drawRRect(displayRect, Paint()..color = Colors.black87);
 
       // Show reward symbol if just pulled
       if (isSelected) {
@@ -770,11 +784,13 @@ class _BanditPainter extends CustomPainter {
     final padding = 10.0;
 
     for (int i = 0; i < rewardHistory.length; i++) {
-      final x = origin.dx +
+      final x =
+          origin.dx +
           padding +
           (i / (rewardHistory.length - 1).clamp(1, double.infinity)) *
               (chartSize.width - padding * 2);
-      final y = origin.dy +
+      final y =
+          origin.dy +
           chartSize.height -
           padding -
           rewardHistory[i] * (chartSize.height - padding * 2 - 15);
@@ -796,7 +812,8 @@ class _BanditPainter extends CustomPainter {
 
     // Draw optimal line
     final optimalProb = trueProbabilities.reduce(math.max);
-    final optimalY = origin.dy +
+    final optimalY =
+        origin.dy +
         chartSize.height -
         padding -
         optimalProb * (chartSize.height - padding * 2 - 15);
@@ -817,12 +834,22 @@ class _BanditPainter extends CustomPainter {
     );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color,
-      {double fontSize = 12, FontWeight fontWeight = FontWeight.normal}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color, {
+    double fontSize = 12,
+    FontWeight fontWeight = FontWeight.normal,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
       ),
       textDirection: TextDirection.ltr,
     );

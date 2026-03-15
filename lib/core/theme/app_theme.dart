@@ -7,6 +7,9 @@ import '../constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
+  /// 수학 유니코드 기호 렌더링을 위한 폰트 fallback 체인
+  static const List<String> _mathFallback = ['Noto Sans', 'Roboto', 'sans-serif'];
+
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
@@ -22,15 +25,15 @@ class AppTheme {
       ),
       textTheme: GoogleFonts.notoSansKrTextTheme(
         const TextTheme(
-          displayLarge: TextStyle(color: AppColors.ink),
-          displayMedium: TextStyle(color: AppColors.ink),
-          displaySmall: TextStyle(color: AppColors.ink),
-          headlineMedium: TextStyle(color: AppColors.ink),
-          titleLarge: TextStyle(color: AppColors.ink),
-          titleMedium: TextStyle(color: AppColors.muted),
-          bodyLarge: TextStyle(color: AppColors.ink),
-          bodyMedium: TextStyle(color: AppColors.muted),
-          labelLarge: TextStyle(color: AppColors.accent),
+          displayLarge: TextStyle(color: AppColors.ink, fontFamilyFallback: _mathFallback),
+          displayMedium: TextStyle(color: AppColors.ink, fontFamilyFallback: _mathFallback),
+          displaySmall: TextStyle(color: AppColors.ink, fontFamilyFallback: _mathFallback),
+          headlineMedium: TextStyle(color: AppColors.ink, fontFamilyFallback: _mathFallback),
+          titleLarge: TextStyle(color: AppColors.ink, fontFamilyFallback: _mathFallback),
+          titleMedium: TextStyle(color: AppColors.muted, fontFamilyFallback: _mathFallback),
+          bodyLarge: TextStyle(color: AppColors.ink, fontFamilyFallback: _mathFallback),
+          bodyMedium: TextStyle(color: AppColors.muted, fontFamilyFallback: _mathFallback),
+          labelLarge: TextStyle(color: AppColors.accent, fontFamilyFallback: _mathFallback),
         ),
       ),
       cardTheme: CardThemeData(

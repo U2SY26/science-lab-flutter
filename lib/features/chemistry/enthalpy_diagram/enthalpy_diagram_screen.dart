@@ -89,7 +89,7 @@ class _EnthalpyDiagramScreenState extends State<EnthalpyDiagramScreen>
                 max: 500,
                 step: 10,
                 defaultValue: -100,
-                formatValue: (v) => v.toStringAsFixed(0) + ' kJ/mol',
+                formatValue: (v) => '${v.toStringAsFixed(0)} kJ/mol',
                 onChanged: (v) => setState(() => _deltaH = v),
               ),
               advancedControls: [
@@ -100,7 +100,7 @@ class _EnthalpyDiagramScreenState extends State<EnthalpyDiagramScreen>
                 max: 200,
                 step: 5,
                 defaultValue: 50,
-                formatValue: (v) => v.toStringAsFixed(0) + ' kJ/mol',
+                formatValue: (v) => '${v.toStringAsFixed(0)} kJ/mol',
                 onChanged: (v) => setState(() => _activationE = v),
               ),
               ],
@@ -114,8 +114,8 @@ class _EnthalpyDiagramScreenState extends State<EnthalpyDiagramScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('ΔH', _deltaH.toStringAsFixed(0) + ' kJ'),
-          _V('Ea', _activationE.toStringAsFixed(0) + ' kJ'),
+          _V('ΔH', '${_deltaH.toStringAsFixed(0)} kJ'),
+          _V('Ea', '${_activationE.toStringAsFixed(0)} kJ'),
           _V('유형', _reactionType),
                 ]),
               ),

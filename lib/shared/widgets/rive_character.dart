@@ -161,6 +161,7 @@ class _RiveCharacterState extends State<RiveCharacter> {
       return RiveCharacterFallback(
         personaId: widget.personaId,
         mode: widget.mode,
+        emotion: widget.emotion,
         size: widget.size,
         visible: widget.visible,
       );

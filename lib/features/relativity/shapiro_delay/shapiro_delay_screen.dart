@@ -18,14 +18,16 @@ class _ShapiroDelayScreenState extends State<ShapiroDelayScreen>
   double _time = 0;
   bool _isRunning = true;
   double _mass = 1;
-  
+
   double _delay = 0, _rs = 3.0;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -47,7 +49,10 @@ class _ShapiroDelayScreenState extends State<ShapiroDelayScreen>
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +60,27 @@ class _ShapiroDelayScreenState extends State<ShapiroDelayScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('상대성이론 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('샤피로 시간 지연', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '상대성이론 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '샤피로 시간 지연',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -71,29 +92,25 @@ class _ShapiroDelayScreenState extends State<ShapiroDelayScreen>
           simulation: SizedBox(
             height: 350,
             child: CustomPaint(
-              painter: _ShapiroDelayScreenPainter(
-                time: _time,
-                mass: _mass,
-              ),
+              painter: _ShapiroDelayScreenPainter(time: _time, mass: _mass),
               size: Size.infinite,
             ),
           ),
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '중심 질량 (M☉)',
-                value: _mass,
-                min: 0.1,
-                max: 100,
-                step: 0.1,
-                defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1) + ' M☉',
-                onChanged: (v) => setState(() => _mass = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '중심 질량 (M☉)',
+                  value: _mass,
+                  min: 0.1,
+                  max: 100,
+                  step: 0.1,
+                  defaultValue: 1,
+                  formatValue: (v) => '${v.toStringAsFixed(1)} M☉',
+                  onChanged: (v) => setState(() => _mass = v),
+                ),
               ),
-              
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -102,23 +119,31 @@ class _ShapiroDelayScreenState extends State<ShapiroDelayScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('지연', (_delay * 1e6).toStringAsFixed(1) + ' μs'),
-          _V('r_s', _rs.toStringAsFixed(2) + ' km'),
-          _V('M', _mass.toStringAsFixed(1) + ' M☉'),
-                ]),
+                child: Row(
+                  children: [
+                    _V('지연', '${(_delay * 1e6).toStringAsFixed(1)} μs'),
+                    _V('r_s', '${_rs.toStringAsFixed(2)} km'),
+                    _V('M', '${_mass.toStringAsFixed(1)} M☉'),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -129,26 +154,41 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _ShapiroDelayScreenPainter extends CustomPainter {
   final double time;
   final double mass;
 
-  _ShapiroDelayScreenPainter({
-    required this.time,
-    required this.mass,
-  });
+  _ShapiroDelayScreenPainter({required this.time, required this.mass});
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width;
     final h = size.height;
@@ -156,9 +196,9 @@ class _ShapiroDelayScreenPainter extends CustomPainter {
     // Layout: Earth left, Sun center, Mercury right
     // Signal travels from Earth → past Sun → Mercury
     final earthX = w * 0.06;
-    final sunX   = w * 0.50;
-    final mercX  = w * 0.94;
-    final baseY  = h * 0.52;
+    final sunX = w * 0.50;
+    final mercX = w * 0.94;
+    final baseY = h * 0.52;
 
     // Schwarzschild radius → visual sun radius scale
     // Sun M=1: rs=2.95km → use visual radius ~28px; scale with mass^0.4
@@ -183,30 +223,74 @@ class _ShapiroDelayScreenPainter extends CustomPainter {
       Offset(sunX, baseY),
       sunVisR,
       Paint()
-        ..shader = RadialGradient(
-          colors: [const Color(0xFFFFEE88), const Color(0xFFFFAA22), const Color(0xFFFF6600)],
-        ).createShader(Rect.fromCircle(center: Offset(sunX, baseY), radius: sunVisR)),
+        ..shader =
+            RadialGradient(
+              colors: [
+                const Color(0xFFFFEE88),
+                const Color(0xFFFFAA22),
+                const Color(0xFFFF6600),
+              ],
+            ).createShader(
+              Rect.fromCircle(center: Offset(sunX, baseY), radius: sunVisR),
+            ),
     );
 
     // --- Earth ---
-    canvas.drawCircle(Offset(earthX, baseY), 9,
-        Paint()..color = const Color(0xFF2244AA));
-    canvas.drawCircle(Offset(earthX, baseY), 9,
-        Paint()..color = const Color(0xFF33BB55)..style = PaintingStyle.stroke..strokeWidth = 2.5);
-    _drawLabel(canvas, '지구', Offset(earthX - 10, baseY + 13), 9, AppColors.muted);
+    canvas.drawCircle(
+      Offset(earthX, baseY),
+      9,
+      Paint()..color = const Color(0xFF2244AA),
+    );
+    canvas.drawCircle(
+      Offset(earthX, baseY),
+      9,
+      Paint()
+        ..color = const Color(0xFF33BB55)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5,
+    );
+    _drawLabel(
+      canvas,
+      '지구',
+      Offset(earthX - 10, baseY + 13),
+      9,
+      AppColors.muted,
+    );
 
     // --- Mercury ---
-    canvas.drawCircle(Offset(mercX, baseY), 6,
-        Paint()..color = const Color(0xFF997755));
-    canvas.drawCircle(Offset(mercX, baseY), 6,
-        Paint()..color = AppColors.muted..style = PaintingStyle.stroke..strokeWidth = 1.5);
+    canvas.drawCircle(
+      Offset(mercX, baseY),
+      6,
+      Paint()..color = const Color(0xFF997755),
+    );
+    canvas.drawCircle(
+      Offset(mercX, baseY),
+      6,
+      Paint()
+        ..color = AppColors.muted
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
+    );
     _drawLabel(canvas, '수성', Offset(mercX - 8, baseY + 11), 9, AppColors.muted);
 
     // --- Classical straight path (dashed, orange) ---
     final straightY = baseY - sunVisR * 0.45;
-    _drawDashedLine(canvas, Offset(earthX + 10, straightY),
-        Offset(mercX - 7, straightY), const Color(0xFFFF6B35), 0.9, 8, 5);
-    _drawLabel(canvas, '고전 경로', Offset(earthX + 18, straightY - 13), 9, const Color(0xFFFF6B35));
+    _drawDashedLine(
+      canvas,
+      Offset(earthX + 10, straightY),
+      Offset(mercX - 7, straightY),
+      const Color(0xFFFF6B35),
+      0.9,
+      8,
+      5,
+    );
+    _drawLabel(
+      canvas,
+      '고전 경로',
+      Offset(earthX + 18, straightY - 13),
+      9,
+      const Color(0xFFFF6B35),
+    );
 
     // --- GR curved path (bent around Sun) ---
     // Bending impact parameter b proportional to sunVisR; more mass → more bending
@@ -235,49 +319,115 @@ class _ShapiroDelayScreenPainter extends CustomPainter {
         ..strokeWidth = 1.8
         ..style = PaintingStyle.stroke,
     );
-    _drawLabel(canvas, 'GR 경로 (지연)', Offset(earthX + 18, straightY + bendAmp + 4), 9, AppColors.accent);
+    _drawLabel(
+      canvas,
+      'GR 경로 (지연)',
+      Offset(earthX + 18, straightY + bendAmp + 4),
+      9,
+      AppColors.accent,
+    );
 
     // --- Animated signal pulses ---
     // Two pulses: classical (orange) and GR (cyan), GR arrives later
     final grDelay = 0.08 * math.log(1 + mass * 0.5); // normalized extra delay
-    _drawPulse(canvas, time * 0.22, earthX, mercX, straightY, 0.0, 4.5,
-        const Color(0xFFFF6B35));
-    _drawPulseGR(canvas, time * 0.22, earthX, mercX, straightY, bParam, bendAmp,
-        grDelay, 4.5, const Color(0xFF00D4FF));
+    _drawPulse(
+      canvas,
+      time * 0.22,
+      earthX,
+      mercX,
+      straightY,
+      0.0,
+      4.5,
+      const Color(0xFFFF6B35),
+    );
+    _drawPulseGR(
+      canvas,
+      time * 0.22,
+      earthX,
+      mercX,
+      straightY,
+      bParam,
+      bendAmp,
+      grDelay,
+      4.5,
+      const Color(0xFF00D4FF),
+    );
 
     // --- Delay annotation ---
     final delayUs = 4 * mass * 4.93e-6 * math.log(4e22 / (bParam * bParam));
     final delayLabel = '∆t ≈ ${(delayUs * 1e6).abs().toStringAsFixed(0)} μs';
-    _drawLabel(canvas, delayLabel, Offset(sunX - 26, baseY - sunVisR - 18), 10, const Color(0xFF64FF8C));
+    _drawLabel(
+      canvas,
+      delayLabel,
+      Offset(sunX - 26, baseY - sunVisR - 18),
+      10,
+      const Color(0xFF64FF8C),
+    );
 
     // --- 1964 Shapiro label ---
-    _drawLabel(canvas, 'Shapiro 1964', Offset(w * 0.38, h * 0.88), 9, AppColors.muted);
+    _drawLabel(
+      canvas,
+      'Shapiro 1964',
+      Offset(w * 0.38, h * 0.88),
+      9,
+      AppColors.muted,
+    );
     _drawLabel(canvas, '샤피로 시간 지연', Offset(w * 0.36, 8), 11, AppColors.accent);
   }
 
-  void _drawPulse(Canvas canvas, double t, double x0, double x1,
-      double y, double delay, double r, Color color) {
+  void _drawPulse(
+    Canvas canvas,
+    double t,
+    double x0,
+    double x1,
+    double y,
+    double delay,
+    double r,
+    Color color,
+  ) {
     final phase = ((t - delay) % 1.0 + 1.0) % 1.0;
     final px = x0 + phase * (x1 - x0);
-    canvas.drawCircle(Offset(px, y), r,
-        Paint()..color = color.withValues(alpha: 0.9));
+    canvas.drawCircle(
+      Offset(px, y),
+      r,
+      Paint()..color = color.withValues(alpha: 0.9),
+    );
   }
 
-  void _drawPulseGR(Canvas canvas, double t, double x0, double x1,
-      double y, double bParam, double bendAmp, double delay,
-      double r, Color color) {
+  void _drawPulseGR(
+    Canvas canvas,
+    double t,
+    double x0,
+    double x1,
+    double y,
+    double bParam,
+    double bendAmp,
+    double delay,
+    double r,
+    Color color,
+  ) {
     final phase = ((t - delay) % 1.0 + 1.0) % 1.0;
     final px = x0 + phase * (x1 - x0);
     final midX = (x0 + x1) / 2;
     final dx = px - midX;
     final deflect = bendAmp * math.exp(-dx * dx / (bParam * bParam * 8));
     final py = y - deflect;
-    canvas.drawCircle(Offset(px, py), r,
-        Paint()..color = color.withValues(alpha: 0.9));
+    canvas.drawCircle(
+      Offset(px, py),
+      r,
+      Paint()..color = color.withValues(alpha: 0.9),
+    );
   }
 
-  void _drawDashedLine(Canvas canvas, Offset p1, Offset p2, Color color,
-      double strokeWidth, double dashLen, double gapLen) {
+  void _drawDashedLine(
+    Canvas canvas,
+    Offset p1,
+    Offset p2,
+    Color color,
+    double strokeWidth,
+    double dashLen,
+    double gapLen,
+  ) {
     final dx = p2.dx - p1.dx;
     final dy = p2.dy - p1.dy;
     final dist = math.sqrt(dx * dx + dy * dy);
@@ -303,9 +453,18 @@ class _ShapiroDelayScreenPainter extends CustomPainter {
     }
   }
 
-  void _drawLabel(Canvas canvas, String text, Offset pos, double fontSize, Color color) {
+  void _drawLabel(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    double fontSize,
+    Color color,
+  ) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, pos);

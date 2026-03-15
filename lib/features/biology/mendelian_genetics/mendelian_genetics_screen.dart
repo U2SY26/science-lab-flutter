@@ -93,7 +93,7 @@ class _MendelianGeneticsScreenState extends State<MendelianGeneticsScreen>
                 min: 0.0,
                 max: 2.0,
                 defaultValue: 1.0,
-                formatValue: (v) => '${["AA","Aa","aa"][v.toInt()]}',
+                formatValue: (v) => ["AA","Aa","aa"][v.toInt()],
                 onChanged: (v) => setState(() => _parent1 = v),
               ),
               advancedControls: [
@@ -103,7 +103,7 @@ class _MendelianGeneticsScreenState extends State<MendelianGeneticsScreen>
                 min: 0.0,
                 max: 2.0,
                 defaultValue: 1.0,
-                formatValue: (v) => '${["AA","Aa","aa"][v.toInt()]}',
+                formatValue: (v) => ["AA","Aa","aa"][v.toInt()],
                 onChanged: (v) => setState(() => _parent2 = v),
               ),
               ],

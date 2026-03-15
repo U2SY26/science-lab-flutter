@@ -29,8 +29,8 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
   // Agent state
   int _agentRow = 0;
   int _agentCol = 0;
-  int _goalRow = 4;
-  int _goalCol = 4;
+  final int _goalRow = 4;
+  final int _goalCol = 4;
 
   // Obstacles
   List<List<int>> _obstacles = [];
@@ -45,7 +45,7 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
   int _episode = 0;
   int _stepCount = 0;
   int _totalReward = 0;
-  List<int> _episodeRewards = [];
+  final List<int> _episodeRewards = [];
 
   // Actions: 0=up, 1=right, 2=down, 3=left
   static const List<List<int>> _actionDeltas = [
@@ -70,17 +70,17 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
     // Initialize rewards
     _rewards = List.generate(
       _gridSize,
-      (i) => List.generate(_gridSize, (j) => -1.0), // Small negative reward for each step
+      (i) => List.generate(
+        _gridSize,
+        (j) => -1.0,
+      ), // Small negative reward for each step
     );
     _rewards[_goalRow][_goalCol] = 100.0; // Goal reward
 
     // Initialize Q-table
     _qTable = List.generate(
       _gridSize,
-      (i) => List.generate(
-        _gridSize,
-        (j) => List.generate(4, (_) => 0.0),
-      ),
+      (i) => List.generate(_gridSize, (j) => List.generate(4, (_) => 0.0)),
     );
 
     // Set obstacles
@@ -153,7 +153,8 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
       // Q-learning update
       final currentQ = _qTable[_agentRow][_agentCol][action];
       final maxNextQ = _qTable[nextRow][nextCol].reduce(math.max);
-      final newQ = currentQ +
+      final newQ =
+          currentQ +
           _learningRate * (reward + _discountFactor * maxNextQ - currentQ);
       _qTable[_agentRow][_agentCol][action] = newQ;
 
@@ -251,7 +252,8 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
         child: SimulationContainer(
           category: isKorean ? '강화학습' : 'Reinforcement Learning',
           title: isKorean ? 'Q-러닝' : 'Q-Learning',
-          formula: 'Q(s,a) <- Q(s,a) + alpha[r + gamma*max Q(s\',a\') - Q(s,a)]',
+          formula:
+              'Q(s,a) <- Q(s,a) + alpha[r + gamma*max Q(s\',a\') - Q(s,a)]',
           formulaDescription: isKorean
               ? '에이전트가 환경과 상호작용하며 최적의 행동 정책을 학습'
               : 'Agent learns optimal policy by interacting with environment',
@@ -320,8 +322,8 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
                           value: _episodeRewards.isEmpty
                               ? '-'
                               : (_episodeRewards.reduce((a, b) => a + b) /
-                                      _episodeRewards.length)
-                                  .toStringAsFixed(1),
+                                        _episodeRewards.length)
+                                    .toStringAsFixed(1),
                           color: Colors.purple,
                         ),
                       ],
@@ -344,7 +346,9 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
                 ),
                 advancedControls: [
                   SimSlider(
-                    label: isKorean ? '할인 계수 (gamma)' : 'Discount Factor (gamma)',
+                    label: isKorean
+                        ? '할인 계수 (gamma)'
+                        : 'Discount Factor (gamma)',
                     value: _discountFactor,
                     min: 0.5,
                     max: 0.99,
@@ -382,7 +386,8 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: List.generate(4, (i) {
                         final qValue = _qTable[_agentRow][_agentCol][i];
-                        final isMax = qValue ==
+                        final isMax =
+                            qValue ==
                             _qTable[_agentRow][_agentCol].reduce(math.max);
                         return Column(
                           children: [
@@ -400,10 +405,13 @@ class _QLearningScreenState extends ConsumerState<QLearningScreen>
                             Text(
                               qValue.toStringAsFixed(1),
                               style: TextStyle(
-                                color: isMax ? AppColors.accent : AppColors.muted,
+                                color: isMax
+                                    ? AppColors.accent
+                                    : AppColors.muted,
                                 fontSize: 11,
-                                fontWeight:
-                                    isMax ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isMax
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
                           ],
@@ -459,7 +467,10 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
@@ -625,7 +636,10 @@ class _QLearningPainter extends CustomPainter {
 
       final path = Path();
       for (int i = 0; i < episodeRewards.length; i++) {
-        final x = chartLeft + (i / (episodeRewards.length - 1).clamp(1, double.infinity)) * chartWidth;
+        final x =
+            chartLeft +
+            (i / (episodeRewards.length - 1).clamp(1, double.infinity)) *
+                chartWidth;
         final normalizedY = (episodeRewards[i] - minReward) / effectiveRange;
         final y = chartTop + chartHeight - normalizedY * chartHeight * 0.9 - 10;
 
@@ -646,19 +660,36 @@ class _QLearningPainter extends CustomPainter {
     }
 
     // Legend
-    _drawText(canvas, isKorean ? '에이전트' : 'Agent',
-        Offset(gridLeft, gridTop + gridWidth + 15), Colors.yellow,
-        fontSize: 9);
-    _drawText(canvas, isKorean ? '목표' : 'Goal',
-        Offset(gridLeft + 60, gridTop + gridWidth + 15), Colors.green,
-        fontSize: 9);
-    _drawText(canvas, isKorean ? '장애물' : 'Obstacle',
-        Offset(gridLeft + 100, gridTop + gridWidth + 15), Colors.red,
-        fontSize: 9);
+    _drawText(
+      canvas,
+      isKorean ? '에이전트' : 'Agent',
+      Offset(gridLeft, gridTop + gridWidth + 15),
+      Colors.yellow,
+      fontSize: 9,
+    );
+    _drawText(
+      canvas,
+      isKorean ? '목표' : 'Goal',
+      Offset(gridLeft + 60, gridTop + gridWidth + 15),
+      Colors.green,
+      fontSize: 9,
+    );
+    _drawText(
+      canvas,
+      isKorean ? '장애물' : 'Obstacle',
+      Offset(gridLeft + 100, gridTop + gridWidth + 15),
+      Colors.red,
+      fontSize: 9,
+    );
   }
 
   void _drawArrow(
-      Canvas canvas, Offset center, int direction, double size, Color color) {
+    Canvas canvas,
+    Offset center,
+    int direction,
+    double size,
+    Color color,
+  ) {
     final paint = Paint()
       ..color = color
       ..strokeWidth = 2
@@ -706,12 +737,22 @@ class _QLearningPainter extends CustomPainter {
     );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color,
-      {double fontSize = 12, FontWeight fontWeight = FontWeight.normal}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color, {
+    double fontSize = 12,
+    FontWeight fontWeight = FontWeight.normal,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
       ),
       textDirection: TextDirection.ltr,
     );

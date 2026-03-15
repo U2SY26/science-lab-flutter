@@ -89,7 +89,7 @@ class _SupernovaScreenState extends State<SupernovaScreen>
                 max: 60,
                 step: 1,
                 defaultValue: 15,
-                formatValue: (v) => v.toStringAsFixed(0) + ' M☉',
+                formatValue: (v) => '${v.toStringAsFixed(0)} M☉',
                 onChanged: (v) => setState(() => _progenitorMass = v),
               ),
               
@@ -104,8 +104,8 @@ class _SupernovaScreenState extends State<SupernovaScreen>
                 ),
                 child: Row(children: [
           _V('유형', _type),
-          _V('잔해', _remnantMass.toStringAsFixed(1) + ' M☉'),
-          _V('질량', _progenitorMass.toStringAsFixed(0) + ' M☉'),
+          _V('잔해', '${_remnantMass.toStringAsFixed(1)} M☉'),
+          _V('질량', '${_progenitorMass.toStringAsFixed(0)} M☉'),
                 ]),
               ),
             ],

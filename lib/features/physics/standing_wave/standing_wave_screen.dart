@@ -20,7 +20,7 @@ class _StandingWaveScreenState extends State<StandingWaveScreen>
 
   int _harmonicNumber = 1; // n = 1, 2, 3, ...
   double _amplitude = 50;
-  double _stringLength = 1.0; // m
+  final double _stringLength = 1.0; // m
   bool _showNodes = true;
   bool _showEnvelope = true;
 
@@ -277,17 +277,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
@@ -299,7 +310,11 @@ class _OptionChip extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _OptionChip({required this.label, required this.isSelected, required this.onTap});
+  const _OptionChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -308,14 +323,21 @@ class _OptionChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.accent.withValues(alpha: 0.2) : AppColors.simBg,
+          color: isSelected
+              ? AppColors.accent.withValues(alpha: 0.2)
+              : AppColors.simBg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? AppColors.accent : AppColors.cardBorder),
+          border: Border.all(
+            color: isSelected ? AppColors.accent : AppColors.cardBorder,
+          ),
         ),
         child: Center(
           child: Text(
             label,
-            style: TextStyle(color: isSelected ? AppColors.accent : AppColors.muted, fontSize: 12),
+            style: TextStyle(
+              color: isSelected ? AppColors.accent : AppColors.muted,
+              fontSize: 12,
+            ),
           ),
         ),
       ),
@@ -445,7 +467,13 @@ class _StandingWavePainter extends CustomPainter {
         );
 
         // 라벨
-        _drawText(canvas, 'N', Offset(nodeX - 4, centerY + 15), Colors.red, fontSize: 10);
+        _drawText(
+          canvas,
+          'N',
+          Offset(nodeX - 4, centerY + 15),
+          Colors.red,
+          fontSize: 10,
+        );
       }
 
       // 배 (antinodes) - 최대 진폭
@@ -461,14 +489,32 @@ class _StandingWavePainter extends CustomPainter {
         );
 
         // 라벨
-        _drawText(canvas, 'A', Offset(antinodeX - 4, centerY - amplitude - 20), Colors.green, fontSize: 10);
+        _drawText(
+          canvas,
+          'A',
+          Offset(antinodeX - 4, centerY - amplitude - 20),
+          Colors.green,
+          fontSize: 10,
+        );
       }
     }
 
     // 범례
     if (showNodes) {
-      _drawText(canvas, 'N: 마디 (Node)', Offset(padding, size.height - 30), Colors.red, fontSize: 10);
-      _drawText(canvas, 'A: 배 (Antinode)', Offset(padding + 100, size.height - 30), Colors.green, fontSize: 10);
+      _drawText(
+        canvas,
+        'N: 마디 (Node)',
+        Offset(padding, size.height - 30),
+        Colors.red,
+        fontSize: 10,
+      );
+      _drawText(
+        canvas,
+        'A: 배 (Antinode)',
+        Offset(padding + 100, size.height - 30),
+        Colors.green,
+        fontSize: 10,
+      );
     }
 
     // 배음 라벨
@@ -486,14 +532,32 @@ class _StandingWavePainter extends CustomPainter {
       default:
         harmonicName = '$harmonicNumber차 배음';
     }
-    _drawText(canvas, harmonicName, Offset(size.width / 2 - 60, 20), AppColors.ink, fontSize: 12, fontWeight: FontWeight.bold);
+    _drawText(
+      canvas,
+      harmonicName,
+      Offset(size.width / 2 - 60, 20),
+      AppColors.ink,
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12, FontWeight fontWeight = FontWeight.normal}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+    FontWeight fontWeight = FontWeight.normal,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: fontWeight),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
       ),
       textDirection: TextDirection.ltr,
     );
@@ -503,6 +567,7 @@ class _StandingWavePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _StandingWavePainter oldDelegate) {
-    return oldDelegate.time != time || oldDelegate.harmonicNumber != harmonicNumber;
+    return oldDelegate.time != time ||
+        oldDelegate.harmonicNumber != harmonicNumber;
   }
 }

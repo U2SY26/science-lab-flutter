@@ -350,7 +350,7 @@ class _PopulationGeneticsScreenState extends ConsumerState<PopulationGeneticsScr
                   Switch(
                     value: _enableDrift,
                     onChanged: (v) => setState(() => _enableDrift = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                   Text(
                     isKorean ? '유전적 부동' : 'Genetic Drift',

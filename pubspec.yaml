@@ -2,7 +2,7 @@ name: science_lab_flutter
 description: "눈으로 보는 과학 - 힘들기만한 물리,수학을 시뮬레이터로 재미있게 이해하기"
 publish_to: 'none'
 
-version: 1.23.2+43
+version: 2.0.0+78
 
 environment:
   sdk: ^3.9.2
@@ -34,8 +34,8 @@ dependencies:
   # Ads
   google_mobile_ads: ^5.2.0
 
-  # Video
-  video_player: ^2.9.2
+  # HTTP
+  http: ^1.2.2
 
   # In-App Purchase
   in_app_purchase: ^3.2.0
@@ -44,11 +44,15 @@ dependencies:
   url_launcher: ^6.2.5
 
   # Firebase
-  firebase_core: ^4.4.0
+  firebase_core: ^4.5.0
   firebase_analytics: ^12.0.0
   firebase_remote_config: ^6.1.4
-  firebase_auth: ^6.1.4
-  firebase_ai: ^3.8.0
+  cloud_firestore: ^6.1.2
+  firebase_auth: ^6.0.0
+
+  # Device Info & Anonymity
+  device_info_plus: ^11.2.0
+  crypto: ^3.0.6
 
   # App Info
   package_info_plus: ^8.1.3
@@ -59,6 +63,7 @@ dependencies:
 
   # Animation
   rive: ^0.13.20
+  lottie: ^3.3.1
 
   # Deep Links
   app_links: ^6.3.2
@@ -68,6 +73,8 @@ dependencies:
 
   # Internationalization
   intl: any
+  firebase_ai: ^3.9.0
+  firebase_app_check: ^0.4.1+5
 
 dev_dependencies:
   flutter_test:
@@ -89,5 +96,5 @@ flutter:
 
   assets:
     - assets/icon/
-    - assets/video/
     - assets/rive/
+    - assets/lottie/

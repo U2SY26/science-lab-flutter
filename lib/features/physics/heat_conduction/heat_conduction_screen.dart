@@ -20,7 +20,7 @@ class _HeatConductionScreenState extends State<HeatConductionScreen>
 
   double _leftTemp = 100; // 왼쪽 온도 (°C)
   double _rightTemp = 20; // 오른쪽 온도 (°C)
-  double _conductivity = 0.5; // 열전도도 (상대값)
+  final double _conductivity = 0.5; // 열전도도 (상대값)
   String _material = '구리';
   bool _isRunning = true;
 
@@ -63,7 +63,11 @@ class _HeatConductionScreenState extends State<HeatConductionScreen>
       final k = _conductivity * _materials[_material]!;
 
       for (int i = 1; i < _segments - 1; i++) {
-        final diffusion = k * (_temperatures[i - 1] - 2 * _temperatures[i] + _temperatures[i + 1]);
+        final diffusion =
+            k *
+            (_temperatures[i - 1] -
+                2 * _temperatures[i] +
+                _temperatures[i + 1]);
         newTemps[i] = _temperatures[i] + diffusion * 0.5;
       }
 
@@ -145,10 +149,14 @@ class _HeatConductionScreenState extends State<HeatConductionScreen>
                             decoration: BoxDecoration(
                               color: _getTemperatureColor(_temperatures[i]),
                               borderRadius: i == 0
-                                  ? const BorderRadius.horizontal(left: Radius.circular(8))
+                                  ? const BorderRadius.horizontal(
+                                      left: Radius.circular(8),
+                                    )
                                   : i == _segments - 1
-                                      ? const BorderRadius.horizontal(right: Radius.circular(8))
-                                      : null,
+                                  ? const BorderRadius.horizontal(
+                                      right: Radius.circular(8),
+                                    )
+                                  : null,
                             ),
                           ),
                         );
@@ -204,9 +212,22 @@ class _HeatConductionScreenState extends State<HeatConductionScreen>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _InfoItem(label: '왼쪽 온도', value: '${_leftTemp.toInt()}°C', color: Colors.red),
-                    _InfoItem(label: '열전도도', value: '${(_materials[_material]! * 100).toStringAsFixed(1)}%', color: AppColors.accent),
-                    _InfoItem(label: '오른쪽 온도', value: '${_rightTemp.toInt()}°C', color: Colors.blue),
+                    _InfoItem(
+                      label: '왼쪽 온도',
+                      value: '${_leftTemp.toInt()}°C',
+                      color: Colors.red,
+                    ),
+                    _InfoItem(
+                      label: '열전도도',
+                      value:
+                          '${(_materials[_material]! * 100).toStringAsFixed(1)}%',
+                      color: AppColors.accent,
+                    ),
+                    _InfoItem(
+                      label: '오른쪽 온도',
+                      value: '${_rightTemp.toInt()}°C',
+                      color: Colors.blue,
+                    ),
                   ],
                 ),
               ),
@@ -258,11 +279,7 @@ class _HeatConductionScreenState extends State<HeatConductionScreen>
                   setState(() => _isRunning = !_isRunning);
                 },
               ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -276,14 +293,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -326,7 +357,8 @@ class _TemperatureGraphPainter extends CustomPainter {
 
     for (int i = 0; i < temperatures.length; i++) {
       final x = padding + (i / (temperatures.length - 1)) * graphWidth;
-      final y = size.height - padding - (temperatures[i] / maxTemp) * graphHeight;
+      final y =
+          size.height - padding - (temperatures[i] / maxTemp) * graphHeight;
 
       if (i == 0) {
         path.moveTo(x, y);
@@ -346,13 +378,34 @@ class _TemperatureGraphPainter extends CustomPainter {
     );
 
     // 라벨
-    _drawText(canvas, 'T(°C)', Offset(padding - 25, padding - 10), AppColors.muted, fontSize: 10);
-    _drawText(canvas, 'x', Offset(size.width - padding + 5, size.height - padding + 5), AppColors.muted, fontSize: 10);
+    _drawText(
+      canvas,
+      'T(°C)',
+      Offset(padding - 25, padding - 10),
+      AppColors.muted,
+      fontSize: 10,
+    );
+    _drawText(
+      canvas,
+      'x',
+      Offset(size.width - padding + 5, size.height - padding + 5),
+      AppColors.muted,
+      fontSize: 10,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

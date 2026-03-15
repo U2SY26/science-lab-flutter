@@ -107,12 +107,18 @@ class _TessellationScreenState extends State<TessellationScreen> {
                   children: [
                     Text(
                       _patternNames[_pattern]!,
-                      style: const TextStyle(color: AppColors.ink, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _getPatternInfo(),
-                      style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                 ),
@@ -127,7 +133,7 @@ class _TessellationScreenState extends State<TessellationScreen> {
                   Switch(
                     value: _showColors,
                     onChanged: (v) => setState(() => _showColors = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                 ],
               ),
@@ -223,12 +229,17 @@ class _TessellationPainter extends CustomPainter {
 
         canvas.drawPath(
           path1,
-          Paint()..color = showColors ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6) : Colors.blue.withValues(alpha: 0.2),
+          Paint()
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6)
+                : Colors.blue.withValues(alpha: 0.2),
         );
         canvas.drawPath(
           path1,
           Paint()
-            ..color = showColors ? _colors[colorIndex % _colors.length] : Colors.blue
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length]
+                : Colors.blue
             ..strokeWidth = 1
             ..style = PaintingStyle.stroke,
         );
@@ -243,12 +254,17 @@ class _TessellationPainter extends CustomPainter {
 
         canvas.drawPath(
           path2,
-          Paint()..color = showColors ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6) : Colors.green.withValues(alpha: 0.2),
+          Paint()
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6)
+                : Colors.green.withValues(alpha: 0.2),
         );
         canvas.drawPath(
           path2,
           Paint()
-            ..color = showColors ? _colors[colorIndex % _colors.length] : Colors.green
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length]
+                : Colors.green
             ..strokeWidth = 1
             ..style = PaintingStyle.stroke,
         );
@@ -266,12 +282,17 @@ class _TessellationPainter extends CustomPainter {
 
         canvas.drawRect(
           rect,
-          Paint()..color = showColors ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6) : Colors.blue.withValues(alpha: 0.2),
+          Paint()
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6)
+                : Colors.blue.withValues(alpha: 0.2),
         );
         canvas.drawRect(
           rect,
           Paint()
-            ..color = showColors ? _colors[colorIndex % _colors.length] : Colors.blue
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length]
+                : Colors.blue
             ..strokeWidth = 1
             ..style = PaintingStyle.stroke,
         );
@@ -306,12 +327,17 @@ class _TessellationPainter extends CustomPainter {
 
         canvas.drawPath(
           path,
-          Paint()..color = showColors ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6) : Colors.blue.withValues(alpha: 0.2),
+          Paint()
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6)
+                : Colors.blue.withValues(alpha: 0.2),
         );
         canvas.drawPath(
           path,
           Paint()
-            ..color = showColors ? _colors[colorIndex % _colors.length] : Colors.blue
+            ..color = showColors
+                ? _colors[colorIndex % _colors.length]
+                : Colors.blue
             ..strokeWidth = 1
             ..style = PaintingStyle.stroke,
         );
@@ -324,8 +350,16 @@ class _TessellationPainter extends CustomPainter {
     final s = tileSize * 0.4;
     int colorIndex = 0;
 
-    for (double y = -tileSize; y < size.height + tileSize; y += tileSize * 0.8) {
-      for (double x = -tileSize; x < size.width + tileSize; x += tileSize * 0.8) {
+    for (
+      double y = -tileSize;
+      y < size.height + tileSize;
+      y += tileSize * 0.8
+    ) {
+      for (
+        double x = -tileSize;
+        x < size.width + tileSize;
+        x += tileSize * 0.8
+      ) {
         // 카이로 펜타곤 패턴 (간단화된 버전)
         for (int i = 0; i < 4; i++) {
           final angle = math.pi / 2 * i;
@@ -349,12 +383,17 @@ class _TessellationPainter extends CustomPainter {
 
           canvas.drawPath(
             path,
-            Paint()..color = showColors ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6) : Colors.blue.withValues(alpha: 0.2),
+            Paint()
+              ..color = showColors
+                  ? _colors[colorIndex % _colors.length].withValues(alpha: 0.6)
+                  : Colors.blue.withValues(alpha: 0.2),
           );
           canvas.drawPath(
             path,
             Paint()
-              ..color = showColors ? _colors[colorIndex % _colors.length] : Colors.blue
+              ..color = showColors
+                  ? _colors[colorIndex % _colors.length]
+                  : Colors.blue
               ..strokeWidth = 1
               ..style = PaintingStyle.stroke,
           );

@@ -18,14 +18,16 @@ class _StefanBoltzmannScreenState extends State<StefanBoltzmannScreen>
   double _time = 0;
   bool _isRunning = true;
   double _temperature = 5778;
-  
+
   double _power = 0, _peakWave = 500;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -47,7 +49,10 @@ class _StefanBoltzmannScreenState extends State<StefanBoltzmannScreen>
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +60,27 @@ class _StefanBoltzmannScreenState extends State<StefanBoltzmannScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('물리 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('슈테판-볼츠만 복사', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '물리 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '슈테판-볼츠만 복사',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -81,19 +102,18 @@ class _StefanBoltzmannScreenState extends State<StefanBoltzmannScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '온도 (K)',
-                value: _temperature,
-                min: 300,
-                max: 30000,
-                step: 100,
-                defaultValue: 5778,
-                formatValue: (v) => v.toStringAsFixed(0) + ' K',
-                onChanged: (v) => setState(() => _temperature = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '온도 (K)',
+                  value: _temperature,
+                  min: 300,
+                  max: 30000,
+                  step: 100,
+                  defaultValue: 5778,
+                  formatValue: (v) => '${v.toStringAsFixed(0)} K',
+                  onChanged: (v) => setState(() => _temperature = v),
+                ),
               ),
-              
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -102,23 +122,31 @@ class _StefanBoltzmannScreenState extends State<StefanBoltzmannScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('P', (_power / 1e6).toStringAsFixed(1) + ' MW/m²'),
-          _V('λ_max', _peakWave.toStringAsFixed(0) + ' nm'),
-          _V('T', _temperature.toStringAsFixed(0) + ' K'),
-                ]),
+                child: Row(
+                  children: [
+                    _V('P', '${(_power / 1e6).toStringAsFixed(1)} MW/m²'),
+                    _V('λ_max', '${_peakWave.toStringAsFixed(0)} nm'),
+                    _V('T', '${_temperature.toStringAsFixed(0)} K'),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -129,11 +157,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _StefanBoltzmannScreenPainter extends CustomPainter {
@@ -148,25 +191,67 @@ class _StefanBoltzmannScreenPainter extends CustomPainter {
   // Map temperature to body color (blackbody approximation)
   Color _tempToColor(double t) {
     if (t < 800) return const Color(0xFF1A0800);
-    if (t < 1500) return Color.fromARGB(255, (80 + (t - 800) / 700 * 120).round().clamp(0, 255), 10, 0);
-    if (t < 3000) return Color.fromARGB(255, 200, ((t - 1500) / 1500 * 80).round().clamp(0, 80), 0);
-    if (t < 5000) return Color.fromARGB(255, 255, ((t - 3000) / 2000 * 140).round().clamp(0, 140), ((t - 3000) / 2000 * 30).round().clamp(0, 30));
-    if (t < 8000) return Color.fromARGB(255, 255, (140 + (t - 5000) / 3000 * 115).round().clamp(0, 255), ((t - 5000) / 3000 * 180).round().clamp(0, 180));
-    return Color.fromARGB(255, 255, 255, ((t - 8000) / 22000 * 255).round().clamp(180, 255));
+    if (t < 1500) {
+      return Color.fromARGB(
+        255,
+        (80 + (t - 800) / 700 * 120).round().clamp(0, 255),
+        10,
+        0,
+      );
+    }
+    if (t < 3000) {
+      return Color.fromARGB(
+        255,
+        200,
+        ((t - 1500) / 1500 * 80).round().clamp(0, 80),
+        0,
+      );
+    }
+    if (t < 5000) {
+      return Color.fromARGB(
+        255,
+        255,
+        ((t - 3000) / 2000 * 140).round().clamp(0, 140),
+        ((t - 3000) / 2000 * 30).round().clamp(0, 30),
+      );
+    }
+    if (t < 8000) {
+      return Color.fromARGB(
+        255,
+        255,
+        (140 + (t - 5000) / 3000 * 115).round().clamp(0, 255),
+        ((t - 5000) / 3000 * 180).round().clamp(0, 180),
+      );
+    }
+    return Color.fromARGB(
+      255,
+      255,
+      255,
+      ((t - 8000) / 22000 * 255).round().clamp(180, 255),
+    );
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width <= 0 || size.height <= 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0A0A0F));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0A0A0F),
+    );
 
     final w = size.width;
     final h = size.height;
 
     // Grid
-    final gridPaint = Paint()..color = const Color(0xFF1A3040).withValues(alpha: 0.3)..strokeWidth = 0.5;
-    for (double x = 0; x < w; x += 30) { canvas.drawLine(Offset(x, 0), Offset(x, h), gridPaint); }
-    for (double y = 0; y < h; y += 30) { canvas.drawLine(Offset(0, y), Offset(w, y), gridPaint); }
+    final gridPaint = Paint()
+      ..color = const Color(0xFF1A3040).withValues(alpha: 0.3)
+      ..strokeWidth = 0.5;
+    for (double x = 0; x < w; x += 30) {
+      canvas.drawLine(Offset(x, 0), Offset(x, h), gridPaint);
+    }
+    for (double y = 0; y < h; y += 30) {
+      canvas.drawLine(Offset(0, y), Offset(w, y), gridPaint);
+    }
 
     // Derived
     final sigma = 5.67e-8;
@@ -191,17 +276,24 @@ class _StefanBoltzmannScreenPainter extends CustomPainter {
         Offset(bodyCx, bodyCy),
         layerR,
         Paint()
-          ..color = bodyColor.withValues(alpha: 0.04 + (1 - glowFrac) * 0.06 * tNorm.clamp(0.0, 1.0))
+          ..color = bodyColor.withValues(
+            alpha: 0.04 + (1 - glowFrac) * 0.06 * tNorm.clamp(0.0, 1.0),
+          )
           ..maskFilter = MaskFilter.blur(BlurStyle.normal, layerR * 0.5),
       );
     }
 
     // --- Body circle ---
-    canvas.drawCircle(Offset(bodyCx, bodyCy), glowR, Paint()..color = bodyColor);
     canvas.drawCircle(
       Offset(bodyCx, bodyCy),
       glowR,
-      Paint()..color = Colors.white.withValues(alpha: 0.08 * tNorm.clamp(0.0, 1.0))
+      Paint()..color = bodyColor,
+    );
+    canvas.drawCircle(
+      Offset(bodyCx, bodyCy),
+      glowR,
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.08 * tNorm.clamp(0.0, 1.0))
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
     );
 
@@ -242,10 +334,34 @@ class _StefanBoltzmannScreenPainter extends CustomPainter {
     final specTop = specBot - specH;
 
     // Axes
-    canvas.drawLine(Offset(specLeft, specBot), Offset(specLeft + specW, specBot), Paint()..color = const Color(0xFF5A8A9A)..strokeWidth = 1);
-    canvas.drawLine(Offset(specLeft, specTop), Offset(specLeft, specBot), Paint()..color = const Color(0xFF5A8A9A)..strokeWidth = 1);
-    _drawLabel(canvas, 'λ (nm)', Offset(specLeft + specW - 10, specBot + 10), const Color(0xFF5A8A9A), 8);
-    _drawLabel(canvas, 'I', Offset(specLeft - 8, specTop + 8), const Color(0xFF5A8A9A), 8);
+    canvas.drawLine(
+      Offset(specLeft, specBot),
+      Offset(specLeft + specW, specBot),
+      Paint()
+        ..color = const Color(0xFF5A8A9A)
+        ..strokeWidth = 1,
+    );
+    canvas.drawLine(
+      Offset(specLeft, specTop),
+      Offset(specLeft, specBot),
+      Paint()
+        ..color = const Color(0xFF5A8A9A)
+        ..strokeWidth = 1,
+    );
+    _drawLabel(
+      canvas,
+      'λ (nm)',
+      Offset(specLeft + specW - 10, specBot + 10),
+      const Color(0xFF5A8A9A),
+      8,
+    );
+    _drawLabel(
+      canvas,
+      'I',
+      Offset(specLeft - 8, specTop + 8),
+      const Color(0xFF5A8A9A),
+      8,
+    );
 
     // Planck curve: B(λ,T) ∝ λ^-5 / (exp(hc/λkT) - 1)
     // Approximate: normalized for display
@@ -280,7 +396,10 @@ class _StefanBoltzmannScreenPainter extends CustomPainter {
     }
     canvas.drawPath(
       specPath,
-      Paint()..color = bodyColor.withValues(alpha: 0.85)..strokeWidth = 1.5..style = PaintingStyle.stroke,
+      Paint()
+        ..color = bodyColor.withValues(alpha: 0.85)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
     );
 
     // Peak wavelength marker
@@ -288,46 +407,118 @@ class _StefanBoltzmannScreenPainter extends CustomPainter {
     canvas.drawLine(
       Offset(peakX, specTop),
       Offset(peakX, specBot),
-      Paint()..color = const Color(0xFFE0F4FF).withValues(alpha: 0.35)..strokeWidth = 1,
+      Paint()
+        ..color = const Color(0xFFE0F4FF).withValues(alpha: 0.35)
+        ..strokeWidth = 1,
     );
-    _drawLabel(canvas, 'λ_max', Offset(peakX, specTop - 8), const Color(0xFFE0F4FF), 8);
+    _drawLabel(
+      canvas,
+      'λ_max',
+      Offset(peakX, specTop - 8),
+      const Color(0xFFE0F4FF),
+      8,
+    );
 
     // --- Second body (cool reference, T=300K) for comparison ---
     final refCx = w * 0.72;
     final refCy = h * 0.40;
     final refR = baseR * 0.45;
-    canvas.drawCircle(Offset(refCx, refCy), refR, Paint()..color = const Color(0xFF1A2030));
-    canvas.drawCircle(Offset(refCx, refCy), refR, Paint()..color = const Color(0xFF5A8A9A).withValues(alpha: 0.4)..strokeWidth = 1..style = PaintingStyle.stroke);
-    _drawLabel(canvas, '300K', Offset(refCx, refCy + refR + 10), const Color(0xFF5A8A9A), 8);
+    canvas.drawCircle(
+      Offset(refCx, refCy),
+      refR,
+      Paint()..color = const Color(0xFF1A2030),
+    );
+    canvas.drawCircle(
+      Offset(refCx, refCy),
+      refR,
+      Paint()
+        ..color = const Color(0xFF5A8A9A).withValues(alpha: 0.4)
+        ..strokeWidth = 1
+        ..style = PaintingStyle.stroke,
+    );
+    _drawLabel(
+      canvas,
+      '300K',
+      Offset(refCx, refCy + refR + 10),
+      const Color(0xFF5A8A9A),
+      8,
+    );
 
     // --- Temperature label on body ---
-    _drawLabel(canvas, '${temperature.toStringAsFixed(0)}K', Offset(bodyCx, bodyCy + glowR + 14), bodyColor, 10, bold: true);
+    _drawLabel(
+      canvas,
+      '${temperature.toStringAsFixed(0)}K',
+      Offset(bodyCx, bodyCy + glowR + 14),
+      bodyColor,
+      10,
+      bold: true,
+    );
 
     // --- P = σAT⁴ values ---
     final powerStr = power > 1e9
         ? '${(power / 1e9).toStringAsFixed(1)} GW/m²'
         : power > 1e6
-            ? '${(power / 1e6).toStringAsFixed(1)} MW/m²'
-            : '${(power / 1e3).toStringAsFixed(1)} kW/m²';
-    _drawLabel(canvas, 'P = σAT⁴', Offset(w * 0.27, h * 0.76), const Color(0xFFE0F4FF), 10);
-    _drawLabel(canvas, '= $powerStr', Offset(w * 0.27, h * 0.83), const Color(0xFF00D4FF), 10);
-    _drawLabel(canvas, 'λ_max = ${peakNm.toStringAsFixed(0)} nm', Offset(w * 0.27, h * 0.90), const Color(0xFFFF6B35), 9);
+        ? '${(power / 1e6).toStringAsFixed(1)} MW/m²'
+        : '${(power / 1e3).toStringAsFixed(1)} kW/m²';
+    _drawLabel(
+      canvas,
+      'P = σAT⁴',
+      Offset(w * 0.27, h * 0.76),
+      const Color(0xFFE0F4FF),
+      10,
+    );
+    _drawLabel(
+      canvas,
+      '= $powerStr',
+      Offset(w * 0.27, h * 0.83),
+      const Color(0xFF00D4FF),
+      10,
+    );
+    _drawLabel(
+      canvas,
+      'λ_max = ${peakNm.toStringAsFixed(0)} nm',
+      Offset(w * 0.27, h * 0.90),
+      const Color(0xFFFF6B35),
+      9,
+    );
 
     // Title
-    _drawLabel(canvas, '슈테판-볼츠만 흑체 복사', Offset(w / 2, 14), const Color(0xFF00D4FF), 12, bold: true);
+    _drawLabel(
+      canvas,
+      '슈테판-볼츠만 흑체 복사',
+      Offset(w / 2, 14),
+      const Color(0xFF00D4FF),
+      12,
+      bold: true,
+    );
   }
 
-  void _drawLabel(Canvas canvas, String text, Offset center, Color color, double fontSize, {bool bold = false}) {
+  void _drawLabel(
+    Canvas canvas,
+    String text,
+    Offset center,
+    Color color,
+    double fontSize, {
+    bool bold = false,
+  }) {
     final tp = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: bold ? FontWeight.bold : FontWeight.normal),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(canvas, Offset(center.dx - tp.width / 2, center.dy - tp.height / 2));
+    tp.paint(
+      canvas,
+      Offset(center.dx - tp.width / 2, center.dy - tp.height / 2),
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _StefanBoltzmannScreenPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _StefanBoltzmannScreenPainter oldDelegate) =>
+      true;
 }

@@ -19,7 +19,7 @@ class _GyroscopeScreenState extends State<GyroscopeScreen>
   bool _isRunning = true;
   double _spinRate = 500.0;
   double _tiltAngle = 0.5;
-  double _precessionRate = 0, _precessionAngle = 0;
+  double _precessionRate = 0;
 
   @override
   void initState() {
@@ -38,7 +38,6 @@ class _GyroscopeScreenState extends State<GyroscopeScreen>
       final L = I * spinOmega;
       final tau = 1.0 * 9.8 * 0.05 * math.sin(_tiltAngle);
       _precessionRate = tau / L;
-      _precessionAngle += _precessionRate * 0.02;
     });
   }
 

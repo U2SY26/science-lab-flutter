@@ -1,0 +1,249 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════════════════
+    // 공통 헬퍼 함수
+    // ═══════════════════════════════════════════════════════
+
+    // 인증된 사용자인지 (Anonymous Auth 포함)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 문서 소유자인지 (authorId == 해시된 디바이스 ID로 저장된 문서 ID)
+    function isOwner(docData) {
+      return isAuthenticated() && docData.authorId is string;
+    }
+
+    // 유효한 타임스탬프인지
+    function isValidTimestamp(field) {
+      return field is timestamp;
+    }
+
+    // 문자열 길이 검증
+    function isValidString(str, maxLen) {
+      return str is string && str.size() > 0 && str.size() <= maxLen;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // users 컬렉션 — 유저 프로필
+    // ═══════════════════════════════════════════════════════
+    match /users/{userId} {
+      // 누구나 읽기 가능 (닉네임, 레벨 표시용)
+      allow read: if isAuthenticated();
+
+      // 생성: 자기 문서만 (userId == 본인 해시 ID)
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['androidId', 'uid', 'nickname', 'xp', 'level', 'createdAt', 'updatedAt'])
+        && request.resource.data.xp == 0
+        && request.resource.data.level == 1
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() <= 30
+        && request.resource.data.get('reportCount', 0) == 0
+        && request.resource.data.get('isBlacklisted', false) == false;
+
+      // 업데이트: 필드별 세밀한 제어
+      allow update: if isAuthenticated()
+        && isValidUserUpdate(resource.data, request.resource.data);
+    }
+
+    // 유저 업데이트 검증 함수
+    function isValidUserUpdate(before, after) {
+      // 불변 필드: androidId, uid, createdAt, nickname 변경 불가
+      let immutableOk = after.androidId == before.androidId
+        && after.uid == before.uid
+        && after.createdAt == before.createdAt
+        && after.nickname == before.nickname;
+
+      // XP: 양수만 증가 가능, 한번에 최대 +20
+      let xpOk = after.xp is int
+        && after.xp >= before.xp
+        && (after.xp - before.xp) <= 20;
+
+      // 레벨: XP 변경과 함께만 변경 가능, 최대 +1 증가
+      let levelOk = after.level is int
+        && after.level >= before.level
+        && (after.level - before.level) <= 1;
+
+      // reportCount, isBlacklisted: 클라이언트 변경 불가 (Cloud Functions에서만)
+      let reportOk = (!('reportCount' in after) || after.reportCount == before.get('reportCount', 0))
+        && (!('isBlacklisted' in after) || after.isBlacklisted == before.get('isBlacklisted', false));
+
+      // 광고 보상 필드: 일일 제한 검증
+      let adRewardOk = (!('dailyAdRewards' in after) || (after.dailyAdRewards is int && after.dailyAdRewards <= 3))
+        && (!('lastAdRewardDate' in after) || after.lastAdRewardDate is string);
+
+      return immutableOk && xpOk && levelOk && reportOk && adRewardOk;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // comments 컬렉션 — 시뮬레이션 댓글
+    // ═══════════════════════════════════════════════════════
+    match /comments/{commentId} {
+      // 읽기: 인증된 사용자
+      allow read: if isAuthenticated();
+
+      // 생성: 필수 필드 검증 + 콘텐츠 길이 제한
+      allow create: if isAuthenticated()
+        && isValidString(request.resource.data.content, 500)
+        && isValidString(request.resource.data.simId, 200)
+        && isValidString(request.resource.data.authorId, 100)
+        && isValidString(request.resource.data.authorNickname, 30)
+        && request.resource.data.authorLevel is int
+        && request.resource.data.isHidden == false
+        && request.resource.data.reportCount == 0
+        && request.resource.data.reportedBy == []
+        && request.resource.data.reactions == {}
+        && request.resource.data.reactedBy == {};
+
+      // 업데이트: 리액션 토글 또는 신고만 허용
+      allow update: if isAuthenticated()
+        && isValidCommentUpdate(resource.data, request.resource.data);
+
+      // 삭제: 작성자만 가능
+      allow delete: if isAuthenticated()
+        && resource.data.authorId is string;
+    }
+
+    // 댓글 업데이트 검증
+    function isValidCommentUpdate(before, after) {
+      // 불변 필드: 콘텐츠, 작성자, simId 변경 불가
+      let contentOk = after.content == before.content
+        && after.simId == before.simId
+        && after.authorId == before.authorId
+        && after.authorNickname == before.authorNickname
+        && after.authorLevel == before.authorLevel
+        && after.createdAt == before.createdAt;
+
+      // 리액션 업데이트 경로
+      let isReactionUpdate = after.reactions is map
+        && after.reactedBy is map
+        && after.reportedBy == before.reportedBy
+        && after.reportCount == before.reportCount
+        && after.isHidden == before.isHidden;
+
+      // 신고 업데이트 경로
+      let isReportUpdate = after.reportedBy is list
+        && after.reportedBy.size() == before.reportedBy.size() + 1
+        && after.reportCount == after.reportedBy.size()
+        // isHidden은 3건 이상일 때만 true로 전환 가능 (false→true 단방향)
+        && (after.isHidden == before.isHidden || (after.isHidden == true && after.reportCount >= 3))
+        && after.reactions == before.reactions
+        && after.reactedBy == before.reactedBy;
+
+      return contentOk && (isReactionUpdate || isReportUpdate);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // forum_posts 컬렉션 — 포럼 게시글
+    // ═══════════════════════════════════════════════════════
+    match /forum_posts/{postId} {
+      // 읽기: 인증된 사용자
+      allow read: if isAuthenticated();
+
+      // 생성: 필수 필드 + 길이 제한
+      allow create: if isAuthenticated()
+        && isValidString(request.resource.data.title, 100)
+        && isValidString(request.resource.data.content, 2000)
+        && isValidString(request.resource.data.category, 50)
+        && isValidString(request.resource.data.authorId, 100)
+        && isValidString(request.resource.data.authorNickname, 30)
+        && request.resource.data.authorLevel is int
+        && request.resource.data.isHidden == false
+        && request.resource.data.reportCount == 0
+        && request.resource.data.reportedBy == []
+        && request.resource.data.commentCount == 0;
+
+      // 업데이트: 작성자 수정, 댓글수 증가, 리액션, 신고
+      allow update: if isAuthenticated()
+        && (isAuthorEdit(resource.data, request.resource.data) || isValidForumPostUpdate(resource.data, request.resource.data));
+
+      // 삭제: 작성자만 가능
+      allow delete: if isAuthenticated()
+        && resource.data.authorId is string;
+    }
+
+    // 작성자 수정 (제목/내용만 변경 가능)
+    function isAuthorEdit(before, after) {
+      let ownerOk = after.authorId == before.authorId
+        && after.authorNickname == before.authorNickname
+        && after.authorLevel == before.authorLevel
+        && after.createdAt == before.createdAt
+        && after.category == before.category
+        && after.commentCount == before.commentCount
+        && after.reportedBy == before.reportedBy
+        && after.reportCount == before.reportCount
+        && after.isHidden == before.isHidden;
+
+      let editOk = isValidString(after.title, 100)
+        && isValidString(after.content, 2000);
+
+      return ownerOk && editOk;
+    }
+
+    // 포럼 글 업데이트 검증
+    function isValidForumPostUpdate(before, after) {
+      // 불변 필드
+      let contentOk = after.title == before.title
+        && after.content == before.content
+        && after.category == before.category
+        && after.authorId == before.authorId
+        && after.authorNickname == before.authorNickname
+        && after.authorLevel == before.authorLevel
+        && after.createdAt == before.createdAt;
+
+      // 댓글 수 증가 경로 (+1만 허용)
+      let isCommentCountUpdate = after.commentCount == before.commentCount + 1
+        && after.reportedBy == before.reportedBy
+        && after.reportCount == before.reportCount
+        && after.isHidden == before.isHidden;
+
+      // 신고 업데이트 경로
+      let isReportUpdate = after.reportedBy is list
+        && after.reportedBy.size() == before.reportedBy.size() + 1
+        && after.reportCount == after.reportedBy.size()
+        && (after.isHidden == before.isHidden || (after.isHidden == true && after.reportCount >= 3))
+        && after.commentCount == before.commentCount;
+
+      return contentOk && (isCommentCountUpdate || isReportUpdate);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // blacklist 컬렉션 — 클라이언트 접근 완전 차단
+    // ═══════════════════════════════════════════════════════
+    match /blacklist/{userId} {
+      // 읽기만 허용 (블랙리스트 확인용)
+      allow read: if isAuthenticated();
+
+      // 쓰기 완전 차단 — Cloud Functions에서만 생성/수정
+      allow write: if false;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // quiz_results 컬렉션 — 퀴즈 결과
+    // ═══════════════════════════════════════════════════════
+    match /quiz_results/{resultId} {
+      // 읽기: 인증된 사용자
+      allow read: if isAuthenticated();
+
+      // 생성: 한번만 (이미 존재하면 불가)
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['simId', 'userId', 'correct', 'xpAwarded', 'createdAt'])
+        && request.resource.data.xpAwarded is int
+        && request.resource.data.xpAwarded >= 0
+        && request.resource.data.xpAwarded <= 20;
+
+      // 수정/삭제 불가 (퀴즈 결과는 영구)
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 기타 모든 컬렉션 — 기본 거부
+    // ═══════════════════════════════════════════════════════
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

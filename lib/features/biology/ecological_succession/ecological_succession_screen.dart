@@ -89,7 +89,7 @@ class _EcologicalSuccessionScreenState extends State<EcologicalSuccessionScreen>
                 max: 500,
                 step: 10,
                 defaultValue: 50,
-                formatValue: (v) => v.toStringAsFixed(0) + '년',
+                formatValue: (v) => '${v.toStringAsFixed(0)}년',
                 onChanged: (v) => setState(() => _years = v),
               ),
               
@@ -104,8 +104,8 @@ class _EcologicalSuccessionScreenState extends State<EcologicalSuccessionScreen>
                 ),
                 child: Row(children: [
           _V('단계', _stage),
-          _V('다양성', (_biodiversity * 100).toStringAsFixed(1) + '%'),
-          _V('경과', _years.toStringAsFixed(0) + '년'),
+          _V('다양성', '${(_biodiversity * 100).toStringAsFixed(1)}%'),
+          _V('경과', '${_years.toStringAsFixed(0)}년'),
                 ]),
               ),
             ],
@@ -311,7 +311,6 @@ class _EcologicalSuccessionScreenPainter extends CustomPainter {
     // ── Soil profile (thin strip below scene) ─────────────────────────
     final soilTop = sceneBottom + 2;
     final soilBottom = sceneBottom + 16.0;
-    final soilDepth = (years / maxYears).clamp(0.0, 1.0);
     for (int s = 0; s < 6; s++) {
       final secLeft2 = sceneLeft + sectionW * s;
       final active = s <= currentStage;

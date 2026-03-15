@@ -24,8 +24,10 @@ class _WavePacketScreenState extends State<WavePacketScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -42,12 +44,16 @@ class _WavePacketScreenState extends State<WavePacketScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _time = 0;
-      _centralK = 5; _sigmaK = 1.0;
+      _centralK = 5;
+      _sigmaK = 1.0;
     });
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +61,27 @@ class _WavePacketScreenState extends State<WavePacketScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('물리 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('파동 패킷', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '물리 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '파동 패킷',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -82,30 +104,30 @@ class _WavePacketScreenState extends State<WavePacketScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '중심 파수 k₀',
-                value: _centralK,
-                min: 1,
-                max: 20,
-                step: 0.5,
-                defaultValue: 5,
-                formatValue: (v) => v.toStringAsFixed(1),
-                onChanged: (v) => setState(() => _centralK = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '중심 파수 k₀',
+                  value: _centralK,
+                  min: 1,
+                  max: 20,
+                  step: 0.5,
+                  defaultValue: 5,
+                  formatValue: (v) => v.toStringAsFixed(1),
+                  onChanged: (v) => setState(() => _centralK = v),
+                ),
+                advancedControls: [
+                  SimSlider(
+                    label: '파수 폭 Δk',
+                    value: _sigmaK,
+                    min: 0.1,
+                    max: 5,
+                    step: 0.1,
+                    defaultValue: 1,
+                    formatValue: (v) => v.toStringAsFixed(1),
+                    onChanged: (v) => setState(() => _sigmaK = v),
+                  ),
+                ],
               ),
-              advancedControls: [
-            SimSlider(
-                label: '파수 폭 Δk',
-                value: _sigmaK,
-                min: 0.1,
-                max: 5,
-                step: 0.1,
-                defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1),
-                onChanged: (v) => setState(() => _sigmaK = v),
-              ),
-              ],
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -114,23 +136,31 @@ class _WavePacketScreenState extends State<WavePacketScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('위상 속도', _phaseV.toStringAsFixed(2)),
-          _V('군 속도', _groupV.toStringAsFixed(2)),
-          _V('Δk', _sigmaK.toStringAsFixed(1)),
-                ]),
+                child: Row(
+                  children: [
+                    _V('위상 속도', _phaseV.toStringAsFixed(2)),
+                    _V('군 속도', _groupV.toStringAsFixed(2)),
+                    _V('Δk', _sigmaK.toStringAsFixed(1)),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -141,11 +171,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _WavePacketScreenPainter extends CustomPainter {
@@ -159,9 +204,22 @@ class _WavePacketScreenPainter extends CustomPainter {
     required this.sigmaK,
   });
 
-  void _drawLabel(Canvas canvas, String text, Offset pos, Color color, double fontSize) {
+  void _drawLabel(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color,
+    double fontSize,
+  ) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.w600)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, pos);
@@ -171,7 +229,10 @@ class _WavePacketScreenPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (size.width <= 0 || size.height <= 0) return;
     // Background
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width, h = size.height;
     // Layout: main wave area top 65%, spectrum bottom 30%
@@ -190,11 +251,20 @@ class _WavePacketScreenPainter extends CustomPainter {
     final envCenterX = envCenterNorm * w;
 
     // Grid lines (subtle)
-    final gridP = Paint()..color = const Color(0xFF1A3040).withValues(alpha: 0.5)..strokeWidth = 0.5;
-    for (double x = 0; x < w; x += w / 8) canvas.drawLine(Offset(x, 0), Offset(x, mainH), gridP);
+    final gridP = Paint()
+      ..color = const Color(0xFF1A3040).withValues(alpha: 0.5)
+      ..strokeWidth = 0.5;
+    for (double x = 0; x < w; x += w / 8) {
+      canvas.drawLine(Offset(x, 0), Offset(x, mainH), gridP);
+    }
     final axisY = mainH * 0.5;
-    canvas.drawLine(Offset(0, axisY), Offset(w, axisY),
-        Paint()..color = const Color(0xFF1A3040)..strokeWidth = 1);
+    canvas.drawLine(
+      Offset(0, axisY),
+      Offset(w, axisY),
+      Paint()
+        ..color = const Color(0xFF1A3040)
+        ..strokeWidth = 1,
+    );
 
     // Draw carrier wave ψ(x,t) = envelope(x) * cos(k0*x - ω0*t)
     final carrierPath = Path();
@@ -237,50 +307,123 @@ class _WavePacketScreenPainter extends CustomPainter {
     _drawDashedPath(canvas, envelopePathNeg, dashP, 8, 4, w, mainH);
 
     // Draw cyan carrier wave
-    canvas.drawPath(carrierPath, Paint()
-      ..color = const Color(0xFF00D4FF)
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      carrierPath,
+      Paint()
+        ..color = const Color(0xFF00D4FF)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
+    );
 
     // Phase velocity indicator (small arrow on carrier crest)
     final crestNorm = ((vp * time * 0.3 - 0.5 / centralK) % 1.2) - 0.1;
     final crestX = crestNorm * w;
     if (crestX > 10 && crestX < w - 30) {
-      final arrowP = Paint()..color = const Color(0xFF00D4FF)..strokeWidth = 1.5;
-      canvas.drawLine(Offset(crestX, axisY - 12), Offset(crestX + 18, axisY - 12), arrowP);
-      canvas.drawLine(Offset(crestX + 18, axisY - 12), Offset(crestX + 13, axisY - 16), arrowP);
-      canvas.drawLine(Offset(crestX + 18, axisY - 12), Offset(crestX + 13, axisY - 8), arrowP);
-      _drawLabel(canvas, 'vₚ', Offset(crestX + 20, axisY - 18), const Color(0xFF00D4FF), 9);
+      final arrowP = Paint()
+        ..color = const Color(0xFF00D4FF)
+        ..strokeWidth = 1.5;
+      canvas.drawLine(
+        Offset(crestX, axisY - 12),
+        Offset(crestX + 18, axisY - 12),
+        arrowP,
+      );
+      canvas.drawLine(
+        Offset(crestX + 18, axisY - 12),
+        Offset(crestX + 13, axisY - 16),
+        arrowP,
+      );
+      canvas.drawLine(
+        Offset(crestX + 18, axisY - 12),
+        Offset(crestX + 13, axisY - 8),
+        arrowP,
+      );
+      _drawLabel(
+        canvas,
+        'vₚ',
+        Offset(crestX + 20, axisY - 18),
+        const Color(0xFF00D4FF),
+        9,
+      );
     }
 
     // Group velocity indicator (arrow at envelope peak)
     final grpX = envCenterX;
     if (grpX > 20 && grpX < w - 40) {
-      final arrowP = Paint()..color = const Color(0xFFFF6B35)..strokeWidth = 1.5;
-      canvas.drawLine(Offset(grpX, axisY - mainH * 0.40), Offset(grpX + 22, axisY - mainH * 0.40), arrowP);
-      canvas.drawLine(Offset(grpX + 22, axisY - mainH * 0.40), Offset(grpX + 16, axisY - mainH * 0.40 - 5), arrowP);
-      canvas.drawLine(Offset(grpX + 22, axisY - mainH * 0.40), Offset(grpX + 16, axisY - mainH * 0.40 + 5), arrowP);
-      _drawLabel(canvas, 'vg', Offset(grpX + 24, axisY - mainH * 0.40 - 6), const Color(0xFFFF6B35), 9);
+      final arrowP = Paint()
+        ..color = const Color(0xFFFF6B35)
+        ..strokeWidth = 1.5;
+      canvas.drawLine(
+        Offset(grpX, axisY - mainH * 0.40),
+        Offset(grpX + 22, axisY - mainH * 0.40),
+        arrowP,
+      );
+      canvas.drawLine(
+        Offset(grpX + 22, axisY - mainH * 0.40),
+        Offset(grpX + 16, axisY - mainH * 0.40 - 5),
+        arrowP,
+      );
+      canvas.drawLine(
+        Offset(grpX + 22, axisY - mainH * 0.40),
+        Offset(grpX + 16, axisY - mainH * 0.40 + 5),
+        arrowP,
+      );
+      _drawLabel(
+        canvas,
+        'vg',
+        Offset(grpX + 24, axisY - mainH * 0.40 - 6),
+        const Color(0xFFFF6B35),
+        9,
+      );
     }
 
     // Labels top-left
-    _drawLabel(canvas, 'ψ(x,t)=A(x,t)·cos(k₀x-ω₀t)', Offset(6, 5), const Color(0xFF5A8A9A), 9);
+    _drawLabel(
+      canvas,
+      'ψ(x,t)=A(x,t)·cos(k₀x-ω₀t)',
+      Offset(6, 5),
+      const Color(0xFF5A8A9A),
+      9,
+    );
 
     // Legend
-    canvas.drawLine(Offset(w - 90, 10), Offset(w - 72, 10),
-        Paint()..color = const Color(0xFF00D4FF)..strokeWidth = 2);
+    canvas.drawLine(
+      Offset(w - 90, 10),
+      Offset(w - 72, 10),
+      Paint()
+        ..color = const Color(0xFF00D4FF)
+        ..strokeWidth = 2,
+    );
     _drawLabel(canvas, '반송파', Offset(w - 70, 5), const Color(0xFFE0F4FF), 9);
-    canvas.drawLine(Offset(w - 90, 22), Offset(w - 72, 22),
-        Paint()..color = const Color(0xFFFF6B35)..strokeWidth = 1.5..style = PaintingStyle.stroke);
+    canvas.drawLine(
+      Offset(w - 90, 22),
+      Offset(w - 72, 22),
+      Paint()
+        ..color = const Color(0xFFFF6B35)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
+    );
     _drawLabel(canvas, '포락선', Offset(w - 70, 17), const Color(0xFFE0F4FF), 9);
 
     // ---- Frequency spectrum (k-space) ----
-    canvas.drawRect(Rect.fromLTWH(0, specY, w, specH),
-        Paint()..color = const Color(0xFF0A0A0F));
-    canvas.drawLine(Offset(0, specY + specH * 0.8), Offset(w, specY + specH * 0.8),
-        Paint()..color = const Color(0xFF1A3040)..strokeWidth = 1);
+    canvas.drawRect(
+      Rect.fromLTWH(0, specY, w, specH),
+      Paint()..color = const Color(0xFF0A0A0F),
+    );
+    canvas.drawLine(
+      Offset(0, specY + specH * 0.8),
+      Offset(w, specY + specH * 0.8),
+      Paint()
+        ..color = const Color(0xFF1A3040)
+        ..strokeWidth = 1,
+    );
 
-    _drawLabel(canvas, '주파수 스펙트럼 (k-공간)', Offset(6, specY + 2), const Color(0xFF5A8A9A), 8);
+    _drawLabel(
+      canvas,
+      '주파수 스펙트럼 (k-공간)',
+      Offset(6, specY + 2),
+      const Color(0xFF5A8A9A),
+      8,
+    );
 
     final specBaseline = specY + specH * 0.8;
     final k0Norm = centralK / 22.0;
@@ -292,38 +435,71 @@ class _WavePacketScreenPainter extends CustomPainter {
       final dk = k - centralK;
       final amp = math.exp(-(dk * dk) / (2 * sigmaK * sigmaK));
       final sy = specBaseline - amp * specH * 0.65;
-      if (firstSpec) { specPath.moveTo(px.toDouble(), sy); firstSpec = false; }
-      else specPath.lineTo(px.toDouble(), sy);
+      if (firstSpec) {
+        specPath.moveTo(px.toDouble(), sy);
+        firstSpec = false;
+      } else {
+        specPath.lineTo(px.toDouble(), sy);
+      }
     }
-    canvas.drawPath(specPath, Paint()
-      ..color = const Color(0xFF00D4FF).withValues(alpha: 0.7)
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      specPath,
+      Paint()
+        ..color = const Color(0xFF00D4FF).withValues(alpha: 0.7)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
+    );
     // Fill under spectrum
     specPath.lineTo(w, specBaseline);
     specPath.lineTo(0, specBaseline);
     specPath.close();
-    canvas.drawPath(specPath, Paint()
-      ..color = const Color(0xFF00D4FF).withValues(alpha: 0.08));
+    canvas.drawPath(
+      specPath,
+      Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.08),
+    );
 
     // k0 marker
     if (k0X > 0 && k0X < w) {
-      canvas.drawLine(Offset(k0X, specY + 2), Offset(k0X, specBaseline),
-          Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.6)..strokeWidth = 1
-            ..strokeCap = StrokeCap.round);
-      _drawLabel(canvas, 'k₀', Offset(k0X + 2, specY + 2), const Color(0xFFFF6B35), 8);
+      canvas.drawLine(
+        Offset(k0X, specY + 2),
+        Offset(k0X, specBaseline),
+        Paint()
+          ..color = const Color(0xFFFF6B35).withValues(alpha: 0.6)
+          ..strokeWidth = 1
+          ..strokeCap = StrokeCap.round,
+      );
+      _drawLabel(
+        canvas,
+        'k₀',
+        Offset(k0X + 2, specY + 2),
+        const Color(0xFFFF6B35),
+        8,
+      );
     }
   }
 
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint, double dashLen, double gapLen, double w, double h) {
+  void _drawDashedPath(
+    Canvas canvas,
+    Path path,
+    Paint paint,
+    double dashLen,
+    double gapLen,
+    double w,
+    double h,
+  ) {
     // Approximate dashing by sampling the path
     final metrics = path.computeMetrics();
     for (final metric in metrics) {
       double dist = 0;
       bool drawing = true;
       while (dist < metric.length) {
-        final end = (dist + (drawing ? dashLen : gapLen)).clamp(0.0, metric.length);
-        if (drawing) { canvas.drawPath(metric.extractPath(dist, end), paint); }
+        final end = (dist + (drawing ? dashLen : gapLen)).clamp(
+          0.0,
+          metric.length,
+        );
+        if (drawing) {
+          canvas.drawPath(metric.extractPath(dist, end), paint);
+        }
         dist = end;
         drawing = !drawing;
       }

@@ -89,7 +89,7 @@ class _SpeciationScreenState extends State<SpeciationScreen>
                 max: 50,
                 step: 0.5,
                 defaultValue: 5,
-                formatValue: (v) => v.toStringAsFixed(1) + ' Myr',
+                formatValue: (v) => '${v.toStringAsFixed(1)} Myr',
                 onChanged: (v) => setState(() => _isolation = v),
               ),
               
@@ -103,9 +103,9 @@ class _SpeciationScreenState extends State<SpeciationScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('분기도', (_divergence * 100).toStringAsFixed(1) + '%'),
-          _V('생식 격리', (_reproIsolation * 100).toStringAsFixed(1) + '%'),
-          _V('기간', _isolation.toStringAsFixed(1) + ' Myr'),
+          _V('분기도', '${(_divergence * 100).toStringAsFixed(1)}%'),
+          _V('생식 격리', '${(_reproIsolation * 100).toStringAsFixed(1)}%'),
+          _V('기간', '${_isolation.toStringAsFixed(1)} Myr'),
                 ]),
               ),
             ],

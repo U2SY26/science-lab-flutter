@@ -103,9 +103,9 @@ class _GalaxyRotationScreenState extends State<GalaxyRotationScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('v_obs', _vObs.toStringAsFixed(0) + ' km/s'),
-          _V('v_kep', _vKep.toStringAsFixed(0) + ' km/s'),
-          _V('DM', _darkMatterRatio.toStringAsFixed(1) + 'x'),
+          _V('v_obs', '${_vObs.toStringAsFixed(0)} km/s'),
+          _V('v_kep', '${_vKep.toStringAsFixed(0)} km/s'),
+          _V('DM', '${_darkMatterRatio.toStringAsFixed(1)}x'),
                 ]),
               ),
             ],

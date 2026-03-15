@@ -1255,5 +1255,47 @@
   "xrView3D": "3D View",
   "xrLoading": "Loading 3D...",
   "xrRequiresInternet": "Internet connection required for 3D viewer",
-  "xrGyroHint": "Tap Gyro button for motion control"
+  "xrGyroHint": "Tap Gyro button for motion control",
+
+  "community": "Community",
+  "comments": "Comments",
+  "writeComment": "Write a comment...",
+  "beFirstToComment": "Be the first to comment!",
+  "replyingTo": "Replying to {nickname}",
+  "@replyingTo": {
+    "placeholders": {
+      "nickname": {"type": "String"}
+    }
+  },
+  "report": "Report",
+  "reportConfirm": "Are you sure you want to report this content?",
+  "reportSuccess": "Content has been reported.",
+  "moderationFailed": "This content violates community guidelines.",
+  "accountRestricted": "Your account has been restricted.",
+  "levelUp": "LEVEL UP!",
+  "levelLabel": "Level {level}",
+  "@levelLabel": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
+  "tapToContinue": "Tap to continue",
+  "quizChallenge": "Quiz Challenge",
+  "quizCompleted": "Quiz Completed",
+  "quizGenerating": "AI is generating a quiz...",
+  "quizFailed": "Failed to generate quiz",
+  "quizCorrect": "Correct!",
+  "quizIncorrect": "Incorrect",
+  "submit": "Submit",
+  "later": "Later",
+  "forumGeneral": "General",
+  "forumQuestion": "Question",
+  "forumTip": "Tip",
+  "forumBug": "Bug Report",
+  "newPost": "New Post",
+  "postTitle": "Title",
+  "postContent": "Content",
+  "noPosts": "No posts yet. Be the first!",
+  "cancel": "Cancel",
+  "post": "Post"
 }

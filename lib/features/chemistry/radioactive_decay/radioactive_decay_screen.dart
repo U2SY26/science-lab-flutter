@@ -90,7 +90,7 @@ class _RadioactiveDecayScreenState extends State<RadioactiveDecayScreen>
                 max: 30,
                 step: 0.5,
                 defaultValue: 5,
-                formatValue: (v) => v.toStringAsFixed(1) + ' s',
+                formatValue: (v) => '${v.toStringAsFixed(1)} s',
                 onChanged: (v) => setState(() => _halfLife = v),
               ),
               
@@ -104,8 +104,8 @@ class _RadioactiveDecayScreenState extends State<RadioactiveDecayScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('잔량', (_remaining * 100).toStringAsFixed(1) + '%'),
-          _V('붕괴', (_decayed * 100).toStringAsFixed(1) + '%'),
+          _V('잔량', '${(_remaining * 100).toStringAsFixed(1)}%'),
+          _V('붕괴', '${(_decayed * 100).toStringAsFixed(1)}%'),
           _V('t/T½', (_time / _halfLife).toStringAsFixed(2)),
                 ]),
               ),

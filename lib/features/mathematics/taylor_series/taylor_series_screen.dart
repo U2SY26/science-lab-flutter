@@ -17,7 +17,7 @@ class TaylorSeriesScreen extends StatefulWidget {
 class _TaylorSeriesScreenState extends State<TaylorSeriesScreen> {
   String _function = 'sin(x)';
   int _terms = 3;
-  double _center = 0;
+  final double _center = 0;
 
   final Map<String, String> _formulas = {
     'sin(x)': 'sin(x) = x - x³/3! + x⁵/5! - ...',
@@ -158,7 +158,10 @@ class _TaylorSeriesScreenState extends State<TaylorSeriesScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('항 개수: ', style: TextStyle(color: AppColors.muted)),
+                    const Text(
+                      '항 개수: ',
+                      style: TextStyle(color: AppColors.muted),
+                    ),
                     Text(
                       '$_terms',
                       style: const TextStyle(
@@ -242,9 +245,15 @@ class _TaylorSeriesPainter extends CustomPainter {
         final screenY = centerY - y * graphHeight / 4;
 
         if (px == 0) {
-          originalPath.moveTo(screenX, screenY.clamp(padding, size.height - padding));
+          originalPath.moveTo(
+            screenX,
+            screenY.clamp(padding, size.height - padding),
+          );
         } else {
-          originalPath.lineTo(screenX, screenY.clamp(padding, size.height - padding));
+          originalPath.lineTo(
+            screenX,
+            screenY.clamp(padding, size.height - padding),
+          );
         }
       }
     }
@@ -269,9 +278,15 @@ class _TaylorSeriesPainter extends CustomPainter {
         final screenY = centerY - y * graphHeight / 4;
 
         if (px == 0) {
-          taylorPath.moveTo(screenX, screenY.clamp(padding, size.height - padding));
+          taylorPath.moveTo(
+            screenX,
+            screenY.clamp(padding, size.height - padding),
+          );
         } else {
-          taylorPath.lineTo(screenX, screenY.clamp(padding, size.height - padding));
+          taylorPath.lineTo(
+            screenX,
+            screenY.clamp(padding, size.height - padding),
+          );
         }
       }
     }
@@ -296,7 +311,13 @@ class _TaylorSeriesPainter extends CustomPainter {
         ..color = Colors.blue
         ..strokeWidth = 2,
     );
-    _drawText(canvas, '원래 함수', Offset(size.width - 75, 14), Colors.blue, fontSize: 10);
+    _drawText(
+      canvas,
+      '원래 함수',
+      Offset(size.width - 75, 14),
+      Colors.blue,
+      fontSize: 10,
+    );
 
     canvas.drawLine(
       Offset(size.width - 100, 35),
@@ -305,12 +326,27 @@ class _TaylorSeriesPainter extends CustomPainter {
         ..color = Colors.red
         ..strokeWidth = 2,
     );
-    _drawText(canvas, '테일러 근사', Offset(size.width - 75, 29), Colors.red, fontSize: 10);
+    _drawText(
+      canvas,
+      '테일러 근사',
+      Offset(size.width - 75, 29),
+      Colors.red,
+      fontSize: 10,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

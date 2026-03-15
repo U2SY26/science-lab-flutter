@@ -32,14 +32,9 @@ class AdService {
     return 'ca-app-pub-3715008468517611/9070027306';
   }
 
-  // 전면 광고 ID (선택적)
+  // 전면 광고 ID — 프로덕션 미사용 (배너+보상형만 운영)
   String get interstitialAdUnitId {
-    if (kDebugMode) {
-      return Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/1033173712'
-          : 'ca-app-pub-3940256099942544/4411468910';
-    }
-    // TODO: 프로덕션 전면 광고 ID 추가
+    // 전면 광고는 현재 미사용이므로 항상 테스트 ID 반환
     return Platform.isAndroid
         ? 'ca-app-pub-3940256099942544/1033173712'
         : 'ca-app-pub-3940256099942544/4411468910';

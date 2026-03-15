@@ -105,9 +105,9 @@ class _LagrangePointsScreenState extends State<LagrangePointsScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('L1', _l1.toStringAsFixed(4) + ' AU'),
-          _V('L2', _l2.toStringAsFixed(4) + ' AU'),
-          _V('L3', _l3.toStringAsFixed(4) + ' AU'),
+          _V('L1', '${_l1.toStringAsFixed(4)} AU'),
+          _V('L2', '${_l2.toStringAsFixed(4)} AU'),
+          _V('L3', '${_l3.toStringAsFixed(4)} AU'),
                 ]),
               ),
             ],

@@ -89,7 +89,7 @@ class _MuscleContractionScreenState extends State<MuscleContractionScreen>
                 max: 100,
                 step: 1,
                 defaultValue: 50,
-                formatValue: (v) => v.toStringAsFixed(0) + ' mV',
+                formatValue: (v) => '${v.toStringAsFixed(0)} mV',
                 onChanged: (v) => setState(() => _stimulus = v),
               ),
               
@@ -103,9 +103,9 @@ class _MuscleContractionScreenState extends State<MuscleContractionScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('힘', _force.toStringAsFixed(1) + ' N'),
-          _V('근절편', _sarcomereLen.toStringAsFixed(2) + ' μm'),
-          _V('자극', _stimulus.toStringAsFixed(0) + ' mV'),
+          _V('힘', '${_force.toStringAsFixed(1)} N'),
+          _V('근절편', '${_sarcomereLen.toStringAsFixed(2)} μm'),
+          _V('자극', '${_stimulus.toStringAsFixed(0)} mV'),
                 ]),
               ),
             ],

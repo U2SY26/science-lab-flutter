@@ -18,7 +18,7 @@ class _RippleWaveScreenState extends State<RippleWaveScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
 
-  List<_Ripple> _ripples = [];
+  final List<_Ripple> _ripples = [];
   String _waveType = 'circular';
   double _waveSpeed = 100;
   double _frequency = 2.0;
@@ -52,12 +52,9 @@ class _RippleWaveScreenState extends State<RippleWaveScreen>
   void _addRipple(Offset position, Size size) {
     HapticFeedback.lightImpact();
     setState(() {
-      _ripples.add(_Ripple(
-        center: position,
-        radius: 0,
-        age: 0,
-        color: _waveColor,
-      ));
+      _ripples.add(
+        _Ripple(center: position, radius: 0, age: 0, color: _waveColor),
+      );
 
       // 최대 파동 수 제한
       if (_ripples.length > 20) {
@@ -164,11 +161,17 @@ class _RippleWaveScreenState extends State<RippleWaveScreen>
                         children: [
                           const Text(
                             '화면을 터치하세요',
-                            style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: AppColors.ink,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             '활성 파동: ${_ripples.length}개',
-                            style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                            style: const TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 11,
+                            ),
                           ),
                         ],
                       ),
@@ -211,16 +214,43 @@ class _RippleWaveScreenState extends State<RippleWaveScreen>
               const SizedBox(height: 16),
 
               // 색상 선택
-              const Text('파동 색상', style: TextStyle(color: AppColors.muted, fontSize: 12)),
+              const Text(
+                '파동 색상',
+                style: TextStyle(color: AppColors.muted, fontSize: 12),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  _ColorButton(color: Colors.cyan, isSelected: _waveColor == Colors.cyan, onTap: () => setState(() => _waveColor = Colors.cyan)),
-                  _ColorButton(color: Colors.blue, isSelected: _waveColor == Colors.blue, onTap: () => setState(() => _waveColor = Colors.blue)),
-                  _ColorButton(color: Colors.purple, isSelected: _waveColor == Colors.purple, onTap: () => setState(() => _waveColor = Colors.purple)),
-                  _ColorButton(color: Colors.pink, isSelected: _waveColor == Colors.pink, onTap: () => setState(() => _waveColor = Colors.pink)),
-                  _ColorButton(color: Colors.orange, isSelected: _waveColor == Colors.orange, onTap: () => setState(() => _waveColor = Colors.orange)),
-                  _ColorButton(color: Colors.green, isSelected: _waveColor == Colors.green, onTap: () => setState(() => _waveColor = Colors.green)),
+                  _ColorButton(
+                    color: Colors.cyan,
+                    isSelected: _waveColor == Colors.cyan,
+                    onTap: () => setState(() => _waveColor = Colors.cyan),
+                  ),
+                  _ColorButton(
+                    color: Colors.blue,
+                    isSelected: _waveColor == Colors.blue,
+                    onTap: () => setState(() => _waveColor = Colors.blue),
+                  ),
+                  _ColorButton(
+                    color: Colors.purple,
+                    isSelected: _waveColor == Colors.purple,
+                    onTap: () => setState(() => _waveColor = Colors.purple),
+                  ),
+                  _ColorButton(
+                    color: Colors.pink,
+                    isSelected: _waveColor == Colors.pink,
+                    onTap: () => setState(() => _waveColor = Colors.pink),
+                  ),
+                  _ColorButton(
+                    color: Colors.orange,
+                    isSelected: _waveColor == Colors.orange,
+                    onTap: () => setState(() => _waveColor = Colors.orange),
+                  ),
+                  _ColorButton(
+                    color: Colors.green,
+                    isSelected: _waveColor == Colors.green,
+                    onTap: () => setState(() => _waveColor = Colors.green),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -228,12 +258,15 @@ class _RippleWaveScreenState extends State<RippleWaveScreen>
               // 간섭 표시 토글
               Row(
                 children: [
-                  const Text('파동 간섭 표시', style: TextStyle(color: AppColors.muted)),
+                  const Text(
+                    '파동 간섭 표시',
+                    style: TextStyle(color: AppColors.muted),
+                  ),
                   const Spacer(),
                   Switch(
                     value: _showInterference,
                     onChanged: (v) => setState(() => _showInterference = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                 ],
               ),
@@ -274,11 +307,7 @@ class _RippleWaveScreenState extends State<RippleWaveScreen>
           buttons: SimButtonGroup(
             expanded: true,
             buttons: [
-              SimButton(
-                label: '초기화',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '초기화', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -292,7 +321,11 @@ class _ColorButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _ColorButton({required this.color, required this.isSelected, required this.onTap});
+  const _ColorButton({
+    required this.color,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -361,7 +394,12 @@ class _RipplePainter extends CustomPainter {
     );
 
     if (ripples.isEmpty) {
-      _drawText(canvas, '터치하여 파동 생성', Offset(size.width / 2 - 60, size.height / 2), AppColors.muted);
+      _drawText(
+        canvas,
+        '터치하여 파동 생성',
+        Offset(size.width / 2 - 60, size.height / 2),
+        AppColors.muted,
+      );
       return;
     }
 
@@ -378,11 +416,7 @@ class _RipplePainter extends CustomPainter {
     // 파원 표시
     for (var ripple in ripples) {
       if (ripple.age < 2) {
-        canvas.drawCircle(
-          ripple.center,
-          4,
-          Paint()..color = ripple.color,
-        );
+        canvas.drawCircle(ripple.center, 4, Paint()..color = ripple.color);
       }
     }
   }
@@ -408,7 +442,8 @@ class _RipplePainter extends CustomPainter {
     final numRings = (frequency * 3).toInt();
 
     for (int i = 0; i < numRings; i++) {
-      final ringRadius = ripple.radius - i * (ripple.radius / numRings / frequency);
+      final ringRadius =
+          ripple.radius - i * (ripple.radius / numRings / frequency);
       if (ringRadius < 0) continue;
 
       final ringDecay = decay * (1 - i / numRings);
@@ -465,7 +500,8 @@ class _RipplePainter extends CustomPainter {
 
         // 파동 높이 계산
         final wavePhase = radius / 20 * frequency - time * frequency * 2;
-        final height = math.sin(wavePhase) * 10 * decay * (1 - radius / maxRadius);
+        final height =
+            math.sin(wavePhase) * 10 * decay * (1 - radius / maxRadius);
 
         final screenY = y - height;
 
@@ -504,7 +540,8 @@ class _RipplePainter extends CustomPainter {
           if (distance < ripple.radius && distance > 0) {
             final decay = math.exp(-damping * ripple.age);
             final phase = distance / 20 * frequency - time * frequency * 2;
-            final amplitude = math.sin(phase) * decay * (1 - distance / ripple.radius);
+            final amplitude =
+                math.sin(phase) * decay * (1 - distance / ripple.radius);
             totalAmplitude += amplitude;
           }
         }
@@ -524,9 +561,18 @@ class _RipplePainter extends CustomPainter {
     }
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 14}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 14,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

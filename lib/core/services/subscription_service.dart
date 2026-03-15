@@ -3,17 +3,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'iap_service.dart';
 
-/// 구독 상품 ID (Google Play Console 기준)
-const String kRemoveAdsProductId = 'remove_ads_monthly';
-const String kAiUnlimitedProductId = 'ai';       // AI 해설 무제한 ₩2,990/월
-const String kAiAssistProductId = 'aiassist';     // AI 챗봇 ₩4,990/월 (해설 무제한 포함)
+/// 상품 ID (Google Play Console 기준)
+const String kRemoveAdsProductId = 'remove_ads';  // 광고 제거 (일회성)
+const String kAiUnlimitedProductId = 'ai';         // AI 무제한 + 광고제거 (구독)
 
-/// 모든 구독 상품 ID 목록
-const Set<String> kAllSubscriptionIds = {
-  kRemoveAdsProductId,
-  kAiUnlimitedProductId,
-  kAiAssistProductId,
+/// 모든 상품 ID 목록
+const Set<String> kAllProductIds = {
+  kRemoveAdsProductId,   // 일회성
+  kAiUnlimitedProductId, // 구독
 };
 
 /// 구독 상태 Provider
@@ -21,29 +20,26 @@ final subscriptionProvider = StateNotifierProvider<SubscriptionNotifier, Subscri
   return SubscriptionNotifier();
 });
 
-/// 편의 Provider: AI 해설 무제한 여부 (ai 또는 aiassist 구독 시)
+/// 편의 Provider: AI 해설 무제한 여부 (ai 구독 시)
 final isAiUnlimitedProvider = Provider<bool>((ref) {
-  final sub = ref.watch(subscriptionProvider);
-  return sub.isAiUnlimited || sub.isAiAssist;
+  return ref.watch(subscriptionProvider).isAiUnlimited;
 });
 
-/// 편의 Provider: AI 챗봇 사용 가능 여부 (aiassist 구독 시)
-final isAiAssistProvider = Provider<bool>((ref) {
-  final sub = ref.watch(subscriptionProvider);
-  return sub.isAiAssist;
-});
-
-/// 편의 Provider: AI PRO 여부 (Gemini Pro 모델 사용)
+/// 편의 Provider: AI PRO 모델 사용 여부 (ai 구독 시)
 final isAiProProvider = Provider<bool>((ref) {
+  return ref.watch(subscriptionProvider).isAiUnlimited;
+});
+
+/// 편의 Provider: 광고 제거 여부 (광고제거 또는 ai 구독 시)
+final isAdsRemovedProvider = Provider<bool>((ref) {
   final sub = ref.watch(subscriptionProvider);
-  return sub.isAiAssist;
+  return sub.isSubscribed || sub.isAiUnlimited;
 });
 
 /// 구독 상태
 class SubscriptionState {
   final bool isSubscribed;    // 광고 제거 구독
-  final bool isAiUnlimited;   // AI 해설 무제한 구독
-  final bool isAiAssist;      // AI 챗봇 구독 (해설 무제한 포함)
+  final bool isAiUnlimited;   // AI 무제한 구독 (광고제거 포함)
   final bool isLoading;
   final String? errorMessage;
   final List<ProductDetails> products;
@@ -51,7 +47,6 @@ class SubscriptionState {
   const SubscriptionState({
     this.isSubscribed = false,
     this.isAiUnlimited = false,
-    this.isAiAssist = false,
     this.isLoading = true,
     this.errorMessage,
     this.products = const [],
@@ -60,7 +55,6 @@ class SubscriptionState {
   SubscriptionState copyWith({
     bool? isSubscribed,
     bool? isAiUnlimited,
-    bool? isAiAssist,
     bool? isLoading,
     String? errorMessage,
     List<ProductDetails>? products,
@@ -68,7 +62,6 @@ class SubscriptionState {
     return SubscriptionState(
       isSubscribed: isSubscribed ?? this.isSubscribed,
       isAiUnlimited: isAiUnlimited ?? this.isAiUnlimited,
-      isAiAssist: isAiAssist ?? this.isAiAssist,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
       products: products ?? this.products,
@@ -100,7 +93,6 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
       return;
     }
 
-    // 구매 스트림 리스닝
     _subscription = _iap.purchaseStream.listen(
       _onPurchaseUpdate,
       onError: (error) {
@@ -108,38 +100,35 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
       },
     );
 
-    // 저장된 구독 상태 확인
     await _loadSubscriptionStatus();
-
-    // 상품 정보 로드
     await _loadProducts();
-
-    // 이전 구매 복원
     await _restorePurchases();
   }
 
   Future<void> _loadSubscriptionStatus() async {
     final prefs = await SharedPreferences.getInstance();
+    final isAiUnlimited = prefs.getBool('isAiUnlimited') ?? false;
     state = state.copyWith(
       isSubscribed: prefs.getBool('isSubscribed') ?? false,
-      isAiUnlimited: prefs.getBool('isAiUnlimited') ?? false,
-      isAiAssist: prefs.getBool('isAiAssist') ?? false,
+      isAiUnlimited: isAiUnlimited,
     );
+    // ai 구독 시 IAPService에도 광고 제거 전파
+    if (isAiUnlimited) {
+      await IAPService().markAdsRemoved();
+    }
   }
 
   Future<void> _saveSubscriptionStatus({
     bool? isSubscribed,
     bool? isAiUnlimited,
-    bool? isAiAssist,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     if (isSubscribed != null) await prefs.setBool('isSubscribed', isSubscribed);
     if (isAiUnlimited != null) await prefs.setBool('isAiUnlimited', isAiUnlimited);
-    if (isAiAssist != null) await prefs.setBool('isAiAssist', isAiAssist);
   }
 
   Future<void> _loadProducts() async {
-    final response = await _iap.queryProductDetails(kAllSubscriptionIds);
+    final response = await _iap.queryProductDetails(kAllProductIds);
 
     if (response.error != null) {
       state = state.copyWith(
@@ -181,33 +170,39 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
       state = state.copyWith(isLoading: false);
     }
 
-    // 구매 완료 처리
     if (purchase.pendingCompletePurchase) {
       await _iap.completePurchase(purchase);
     }
   }
 
-  /// 상품별 활성화 처리
+  /// 상품별 활성화
   Future<void> _activateProduct(String productId) async {
     switch (productId) {
       case kRemoveAdsProductId:
         state = state.copyWith(isSubscribed: true);
         await _saveSubscriptionStatus(isSubscribed: true);
+        await IAPService().markAdsRemoved();
         break;
       case kAiUnlimitedProductId:
-        state = state.copyWith(isAiUnlimited: true);
-        await _saveSubscriptionStatus(isAiUnlimited: true);
-        break;
-      case kAiAssistProductId:
-        // AI 챗봇은 AI 해설 무제한 포함
-        state = state.copyWith(isAiAssist: true, isAiUnlimited: true);
-        await _saveSubscriptionStatus(isAiAssist: true, isAiUnlimited: true);
+        // AI 무제한 구독: 광고제거 포함
+        state = state.copyWith(isAiUnlimited: true, isSubscribed: true);
+        await _saveSubscriptionStatus(isAiUnlimited: true, isSubscribed: true);
+        await IAPService().markAdsRemoved();
         break;
     }
   }
 
-  /// 구독 구매 (상품 ID 지정)
-  Future<void> purchaseProduct(String productId) async {
+  /// 광고 제거 구독 구매
+  Future<void> purchaseSubscription() async {
+    await _purchaseProduct(kRemoveAdsProductId);
+  }
+
+  /// AI 무제한 구독 구매 (광고 제거 포함)
+  Future<void> purchaseAiUnlimited() async {
+    await _purchaseProduct(kAiUnlimitedProductId);
+  }
+
+  Future<void> _purchaseProduct(String productId) async {
     if (state.products.isEmpty) {
       state = state.copyWith(errorMessage: '상품 정보를 불러올 수 없습니다');
       return;
@@ -223,28 +218,11 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
       return;
     }
 
-    final purchaseParam = PurchaseParam(productDetails: product);
-
     try {
-      await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      await _iap.buyNonConsumable(purchaseParam: PurchaseParam(productDetails: product));
     } catch (e) {
       state = state.copyWith(errorMessage: e.toString());
     }
-  }
-
-  /// 기존 호환: 광고 제거 구독 구매
-  Future<void> purchaseSubscription() async {
-    await purchaseProduct(kRemoveAdsProductId);
-  }
-
-  /// AI 해설 무제한 구독 구매
-  Future<void> purchaseAiUnlimited() async {
-    await purchaseProduct(kAiUnlimitedProductId);
-  }
-
-  /// AI 챗봇 구독 구매
-  Future<void> purchaseAiAssist() async {
-    await purchaseProduct(kAiAssistProductId);
   }
 
   /// 구매 복원

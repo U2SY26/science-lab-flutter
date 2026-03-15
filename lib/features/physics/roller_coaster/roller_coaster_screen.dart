@@ -42,7 +42,6 @@ class _RollerCoasterScreenState extends State<RollerCoasterScreen>
   double get _currentHeight => _getTrackHeight(_position);
   double get _potentialEnergy => _initialHeight - _currentHeight;
   double get _kineticEnergy => 0.5 * _velocity * _velocity;
-  double get _totalEnergy => _potentialEnergy + _kineticEnergy;
 
   @override
   void initState() {

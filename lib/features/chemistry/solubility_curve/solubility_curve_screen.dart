@@ -188,12 +188,12 @@ class _SolubilityCurveScreenPainter extends CustomPainter {
     for (int yi = 0; yi <= 4; yi++) {
       final gy = cB - yi * (cHh / 4);
       canvas.drawLine(Offset(cL, gy), Offset(cR, gy), gridP);
-      _lbl(canvas, '${(yi * 50).toString()}', Offset(cL - 14, gy), const Color(0xFF5A8A9A), 7);
+      _lbl(canvas, (yi * 50).toString(), Offset(cL - 14, gy), const Color(0xFF5A8A9A), 7);
     }
     for (int xi = 0; xi <= 5; xi++) {
       final gx = cL + xi * (cW / 5);
       canvas.drawLine(Offset(gx, cT), Offset(gx, cB), gridP);
-      _lbl(canvas, '${(xi * 20).toString()}', Offset(gx, cB + 7), const Color(0xFF5A8A9A), 7);
+      _lbl(canvas, (xi * 20).toString(), Offset(gx, cB + 7), const Color(0xFF5A8A9A), 7);
     }
 
     // Axis labels

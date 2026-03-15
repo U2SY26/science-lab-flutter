@@ -3236,4 +3236,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get xrGyroHint => 'Tap Gyro button for motion control';
+
+  @override
+  String get community => 'Community';
+
+  @override
+  String get comments => 'Comments';
+
+  @override
+  String get writeComment => 'Write a comment...';
+
+  @override
+  String get beFirstToComment => 'Be the first to comment!';
+
+  @override
+  String replyingTo(String nickname) {
+    return 'Replying to $nickname';
+  }
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get reportConfirm => 'Are you sure you want to report this content?';
+
+  @override
+  String get reportSuccess => 'Content has been reported.';
+
+  @override
+  String get moderationFailed => 'This content violates community guidelines.';
+
+  @override
+  String get accountRestricted => 'Your account has been restricted.';
+
+  @override
+  String get levelUp => 'LEVEL UP!';
+
+  @override
+  String levelLabel(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get tapToContinue => 'Tap to continue';
+
+  @override
+  String get quizChallenge => 'Quiz Challenge';
+
+  @override
+  String get quizCompleted => 'Quiz Completed';
+
+  @override
+  String get quizGenerating => 'AI is generating a quiz...';
+
+  @override
+  String get quizFailed => 'Failed to generate quiz';
+
+  @override
+  String get quizCorrect => 'Correct!';
+
+  @override
+  String get quizIncorrect => 'Incorrect';
+
+  @override
+  String get submit => 'Submit';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get forumGeneral => 'General';
+
+  @override
+  String get forumQuestion => 'Question';
+
+  @override
+  String get forumTip => 'Tip';
+
+  @override
+  String get forumBug => 'Bug Report';
+
+  @override
+  String get newPost => 'New Post';
+
+  @override
+  String get postTitle => 'Title';
+
+  @override
+  String get postContent => 'Content';
+
+  @override
+  String get noPosts => 'No posts yet. Be the first!';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get post => 'Post';
 }

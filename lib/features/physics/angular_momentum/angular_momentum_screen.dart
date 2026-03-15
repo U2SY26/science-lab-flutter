@@ -22,7 +22,7 @@ class _AngularMomentumScreenState extends State<AngularMomentumScreen>
   bool _isRunning = true;
 
   double _angle = 0;
-  double _initialAngularMomentum = 100; // L = Iω (상수)
+  final double _initialAngularMomentum = 100; // L = Iω (상수)
 
   // 관성 모멘트는 팔 벌림에 비례
   double get _momentOfInertia => 0.5 + _armExtension * 2;
@@ -117,10 +117,13 @@ class _AngularMomentumScreenState extends State<AngularMomentumScreen>
                       children: [
                         const Text(
                           '각운동량 L = ',
-                          style: TextStyle(color: AppColors.muted, fontSize: 12),
+                          style: TextStyle(
+                            color: AppColors.muted,
+                            fontSize: 12,
+                          ),
                         ),
                         Text(
-                          '${_initialAngularMomentum.toStringAsFixed(0)}',
+                          _initialAngularMomentum.toStringAsFixed(0),
                           style: const TextStyle(
                             color: AppColors.accent,
                             fontSize: 16,
@@ -149,7 +152,8 @@ class _AngularMomentumScreenState extends State<AngularMomentumScreen>
                         ),
                         _InfoItem(
                           label: 'RPM',
-                          value: '${(_angularVelocity * 60 / (2 * math.pi)).toStringAsFixed(0)}',
+                          value: (_angularVelocity * 60 / (2 * math.pi))
+                              .toStringAsFixed(0),
                           color: Colors.green,
                         ),
                       ],
@@ -244,14 +248,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -272,7 +290,11 @@ class _SkaterPainter extends CustomPainter {
 
     // 회전 효과 (바닥 원)
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(centerX, centerY + 80), width: 120, height: 30),
+      Rect.fromCenter(
+        center: Offset(centerX, centerY + 80),
+        width: 120,
+        height: 30,
+      ),
       Paint()
         ..color = AppColors.accent.withValues(alpha: 0.2)
         ..style = PaintingStyle.fill,
@@ -292,7 +314,11 @@ class _SkaterPainter extends CustomPainter {
     );
 
     // 머리
-    canvas.drawCircle(const Offset(0, -20), 18, Paint()..color = const Color(0xFFFFDBB4));
+    canvas.drawCircle(
+      const Offset(0, -20),
+      18,
+      Paint()..color = const Color(0xFFFFDBB4),
+    );
 
     // 팔
     final armLength = 30 + armExtension * 40;
@@ -356,6 +382,7 @@ class _SkaterPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SkaterPainter oldDelegate) {
-    return oldDelegate.angle != angle || oldDelegate.armExtension != armExtension;
+    return oldDelegate.angle != angle ||
+        oldDelegate.armExtension != armExtension;
   }
 }

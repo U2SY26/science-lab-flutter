@@ -18,8 +18,8 @@ class _RiemannSumScreenState extends State<RiemannSumScreen> {
   String _function = 'x²';
   int _rectangles = 5;
   String _method = 'left';
-  double _a = 0;
-  double _b = 2;
+  final double _a = 0;
+  final double _b = 2;
 
   double _f(double x) {
     switch (_function) {
@@ -139,15 +139,25 @@ class _RiemannSumScreenState extends State<RiemannSumScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: '리만 합', value: _riemannSum.toStringAsFixed(4), color: Colors.orange),
-                        _InfoItem(label: '실제 적분값', value: _exactIntegral.toStringAsFixed(4), color: Colors.green),
+                        _InfoItem(
+                          label: '리만 합',
+                          value: _riemannSum.toStringAsFixed(4),
+                          color: Colors.orange,
+                        ),
+                        _InfoItem(
+                          label: '실제 적분값',
+                          value: _exactIntegral.toStringAsFixed(4),
+                          color: Colors.green,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '오차: ${(_riemannSum - _exactIntegral).abs().toStringAsFixed(4)}',
                       style: TextStyle(
-                        color: (_riemannSum - _exactIntegral).abs() < 0.1 ? Colors.green : AppColors.muted,
+                        color: (_riemannSum - _exactIntegral).abs() < 0.1
+                            ? Colors.green
+                            : AppColors.muted,
                         fontSize: 11,
                       ),
                     ),
@@ -228,14 +238,29 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'monospace')),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'monospace',
+          ),
+        ),
       ],
     );
   }
@@ -340,13 +365,34 @@ class _RiemannSumPainter extends CustomPainter {
     );
 
     // 적분 구간 표시
-    _drawText(canvas, 'a=$a', Offset(padding + a * xScale - 10, originY + 5), AppColors.muted, fontSize: 10);
-    _drawText(canvas, 'b=$b', Offset(padding + b * xScale - 10, originY + 5), AppColors.muted, fontSize: 10);
+    _drawText(
+      canvas,
+      'a=$a',
+      Offset(padding + a * xScale - 10, originY + 5),
+      AppColors.muted,
+      fontSize: 10,
+    );
+    _drawText(
+      canvas,
+      'b=$b',
+      Offset(padding + b * xScale - 10, originY + 5),
+      AppColors.muted,
+      fontSize: 10,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

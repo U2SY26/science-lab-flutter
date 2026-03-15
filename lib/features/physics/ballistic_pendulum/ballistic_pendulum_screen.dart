@@ -20,7 +20,7 @@ class _BallisticPendulumScreenState extends State<BallisticPendulumScreen>
   double _projMass = 0.05;
   double _projVel = 200.0;
   double _pendMass = 2.0;
-  double _height = 0, _swingAngle = 0; int _phase = 0;
+  double _height = 0; int _phase = 0;
 
   @override
   void initState() {
@@ -37,9 +37,7 @@ class _BallisticPendulumScreenState extends State<BallisticPendulumScreen>
       final totalMass = _projMass + _pendMass;
       final vAfter = _projMass * _projVel / totalMass;
       _height = vAfter * vAfter / (2 * 9.8);
-      final maxAngle = math.acos(1 - _height / 1.5);
       if (_phase == 0 && _time > 0.5) _phase = 1;
-      if (_phase == 1) _swingAngle = maxAngle * math.sin(math.sqrt(9.8 / 1.5) * (_time - 0.5)).abs() * math.exp(-0.1 * (_time - 0.5));
     });
   }
 

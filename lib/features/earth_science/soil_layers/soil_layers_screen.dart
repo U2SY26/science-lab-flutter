@@ -18,14 +18,16 @@ class _SoilLayersScreenState extends State<SoilLayersScreen>
   double _time = 0;
   bool _isRunning = true;
   double _depth = 2;
-  
+
   String _horizon = "A";
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -33,7 +35,15 @@ class _SoilLayersScreenState extends State<SoilLayersScreen>
     if (!_isRunning) return;
     setState(() {
       _time += 0.016;
-      _horizon = _depth < 0.1 ? "O" : _depth < 0.5 ? "A" : _depth < 1.5 ? "B" : _depth < 3.0 ? "C" : "R";
+      _horizon = _depth < 0.1
+          ? "O"
+          : _depth < 0.5
+          ? "A"
+          : _depth < 1.5
+          ? "B"
+          : _depth < 3.0
+          ? "C"
+          : "R";
     });
   }
 
@@ -46,7 +56,10 @@ class _SoilLayersScreenState extends State<SoilLayersScreen>
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +67,27 @@ class _SoilLayersScreenState extends State<SoilLayersScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('지구과학 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('토양층', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '지구과학 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '토양층',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -70,29 +99,25 @@ class _SoilLayersScreenState extends State<SoilLayersScreen>
           simulation: SizedBox(
             height: 350,
             child: CustomPaint(
-              painter: _SoilLayersScreenPainter(
-                time: _time,
-                depth: _depth,
-              ),
+              painter: _SoilLayersScreenPainter(time: _time, depth: _depth),
               size: Size.infinite,
             ),
           ),
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '깊이 (m)',
-                value: _depth,
-                min: 0,
-                max: 10,
-                step: 0.1,
-                defaultValue: 2,
-                formatValue: (v) => v.toStringAsFixed(1) + ' m',
-                onChanged: (v) => setState(() => _depth = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '깊이 (m)',
+                  value: _depth,
+                  min: 0,
+                  max: 10,
+                  step: 0.1,
+                  defaultValue: 2,
+                  formatValue: (v) => '${v.toStringAsFixed(1)} m',
+                  onChanged: (v) => setState(() => _depth = v),
+                ),
               ),
-              
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -101,23 +126,41 @@ class _SoilLayersScreenState extends State<SoilLayersScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('깊이', _depth.toStringAsFixed(1) + ' m'),
-          _V('층위', _horizon),
-          _V('유형', {'O':'유기물층','A':'표토','B':'집적층','C':'모재층','R':'기반암'}[_horizon] ?? ''),
-                ]),
+                child: Row(
+                  children: [
+                    _V('깊이', '${_depth.toStringAsFixed(1)} m'),
+                    _V('층위', _horizon),
+                    _V(
+                      '유형',
+                      {
+                            'O': '유기물층',
+                            'A': '표토',
+                            'B': '집적층',
+                            'C': '모재층',
+                            'R': '기반암',
+                          }[_horizon] ??
+                          '',
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -128,32 +171,62 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _SoilLayersScreenPainter extends CustomPainter {
   final double time;
   final double depth;
 
-  _SoilLayersScreenPainter({
-    required this.time,
-    required this.depth,
-  });
+  _SoilLayersScreenPainter({required this.time, required this.depth});
 
-  void _drawLabel(Canvas canvas, String text, Offset pos, {Color color = const Color(0xFF5A8A9A), double fontSize = 9}) {
+  void _drawLabel(
+    Canvas canvas,
+    String text,
+    Offset pos, {
+    Color color = const Color(0xFF5A8A9A),
+    double fontSize = 9,
+  }) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, Offset(pos.dx, pos.dy - tp.height / 2));
   }
 
-  void _drawArrowDown(Canvas canvas, double x, double y1, double y2, Color color) {
-    final p = Paint()..color = color..strokeWidth = 1.2..style = PaintingStyle.stroke;
+  void _drawArrowDown(
+    Canvas canvas,
+    double x,
+    double y1,
+    double y2,
+    Color color,
+  ) {
+    final p = Paint()
+      ..color = color
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
     canvas.drawLine(Offset(x, y1), Offset(x, y2), p);
     final path = Path()
       ..moveTo(x, y2)
@@ -166,7 +239,10 @@ class _SoilLayersScreenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width, h = size.height;
 
@@ -176,24 +252,37 @@ class _SoilLayersScreenPainter extends CustomPainter {
     final sectionW = w - labelW - 8;
 
     // Background
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = const Color(0xFF080E08));
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h),
+      Paint()..color = const Color(0xFF080E08),
+    );
 
     // Horizon definitions: [label, name, color, fraction of display height, depth_m_start, depth_m_end]
     // Total simulated depth: 10m mapped to h
     final horizons = [
-      ('O', '유기물층', const Color(0xFF4A2800), 0.06, 0.0,  0.05),
-      ('A', '표토',    const Color(0xFF3A1E00), 0.14, 0.05, 0.3),
-      ('B', '집적층',  const Color(0xFF6B3A12), 0.20, 0.3,  1.5),
-      ('C', '모재층',  const Color(0xFF6B6040), 0.25, 1.5,  4.0),
-      ('R', '기반암',  const Color(0xFF3A3A3A), 0.35, 4.0,  10.0),
+      ('O', '유기물층', const Color(0xFF4A2800), 0.06, 0.0, 0.05),
+      ('A', '표토', const Color(0xFF3A1E00), 0.14, 0.05, 0.3),
+      ('B', '집적층', const Color(0xFF6B3A12), 0.20, 0.3, 1.5),
+      ('C', '모재층', const Color(0xFF6B6040), 0.25, 1.5, 4.0),
+      ('R', '기반암', const Color(0xFF3A3A3A), 0.35, 4.0, 10.0),
     ];
 
     // Compute pixel boundaries for each horizon
     double yOff = 0;
-    final List<(String, String, Color, double, double, double, double, double)> horizonRects = [];
+    final List<(String, String, Color, double, double, double, double, double)>
+    horizonRects = [];
     for (final hz in horizons) {
       final pxH = h * hz.$4;
-      horizonRects.add((hz.$1, hz.$2, hz.$3, sectionX, yOff, sectionW, pxH, hz.$6));
+      horizonRects.add((
+        hz.$1,
+        hz.$2,
+        hz.$3,
+        sectionX,
+        yOff,
+        sectionW,
+        pxH,
+        hz.$6,
+      ));
       yOff += pxH;
     }
 
@@ -211,7 +300,14 @@ class _SoilLayersScreenPainter extends CustomPainter {
         // Leaf litter dots
         for (int i = 0; i < 20; i++) {
           canvas.drawOval(
-            Rect.fromCenter(center: Offset(rx + rng.nextDouble() * rw, ry + rng.nextDouble() * rh), width: 8, height: 4),
+            Rect.fromCenter(
+              center: Offset(
+                rx + rng.nextDouble() * rw,
+                ry + rng.nextDouble() * rh,
+              ),
+              width: 8,
+              height: 4,
+            ),
             Paint()..color = const Color(0xFF2A1400).withValues(alpha: 0.7),
           );
         }
@@ -228,7 +324,14 @@ class _SoilLayersScreenPainter extends CustomPainter {
         // Iron oxide blotches
         for (int i = 0; i < 18; i++) {
           canvas.drawOval(
-            Rect.fromCenter(center: Offset(rx + rng.nextDouble() * rw, ry + rng.nextDouble() * rh), width: 14, height: 8),
+            Rect.fromCenter(
+              center: Offset(
+                rx + rng.nextDouble() * rw,
+                ry + rng.nextDouble() * rh,
+              ),
+              width: 14,
+              height: 8,
+            ),
             Paint()..color = const Color(0xFF8B4513).withValues(alpha: 0.35),
           );
         }
@@ -237,16 +340,26 @@ class _SoilLayersScreenPainter extends CustomPainter {
         for (int i = 0; i < 12; i++) {
           final fx = rx + rng.nextDouble() * rw;
           final fy = ry + rng.nextDouble() * rh;
-          canvas.drawLine(Offset(fx, fy), Offset(fx + 15, fy + 5),
-            Paint()..color = const Color(0xFF8A8060).withValues(alpha: 0.5)..strokeWidth = 2);
+          canvas.drawLine(
+            Offset(fx, fy),
+            Offset(fx + 15, fy + 5),
+            Paint()
+              ..color = const Color(0xFF8A8060).withValues(alpha: 0.5)
+              ..strokeWidth = 2,
+          );
         }
       } else if (label == 'R') {
         // Rock crack pattern
         for (int i = 0; i < 8; i++) {
           final fx = rx + rng.nextDouble() * rw;
           final fy = ry + rng.nextDouble() * rh;
-          canvas.drawLine(Offset(fx, fy), Offset(fx + rng.nextDouble() * 30 - 15, fy + rng.nextDouble() * 20),
-            Paint()..color = const Color(0xFF222222).withValues(alpha: 0.7)..strokeWidth = 1.5);
+          canvas.drawLine(
+            Offset(fx, fy),
+            Offset(fx + rng.nextDouble() * 30 - 15, fy + rng.nextDouble() * 20),
+            Paint()
+              ..color = const Color(0xFF222222).withValues(alpha: 0.7)
+              ..strokeWidth = 1.5,
+          );
         }
       }
 
@@ -254,20 +367,28 @@ class _SoilLayersScreenPainter extends CustomPainter {
       canvas.drawLine(
         Offset(rx, ry),
         Offset(rx + rw, ry),
-        Paint()..color = const Color(0xFF0D1A20).withValues(alpha: 0.6)..strokeWidth = 1.2,
+        Paint()
+          ..color = const Color(0xFF0D1A20).withValues(alpha: 0.6)
+          ..strokeWidth = 1.2,
       );
     }
 
     // Plant roots from top
-    final rootPaint = Paint()..color = const Color(0xFF3A6A1A).withValues(alpha: 0.75)..strokeWidth = 1.2..style = PaintingStyle.stroke;
+    final rootPaint = Paint()
+      ..color = const Color(0xFF3A6A1A).withValues(alpha: 0.75)
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
     final rootDepthPx = math.min(h * 0.4, h * 0.4);
     for (int r = 0; r < 4; r++) {
       final rx2 = sectionX + sectionW * (0.2 + r * 0.2);
       final path = Path()..moveTo(rx2, 0);
       path.cubicTo(
-        rx2 - 10 + r * 5, rootDepthPx * 0.3,
-        rx2 + 8 - r * 4, rootDepthPx * 0.6,
-        rx2 - 5 + r * 3, rootDepthPx,
+        rx2 - 10 + r * 5,
+        rootDepthPx * 0.3,
+        rx2 + 8 - r * 4,
+        rootDepthPx * 0.6,
+        rx2 - 5 + r * 3,
+        rootDepthPx,
       );
       canvas.drawPath(path, rootPaint);
       // Branch
@@ -280,22 +401,49 @@ class _SoilLayersScreenPainter extends CustomPainter {
 
     // Earthworm (animated)
     final wormY = h * 0.25 + math.sin(time * 1.5) * h * 0.04;
-    final wormX = sectionX + sectionW * 0.6 + math.cos(time * 1.5) * sectionW * 0.06;
-    final wormPaint = Paint()..color = const Color(0xFFCC8844)..strokeWidth = 3..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+    final wormX =
+        sectionX + sectionW * 0.6 + math.cos(time * 1.5) * sectionW * 0.06;
+    final wormPaint = Paint()
+      ..color = const Color(0xFFCC8844)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
     final wormPath = Path();
     for (int i = 0; i <= 10; i++) {
       final t = i / 10.0;
       final wx = wormX + t * 20;
       final wy = wormY + math.sin(t * math.pi * 2 + time * 3) * 3;
-      if (i == 0) { wormPath.moveTo(wx, wy); } else { wormPath.lineTo(wx, wy); }
+      if (i == 0) {
+        wormPath.moveTo(wx, wy);
+      } else {
+        wormPath.lineTo(wx, wy);
+      }
     }
     canvas.drawPath(wormPath, wormPaint);
 
     // Water infiltration arrows
     final waterAlpha = 0.5 + 0.3 * math.sin(time * 2);
-    _drawArrowDown(canvas, sectionX + sectionW * 0.82, 4, h * 0.18, const Color(0xFF4488FF).withValues(alpha: waterAlpha));
-    _drawArrowDown(canvas, sectionX + sectionW * 0.88, h * 0.22, h * 0.38, const Color(0xFF4488FF).withValues(alpha: waterAlpha * 0.7));
-    _drawArrowDown(canvas, sectionX + sectionW * 0.84, h * 0.42, h * 0.56, const Color(0xFF4488FF).withValues(alpha: waterAlpha * 0.45));
+    _drawArrowDown(
+      canvas,
+      sectionX + sectionW * 0.82,
+      4,
+      h * 0.18,
+      const Color(0xFF4488FF).withValues(alpha: waterAlpha),
+    );
+    _drawArrowDown(
+      canvas,
+      sectionX + sectionW * 0.88,
+      h * 0.22,
+      h * 0.38,
+      const Color(0xFF4488FF).withValues(alpha: waterAlpha * 0.7),
+    );
+    _drawArrowDown(
+      canvas,
+      sectionX + sectionW * 0.84,
+      h * 0.42,
+      h * 0.56,
+      const Color(0xFF4488FF).withValues(alpha: waterAlpha * 0.45),
+    );
 
     // Depth indicator line
     final depthFrac = (depth / 10.0).clamp(0.0, 1.0);
@@ -303,14 +451,22 @@ class _SoilLayersScreenPainter extends CustomPainter {
     canvas.drawLine(
       Offset(sectionX, depthY),
       Offset(sectionX + sectionW, depthY),
-      Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.6)..strokeWidth = 1.5..style = PaintingStyle.stroke,
+      Paint()
+        ..color = const Color(0xFF00D4FF).withValues(alpha: 0.6)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
     );
-    canvas.drawCircle(Offset(sectionX + sectionW - 4, depthY), 3,
-      Paint()..color = const Color(0xFF00D4FF));
+    canvas.drawCircle(
+      Offset(sectionX + sectionW - 4, depthY),
+      3,
+      Paint()..color = const Color(0xFF00D4FF),
+    );
 
     // Left label column
-    canvas.drawRect(Rect.fromLTWH(0, 0, labelW - 2, h),
-      Paint()..color = const Color(0xFF080E08));
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, labelW - 2, h),
+      Paint()..color = const Color(0xFF080E08),
+    );
 
     double labelY = 0;
     for (final hz in horizons) {
@@ -318,31 +474,57 @@ class _SoilLayersScreenPainter extends CustomPainter {
       final midY = labelY + pxH / 2;
       // Horizon letter
       final tp = TextPainter(
-        text: TextSpan(text: hz.$1,
-          style: TextStyle(color: hz.$3.withValues(alpha: 1.0).withAlpha(255).withRed(
-            (hz.$3.r * 1.4).clamp(0, 255).toInt(),
-          ).withGreen(
-            (hz.$3.g * 1.4).clamp(0, 255).toInt(),
-          ).withBlue(
-            (hz.$3.b * 1.4).clamp(0, 255).toInt(),
+        text: TextSpan(
+          text: hz.$1,
+          style: TextStyle(
+            color: hz.$3
+                .withValues(alpha: 1.0)
+                .withAlpha(255)
+                .withRed((hz.$3.r * 1.4).clamp(0, 255).toInt())
+                .withGreen((hz.$3.g * 1.4).clamp(0, 255).toInt())
+                .withBlue((hz.$3.b * 1.4).clamp(0, 255).toInt()),
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
           ),
-          fontSize: 14, fontWeight: FontWeight.bold)),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       tp.paint(canvas, Offset(6, midY - tp.height / 2));
 
-      _drawLabel(canvas, hz.$2, Offset(22, midY), color: const Color(0xFF8AAAAA), fontSize: 8);
-      _drawLabel(canvas, '${hz.$5.toStringAsFixed(1)}m', Offset(22, midY + 9), color: const Color(0xFF3A5A5A), fontSize: 7);
+      _drawLabel(
+        canvas,
+        hz.$2,
+        Offset(22, midY),
+        color: const Color(0xFF8AAAAA),
+        fontSize: 8,
+      );
+      _drawLabel(
+        canvas,
+        '${hz.$5.toStringAsFixed(1)}m',
+        Offset(22, midY + 9),
+        color: const Color(0xFF3A5A5A),
+        fontSize: 7,
+      );
 
       // Divider
-      canvas.drawLine(Offset(0, labelY + pxH), Offset(labelW - 2, labelY + pxH),
-        Paint()..color = const Color(0xFF1A2A1A)..strokeWidth = 0.8);
+      canvas.drawLine(
+        Offset(0, labelY + pxH),
+        Offset(labelW - 2, labelY + pxH),
+        Paint()
+          ..color = const Color(0xFF1A2A1A)
+          ..strokeWidth = 0.8,
+      );
       labelY += pxH;
     }
 
     // Depth label overlay
-    _drawLabel(canvas, '깊이: ${depth.toStringAsFixed(1)}m', Offset(sectionX + 6, depthY - 8),
-      color: const Color(0xFF00D4FF), fontSize: 8);
+    _drawLabel(
+      canvas,
+      '깊이: ${depth.toStringAsFixed(1)}m',
+      Offset(sectionX + 6, depthY - 8),
+      color: const Color(0xFF00D4FF),
+      fontSize: 8,
+    );
   }
 
   @override

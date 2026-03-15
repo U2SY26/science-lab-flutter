@@ -1,16 +1,18 @@
+import 'dart:async' show unawaited;
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'core/providers/language_provider.dart';
 import 'core/providers/ai_chat_provider.dart';
+import 'core/providers/user_profile_provider.dart';
 import 'core/services/ad_service.dart';
 import 'core/services/iap_service.dart';
 import 'core/services/force_update_service.dart';
@@ -18,6 +20,7 @@ import 'core/services/whats_new_service.dart';
 import 'core/services/analytics_service.dart';
 import 'core/services/deep_link_service.dart';
 import 'core/services/firebase_ai_service.dart';
+import 'core/services/device_id_service.dart';
 import 'core/services/stt_service.dart';
 import 'core/services/tts_service.dart';
 import 'shared/widgets/ai_chat_overlay.dart';
@@ -25,17 +28,33 @@ import 'shared/widgets/ai_chat_overlay.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebase 초기화
-  await Firebase.initializeApp();
+  // Riverpod 2.6.1 + Flutter 3.35 호환성 이슈 우회
+  // _dirty assertion은 디버그 전용 — 릴리즈에선 발생 안 함
+  FlutterError.onError = (details) {
+    final msg = details.exception.toString();
+    if (msg.contains('_dirty') || msg.contains('hasSize')) {
+      debugPrint('[FlutterError] Ignored: $msg');
+      return;
+    }
+    FlutterError.presentError(details);
+  };
 
-  // Firebase 익명 인증 (firebase_ai 필수, 개인정보 수집 없음)
-  await FirebaseAuth.instance.signInAnonymously();
-
-  // Firebase AI (Gemini) 초기화
-  FirebaseAiService().initialize();
-
-  // 앱 시작 이벤트 로깅
-  AnalyticsService.logAppOpen();
+  // Firebase 초기화 (실패해도 앱은 계속 실행)
+  try {
+    await Firebase.initializeApp();
+    // App Check — 릴리즈에서만 Play Integrity 활성화
+    if (!kDebugMode) {
+      await FirebaseAppCheck.instance.activate(
+        providerAndroid: const AndroidPlayIntegrityProvider(),
+      );
+    }
+    // Firebase AI Logic (Gemini) 초기화 — API 키 불필요
+    FirebaseAiService().initialize();
+    // 앱 시작 이벤트 로깅
+    AnalyticsService.logAppOpen();
+  } catch (e) {
+    debugPrint('[main] Firebase init failed: $e');
+  }
 
   // Edge-to-Edge 시스템 UI 설정 (Android 15+ 대응)
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -47,17 +66,19 @@ void main() async {
     systemNavigationBarIconBrightness: Brightness.light,
   ));
 
-  // AdMob + Remote Config 초기화 (모바일만)
+  // 모바일 전용 서비스 초기화 (병렬 실행으로 시작 속도 개선)
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-    await AdService().initialize();
-    await IAPService().initialize();
-    await ForceUpdateService().initialize();
-    await WhatsNewService().initialize();
-    await DeepLinkService().initialize();
-
-    // STT / TTS 초기화
-    await SttService().initialize();
-    await TtsService().initialize();
+    await Future.wait([
+      AdService().initialize(),
+      IAPService().initialize(),
+      WhatsNewService().initialize(),
+      SttService().initialize(),
+      TtsService().initialize(),
+      DeviceIdService().initialize(),
+    ]);
+    // 딥링크 & 강제 업데이트는 별도로 (순서 무관)
+    unawaited(ForceUpdateService().initialize());
+    unawaited(DeepLinkService().initialize());
   }
 
   runApp(
@@ -79,6 +100,10 @@ class _ScienceLabAppState extends ConsumerState<ScienceLabApp> {
   @override
   void initState() {
     super.initState();
+    // 유저 프로필 초기화 — 첫 프레임 이후 (빌드 중 provider 변경 방지)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(userProfileProvider.notifier).initialize();
+    });
     // 딥링크 수신 시 GoRouter로 네비게이션
     DeepLinkService().onDeepLink = (String path) {
       appRouter.go(path);

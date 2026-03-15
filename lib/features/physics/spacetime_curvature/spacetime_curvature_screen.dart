@@ -11,7 +11,8 @@ class SpacetimeCurvatureScreen extends StatefulWidget {
   const SpacetimeCurvatureScreen({super.key});
 
   @override
-  State<SpacetimeCurvatureScreen> createState() => _SpacetimeCurvatureScreenState();
+  State<SpacetimeCurvatureScreen> createState() =>
+      _SpacetimeCurvatureScreenState();
 }
 
 class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
@@ -25,7 +26,7 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
   bool _animate = true;
   String _visualization = 'grid';
 
-  List<_TestParticle> _particles = [];
+  final List<_TestParticle> _particles = [];
 
   @override
   void initState() {
@@ -38,7 +39,11 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
 
     // 기본 질량 (태양 같은 큰 질량)
     _masses = [
-      _MassObject(position: const Offset(0.5, 0.5), mass: 10, color: Colors.orange),
+      _MassObject(
+        position: const Offset(0.5, 0.5),
+        mass: 10,
+        color: Colors.orange,
+      ),
     ];
 
     // 테스트 입자들 초기화
@@ -49,13 +54,15 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
     _particles.clear();
     final random = math.Random();
     for (int i = 0; i < 20; i++) {
-      _particles.add(_TestParticle(
-        position: Offset(random.nextDouble(), random.nextDouble()),
-        velocity: Offset(
-          (random.nextDouble() - 0.5) * 0.01,
-          (random.nextDouble() - 0.5) * 0.01,
+      _particles.add(
+        _TestParticle(
+          position: Offset(random.nextDouble(), random.nextDouble()),
+          velocity: Offset(
+            (random.nextDouble() - 0.5) * 0.01,
+            (random.nextDouble() - 0.5) * 0.01,
+          ),
         ),
-      ));
+      );
     }
   }
 
@@ -105,11 +112,13 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
     if (_masses.length < 3) {
       HapticFeedback.mediumImpact();
       setState(() {
-        _masses.add(_MassObject(
-          position: position,
-          mass: 5 + math.Random().nextDouble() * 10,
-          color: [Colors.blue, Colors.purple][_masses.length % 2],
-        ));
+        _masses.add(
+          _MassObject(
+            position: position,
+            mass: 5 + math.Random().nextDouble() * 10,
+            color: [Colors.blue, Colors.purple][_masses.length % 2],
+          ),
+        );
       });
     }
   }
@@ -118,7 +127,11 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _masses = [
-        _MassObject(position: const Offset(0.5, 0.5), mass: 10, color: Colors.orange),
+        _MassObject(
+          position: const Offset(0.5, 0.5),
+          mass: 10,
+          color: Colors.orange,
+        ),
       ];
       _initParticles();
     });
@@ -207,7 +220,9 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
                     ],
                   ),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.deepPurple.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.deepPurple.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +233,11 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
                         const SizedBox(width: 8),
                         const Text(
                           'Einstein Field Equations',
-                          style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -273,7 +292,8 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
                     child: _OptionChip(
                       label: '측지선',
                       isSelected: _showGeodesics,
-                      onTap: () => setState(() => _showGeodesics = !_showGeodesics),
+                      onTap: () =>
+                          setState(() => _showGeodesics = !_showGeodesics),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -281,7 +301,8 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
                     child: _OptionChip(
                       label: '입자',
                       isSelected: _showParticles,
-                      onTap: () => setState(() => _showParticles = !_showParticles),
+                      onTap: () =>
+                          setState(() => _showParticles = !_showParticles),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -312,11 +333,7 @@ class _SpacetimeCurvatureScreenState extends State<SpacetimeCurvatureScreen>
           buttons: SimButtonGroup(
             expanded: true,
             buttons: [
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -330,7 +347,11 @@ class _MassObject {
   double mass;
   Color color;
 
-  _MassObject({required this.position, required this.mass, required this.color});
+  _MassObject({
+    required this.position,
+    required this.mass,
+    required this.color,
+  });
 }
 
 class _TestParticle {
@@ -361,14 +382,21 @@ class _OptionChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.accent.withValues(alpha: 0.2) : AppColors.simBg,
+          color: isSelected
+              ? AppColors.accent.withValues(alpha: 0.2)
+              : AppColors.simBg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? AppColors.accent : AppColors.cardBorder),
+          border: Border.all(
+            color: isSelected ? AppColors.accent : AppColors.cardBorder,
+          ),
         ),
         child: Center(
           child: Text(
             label,
-            style: TextStyle(color: isSelected ? AppColors.accent : AppColors.muted, fontSize: 11),
+            style: TextStyle(
+              color: isSelected ? AppColors.accent : AppColors.muted,
+              fontSize: 11,
+            ),
           ),
         ),
       ),
@@ -399,7 +427,10 @@ class _SpacetimePainter extends CustomPainter {
     double totalCurvature = 0;
 
     for (var mass in masses) {
-      final massPos = Offset(mass.position.dx * size.width, mass.position.dy * size.height);
+      final massPos = Offset(
+        mass.position.dx * size.width,
+        mass.position.dy * size.height,
+      );
       final dx = point.dx - massPos.dx;
       final dy = point.dy - massPos.dy;
       final r = math.sqrt(dx * dx + dy * dy);
@@ -445,8 +476,15 @@ class _SpacetimePainter extends CustomPainter {
     // 테스트 입자들
     if (showParticles) {
       for (var particle in particles) {
-        final pos = Offset(particle.position.dx * size.width, particle.position.dy * size.height);
-        canvas.drawCircle(pos, 2, Paint()..color = Colors.cyan.withValues(alpha: 0.8));
+        final pos = Offset(
+          particle.position.dx * size.width,
+          particle.position.dy * size.height,
+        );
+        canvas.drawCircle(
+          pos,
+          2,
+          Paint()..color = Colors.cyan.withValues(alpha: 0.8),
+        );
       }
     }
 
@@ -592,21 +630,25 @@ class _SpacetimePainter extends CustomPainter {
         final x = i * step;
         final y = j * step;
 
-        final curvature = _calculateCurvature(Offset(x + step / 2, y + step / 2), size);
+        final curvature = _calculateCurvature(
+          Offset(x + step / 2, y + step / 2),
+          size,
+        );
         final depth = curvature * 0.5;
 
         // 3D 투영 효과
-        final projected = Offset(
-          x + depth * 0.2,
-          y + depth * 0.3,
-        );
+        final projected = Offset(x + depth * 0.2, y + depth * 0.3);
 
         final alpha = (0.3 + curvature / 100).clamp(0.0, 0.8);
 
         canvas.drawRect(
           Rect.fromLTWH(projected.dx, projected.dy, step * 0.9, step * 0.9),
           Paint()
-            ..color = Color.lerp(Colors.blue, Colors.purple, curvature / 50)!.withValues(alpha: alpha)
+            ..color = Color.lerp(
+              Colors.blue,
+              Colors.purple,
+              curvature / 50,
+            )!.withValues(alpha: alpha)
             ..style = PaintingStyle.stroke
             ..strokeWidth = 0.5,
         );
@@ -632,7 +674,10 @@ class _SpacetimePainter extends CustomPainter {
       for (int step = 0; step < 200; step++) {
         // 시공간 곡률에 의한 빛의 휨
         for (var mass in masses) {
-          final massPos = Offset(mass.position.dx * size.width, mass.position.dy * size.height);
+          final massPos = Offset(
+            mass.position.dx * size.width,
+            mass.position.dy * size.height,
+          );
           final dx = massPos.dx - x;
           final dy = massPos.dy - y;
           final r = math.sqrt(dx * dx + dy * dy);
@@ -663,7 +708,10 @@ class _SpacetimePainter extends CustomPainter {
   }
 
   void _drawMassObject(Canvas canvas, _MassObject mass, Size size) {
-    final pos = Offset(mass.position.dx * size.width, mass.position.dy * size.height);
+    final pos = Offset(
+      mass.position.dx * size.width,
+      mass.position.dy * size.height,
+    );
     final radius = 8 + mass.mass * 0.8;
 
     // 이벤트 호라이즌 (블랙홀 효과)
@@ -702,18 +750,17 @@ class _SpacetimePainter extends CustomPainter {
 
     // 중심 질량
     final gradient = RadialGradient(
-      colors: [
-        mass.color,
-        mass.color.withValues(alpha: 0.5),
-        Colors.black,
-      ],
+      colors: [mass.color, mass.color.withValues(alpha: 0.5), Colors.black],
       stops: const [0.0, 0.5, 1.0],
     );
 
     canvas.drawCircle(
       pos,
       radius,
-      Paint()..shader = gradient.createShader(Rect.fromCircle(center: pos, radius: radius)),
+      Paint()
+        ..shader = gradient.createShader(
+          Rect.fromCircle(center: pos, radius: radius),
+        ),
     );
 
     // 밝은 테두리

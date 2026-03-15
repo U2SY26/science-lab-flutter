@@ -22,7 +22,7 @@ class _WavelengthScreenState extends State<WavelengthScreen>
   double _amplitude = 50;
   double _speed = 1.0;
   String _waveType = 'visible';
-  bool _showProperties = true;
+  final bool _showProperties = true;
 
   // 전자기파 스펙트럼 데이터
   final Map<String, _WaveSpectrum> _spectrum = {
@@ -129,7 +129,12 @@ class _WavelengthScreenState extends State<WavelengthScreen>
       b = 0;
     }
 
-    return Color.fromRGBO((r * 255).round(), (g * 255).round(), (b * 255).round(), 1);
+    return Color.fromRGBO(
+      (r * 255).round(),
+      (g * 255).round(),
+      (b * 255).round(),
+      1,
+    );
   }
 
   @override
@@ -211,7 +216,9 @@ class _WavelengthScreenState extends State<WavelengthScreen>
                 decoration: BoxDecoration(
                   color: AppColors.simBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _currentColor.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: _currentColor.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -254,7 +261,10 @@ class _WavelengthScreenState extends State<WavelengthScreen>
               const SizedBox(height: 16),
 
               // 스펙트럼 선택
-              const Text('전자기파 스펙트럼', style: TextStyle(color: AppColors.muted, fontSize: 12)),
+              const Text(
+                '전자기파 스펙트럼',
+                style: TextStyle(color: AppColors.muted, fontSize: 12),
+              ),
               const SizedBox(height: 8),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -271,23 +281,35 @@ class _WavelengthScreenState extends State<WavelengthScreen>
                             if (entry.key == 'visible') {
                               _wavelength = 500;
                             } else {
-                              _wavelength = (entry.value.minWavelength + entry.value.maxWavelength) / 2;
+                              _wavelength =
+                                  (entry.value.minWavelength +
+                                      entry.value.maxWavelength) /
+                                  2;
                             }
                           });
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
-                            color: isSelected ? entry.value.color.withValues(alpha: 0.2) : AppColors.simBg,
+                            color: isSelected
+                                ? entry.value.color.withValues(alpha: 0.2)
+                                : AppColors.simBg,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isSelected ? entry.value.color : AppColors.cardBorder,
+                              color: isSelected
+                                  ? entry.value.color
+                                  : AppColors.cardBorder,
                             ),
                           ),
                           child: Text(
                             entry.value.name,
                             style: TextStyle(
-                              color: isSelected ? entry.value.color : AppColors.muted,
+                              color: isSelected
+                                  ? entry.value.color
+                                  : AppColors.muted,
                               fontSize: 11,
                             ),
                           ),
@@ -309,7 +331,10 @@ class _WavelengthScreenState extends State<WavelengthScreen>
                   ),
                   child: Text(
                     _spectrum[_waveType]!.description,
-                    style: TextStyle(color: _spectrum[_waveType]!.color, fontSize: 11),
+                    style: TextStyle(
+                      color: _spectrum[_waveType]!.color,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
               const SizedBox(height: 16),
@@ -407,14 +432,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -442,7 +481,10 @@ class _WavelengthPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // 배경
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0a0a1a));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0a0a1a),
+    );
 
     final centerY = size.height / 2;
     final padding = 30.0;
@@ -519,12 +561,41 @@ class _WavelengthPainter extends CustomPainter {
       );
 
       // 화살촉
-      canvas.drawLine(Offset(startX, arrowY), Offset(startX + 8, arrowY - 5), Paint()..color = Colors.white..strokeWidth = 1.5);
-      canvas.drawLine(Offset(startX, arrowY), Offset(startX + 8, arrowY + 5), Paint()..color = Colors.white..strokeWidth = 1.5);
-      canvas.drawLine(Offset(endX, arrowY), Offset(endX - 8, arrowY - 5), Paint()..color = Colors.white..strokeWidth = 1.5);
-      canvas.drawLine(Offset(endX, arrowY), Offset(endX - 8, arrowY + 5), Paint()..color = Colors.white..strokeWidth = 1.5);
+      canvas.drawLine(
+        Offset(startX, arrowY),
+        Offset(startX + 8, arrowY - 5),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.5,
+      );
+      canvas.drawLine(
+        Offset(startX, arrowY),
+        Offset(startX + 8, arrowY + 5),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.5,
+      );
+      canvas.drawLine(
+        Offset(endX, arrowY),
+        Offset(endX - 8, arrowY - 5),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.5,
+      );
+      canvas.drawLine(
+        Offset(endX, arrowY),
+        Offset(endX - 8, arrowY + 5),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.5,
+      );
 
-      _drawText(canvas, 'λ', Offset((startX + endX) / 2 - 5, arrowY + 5), Colors.white);
+      _drawText(
+        canvas,
+        'λ',
+        Offset((startX + endX) / 2 - 5, arrowY + 5),
+        Colors.white,
+      );
 
       // 진폭 표시
       final ampX = padding + 20;
@@ -535,7 +606,13 @@ class _WavelengthPainter extends CustomPainter {
           ..color = Colors.yellow.withValues(alpha: 0.7)
           ..strokeWidth = 1.5,
       );
-      _drawText(canvas, 'A', Offset(ampX + 5, centerY - amplitude / 2 - 6), Colors.yellow, fontSize: 10);
+      _drawText(
+        canvas,
+        'A',
+        Offset(ampX + 5, centerY - amplitude / 2 - 6),
+        Colors.yellow,
+        fontSize: 10,
+      );
     }
   }
 
@@ -578,8 +655,20 @@ class _WavelengthPainter extends CustomPainter {
     }
 
     // 레이블
-    _drawText(canvas, '380nm', Offset(barX - 5, barY + barHeight + 3), AppColors.muted, fontSize: 8);
-    _drawText(canvas, '700nm', Offset(barX + barWidth - 20, barY + barHeight + 3), AppColors.muted, fontSize: 8);
+    _drawText(
+      canvas,
+      '380nm',
+      Offset(barX - 5, barY + barHeight + 3),
+      AppColors.muted,
+      fontSize: 8,
+    );
+    _drawText(
+      canvas,
+      '700nm',
+      Offset(barX + barWidth - 20, barY + barHeight + 3),
+      AppColors.muted,
+      fontSize: 8,
+    );
   }
 
   Color _wavelengthToColor(double wavelength) {
@@ -615,12 +704,26 @@ class _WavelengthPainter extends CustomPainter {
       b = 0;
     }
 
-    return Color.fromRGBO((r * 255).round(), (g * 255).round(), (b * 255).round(), 1);
+    return Color.fromRGBO(
+      (r * 255).round(),
+      (g * 255).round(),
+      (b * 255).round(),
+      1,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

@@ -275,7 +275,6 @@ class _GoldenRatioPainter extends CustomPainter {
 
   void _drawFibonacci(Canvas canvas, Size size) {
     final centerX = size.width / 2;
-    final centerY = size.height / 2;
 
     // 피보나치 수열
     final fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55];

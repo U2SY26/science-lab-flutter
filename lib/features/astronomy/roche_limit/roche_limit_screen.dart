@@ -103,8 +103,8 @@ class _RocheLimitScreenState extends State<RocheLimitScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('로슈 한계', _rocheR.toStringAsFixed(3) + ' R'),
-          _V('거리', _dist.toStringAsFixed(3) + ' R'),
+          _V('로슈 한계', '${_rocheR.toStringAsFixed(3)} R'),
+          _V('거리', '${_dist.toStringAsFixed(3)} R'),
           _V('상태', _dist < _rocheR ? '파괴' : '안전'),
                 ]),
               ),

@@ -105,7 +105,7 @@ class _NuclearFissionFusionScreenState extends State<NuclearFissionFusionScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('BE/A', _bindingE.toStringAsFixed(2) + ' MeV'),
+          _V('BE/A', '${_bindingE.toStringAsFixed(2)} MeV'),
           _V('과정', _process),
           _V('A', _massNumber.toInt().toString()),
                 ]),

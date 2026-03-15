@@ -77,7 +77,10 @@ class _PoincareScreenState extends State<PoincareScreen>
               children: [
                 Icon(Icons.check_circle, color: Colors.green, size: 14),
                 SizedBox(width: 4),
-                Text('해결됨', style: TextStyle(color: Colors.green, fontSize: 11)),
+                Text(
+                  '해결됨',
+                  style: TextStyle(color: Colors.green, fontSize: 11),
+                ),
               ],
             ),
           ),
@@ -116,7 +119,9 @@ class _PoincareScreenState extends State<PoincareScreen>
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +132,11 @@ class _PoincareScreenState extends State<PoincareScreen>
                         SizedBox(width: 8),
                         Text(
                           '2003년 페렐만이 증명 (상금 거부)',
-                          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -183,7 +192,7 @@ class _PoincareScreenState extends State<PoincareScreen>
                   Switch(
                     value: _showLoop,
                     onChanged: (v) => setState(() => _showLoop = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                 ],
               ),
@@ -216,7 +225,11 @@ class _PoincareScreenState extends State<PoincareScreen>
                   children: [
                     const Text(
                       '단순 연결성 테스트',
-                      style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.bold, fontSize: 12),
+                      style: TextStyle(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -233,7 +246,8 @@ class _PoincareScreenState extends State<PoincareScreen>
                           child: _TopologyInfo(
                             shape: '토러스',
                             canShrink: false,
-                            isSelected: _shape == 'torus' || _shape == 'double-torus',
+                            isSelected:
+                                _shape == 'torus' || _shape == 'double-torus',
                           ),
                         ),
                       ],
@@ -277,7 +291,10 @@ class _TopologyInfo extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(shape, style: const TextStyle(color: AppColors.ink, fontSize: 11)),
+          Text(
+            shape,
+            style: const TextStyle(color: AppColors.ink, fontSize: 11),
+          ),
           const SizedBox(height: 4),
           Icon(
             canShrink ? Icons.check_circle : Icons.cancel,
@@ -333,10 +350,16 @@ class _PoincarePainter extends CustomPainter {
     final text = shape == 'sphere'
         ? '구: 모든 루프가 한 점으로 수축 가능 → 단순 연결'
         : shape == 'torus'
-            ? '토러스: 구멍을 감싸는 루프는 수축 불가 → 단순 연결 아님'
-            : '2중 토러스: 더 복잡한 위상 → 단순 연결 아님';
+        ? '토러스: 구멍을 감싸는 루프는 수축 불가 → 단순 연결 아님'
+        : '2중 토러스: 더 복잡한 위상 → 단순 연결 아님';
 
-    _drawText(canvas, text, Offset(10, size.height - 25), AppColors.muted, fontSize: 10);
+    _drawText(
+      canvas,
+      text,
+      Offset(10, size.height - 25),
+      AppColors.muted,
+      fontSize: 10,
+    );
   }
 
   void _drawSphere(Canvas canvas, Offset center, double radius) {
@@ -349,13 +372,21 @@ class _PoincarePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     canvas.drawOval(
-      Rect.fromCenter(center: center, width: deformedRadius * 2, height: deformedRadius * 1.8),
+      Rect.fromCenter(
+        center: center,
+        width: deformedRadius * 2,
+        height: deformedRadius * 1.8,
+      ),
       paint,
     );
 
     // 경계선
     canvas.drawOval(
-      Rect.fromCenter(center: center, width: deformedRadius * 2, height: deformedRadius * 1.8),
+      Rect.fromCenter(
+        center: center,
+        width: deformedRadius * 2,
+        height: deformedRadius * 1.8,
+      ),
       Paint()
         ..color = Colors.blue
         ..style = PaintingStyle.stroke
@@ -373,7 +404,11 @@ class _PoincarePainter extends CustomPainter {
       final y = center.dy + (i - 2) * deformedRadius * 0.4;
       final w = deformedRadius * math.sqrt(1 - math.pow((i - 2) * 0.4, 2));
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(center.dx, y), width: w * 2, height: w * 0.3),
+        Rect.fromCenter(
+          center: Offset(center.dx, y),
+          width: w * 2,
+          height: w * 0.3,
+        ),
         Paint()
           ..color = Colors.blue.withValues(alpha: 0.5)
           ..style = PaintingStyle.stroke
@@ -398,11 +433,22 @@ class _PoincarePainter extends CustomPainter {
       }
 
       // 수축 화살표
-      _drawText(canvas, '→ 수축 가능!', Offset(center.dx + deformedRadius + 10, center.dy - 10), Colors.green, fontSize: 11);
+      _drawText(
+        canvas,
+        '→ 수축 가능!',
+        Offset(center.dx + deformedRadius + 10, center.dy - 10),
+        Colors.green,
+        fontSize: 11,
+      );
     }
   }
 
-  void _drawMeridian(Canvas canvas, Offset center, double radius, double angle) {
+  void _drawMeridian(
+    Canvas canvas,
+    Offset center,
+    double radius,
+    double angle,
+  ) {
     final path = Path();
     for (int i = 0; i <= 20; i++) {
       final t = i / 20 * math.pi;
@@ -434,19 +480,31 @@ class _PoincarePainter extends CustomPainter {
 
     // 외부 타원
     canvas.drawOval(
-      Rect.fromCenter(center: center, width: outerRadius * 2, height: outerRadius * 1.2),
+      Rect.fromCenter(
+        center: center,
+        width: outerRadius * 2,
+        height: outerRadius * 1.2,
+      ),
       torusPaint,
     );
 
     // 내부 구멍 (검은색으로 덮기)
     canvas.drawOval(
-      Rect.fromCenter(center: center, width: innerRadius * 2, height: innerRadius * 0.6),
+      Rect.fromCenter(
+        center: center,
+        width: innerRadius * 2,
+        height: innerRadius * 0.6,
+      ),
       Paint()..color = AppColors.simBg,
     );
 
     // 외곽선
     canvas.drawOval(
-      Rect.fromCenter(center: center, width: outerRadius * 2, height: outerRadius * 1.2),
+      Rect.fromCenter(
+        center: center,
+        width: outerRadius * 2,
+        height: outerRadius * 1.2,
+      ),
       Paint()
         ..color = Colors.purple
         ..style = PaintingStyle.stroke
@@ -454,7 +512,11 @@ class _PoincarePainter extends CustomPainter {
     );
 
     canvas.drawOval(
-      Rect.fromCenter(center: center, width: innerRadius * 2, height: innerRadius * 0.6),
+      Rect.fromCenter(
+        center: center,
+        width: innerRadius * 2,
+        height: innerRadius * 0.6,
+      ),
       Paint()
         ..color = Colors.purple
         ..style = PaintingStyle.stroke
@@ -463,12 +525,6 @@ class _PoincarePainter extends CustomPainter {
 
     // 루프 - 구멍 주위
     if (showLoop) {
-      final loopAngle = animation * 2 * math.pi;
-      final loopCenter = Offset(
-        center.dx + (innerRadius + (outerRadius - innerRadius) / 2) * 0.8 * math.cos(loopAngle),
-        center.dy + (innerRadius * 0.3) * math.sin(loopAngle),
-      );
-
       // 구멍을 감싸는 루프
       final loopPath = Path();
       for (int i = 0; i <= 40; i++) {
@@ -491,7 +547,13 @@ class _PoincarePainter extends CustomPainter {
       );
 
       // 수축 불가 표시
-      _drawText(canvas, '✗ 수축 불가!', Offset(center.dx + outerRadius + 10, center.dy - 10), Colors.red, fontSize: 11);
+      _drawText(
+        canvas,
+        '✗ 수축 불가!',
+        Offset(center.dx + outerRadius + 10, center.dy - 10),
+        Colors.red,
+        fontSize: 11,
+      );
     }
   }
 
@@ -506,19 +568,31 @@ class _PoincarePainter extends CustomPainter {
 
       // 토러스 외곽
       canvas.drawOval(
-        Rect.fromCenter(center: torusCenter, width: smallRadius * 1.8, height: smallRadius * 1.1),
+        Rect.fromCenter(
+          center: torusCenter,
+          width: smallRadius * 1.8,
+          height: smallRadius * 1.1,
+        ),
         Paint()..color = Colors.orange.withValues(alpha: 0.3),
       );
 
       // 구멍
       canvas.drawOval(
-        Rect.fromCenter(center: torusCenter, width: holeRadius * 2, height: holeRadius * 0.5),
+        Rect.fromCenter(
+          center: torusCenter,
+          width: holeRadius * 2,
+          height: holeRadius * 0.5,
+        ),
         Paint()..color = AppColors.simBg,
       );
 
       // 외곽선
       canvas.drawOval(
-        Rect.fromCenter(center: torusCenter, width: smallRadius * 1.8, height: smallRadius * 1.1),
+        Rect.fromCenter(
+          center: torusCenter,
+          width: smallRadius * 1.8,
+          height: smallRadius * 1.1,
+        ),
         Paint()
           ..color = Colors.orange
           ..style = PaintingStyle.stroke
@@ -526,7 +600,11 @@ class _PoincarePainter extends CustomPainter {
       );
 
       canvas.drawOval(
-        Rect.fromCenter(center: torusCenter, width: holeRadius * 2, height: holeRadius * 0.5),
+        Rect.fromCenter(
+          center: torusCenter,
+          width: holeRadius * 2,
+          height: holeRadius * 0.5,
+        ),
         Paint()
           ..color = Colors.orange
           ..style = PaintingStyle.stroke
@@ -557,13 +635,32 @@ class _PoincarePainter extends CustomPainter {
           ..strokeWidth = 3,
       );
 
-      _drawText(canvas, '✗ 수축 불가!', Offset(center.dx + radius + 10, center.dy - 10), Colors.red, fontSize: 11);
+      _drawText(
+        canvas,
+        '✗ 수축 불가!',
+        Offset(center.dx + radius + 10, center.dy - 10),
+        Colors.red,
+        fontSize: 11,
+      );
     }
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.bold)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

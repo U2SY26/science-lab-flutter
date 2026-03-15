@@ -89,7 +89,7 @@ class _OsmosisScreenState extends State<OsmosisScreen>
                 max: 3,
                 step: 0.05,
                 defaultValue: 0.5,
-                formatValue: (v) => v.toStringAsFixed(2) + ' M',
+                formatValue: (v) => '${v.toStringAsFixed(2)} M',
                 onChanged: (v) => setState(() => _concentration = v),
               ),
               
@@ -103,9 +103,9 @@ class _OsmosisScreenState extends State<OsmosisScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('삼투압', _osmoticP.toStringAsFixed(1) + ' atm'),
-          _V('수분 이동', _waterFlow.toStringAsFixed(3) + ' L/s'),
-          _V('농도', _concentration.toStringAsFixed(2) + ' M'),
+          _V('삼투압', '${_osmoticP.toStringAsFixed(1)} atm'),
+          _V('수분 이동', '${_waterFlow.toStringAsFixed(3)} L/s'),
+          _V('농도', '${_concentration.toStringAsFixed(2)} M'),
                 ]),
               ),
             ],

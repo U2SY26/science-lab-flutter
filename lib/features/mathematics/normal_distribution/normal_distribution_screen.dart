@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared/widgets/simulation_container.dart';
@@ -11,18 +10,14 @@ class NormalDistributionScreen extends StatefulWidget {
   const NormalDistributionScreen({super.key});
 
   @override
-  State<NormalDistributionScreen> createState() => _NormalDistributionScreenState();
+  State<NormalDistributionScreen> createState() =>
+      _NormalDistributionScreenState();
 }
 
 class _NormalDistributionScreenState extends State<NormalDistributionScreen> {
   double _mean = 0;
   double _stdDev = 1;
   bool _showAreas = true;
-
-  double _normalPdf(double x) {
-    final exponent = -0.5 * math.pow((x - _mean) / _stdDev, 2);
-    return math.exp(exponent) / (_stdDev * math.sqrt(2 * math.pi));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +81,26 @@ class _NormalDistributionScreenState extends State<NormalDistributionScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: '평균 (μ)', value: _mean.toStringAsFixed(1), color: Colors.blue),
-                        _InfoItem(label: '표준편차 (σ)', value: _stdDev.toStringAsFixed(1), color: Colors.green),
+                        _InfoItem(
+                          label: '평균 (μ)',
+                          value: _mean.toStringAsFixed(1),
+                          color: Colors.blue,
+                        ),
+                        _InfoItem(
+                          label: '표준편차 (σ)',
+                          value: _stdDev.toStringAsFixed(1),
+                          color: Colors.green,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       '68-95-99.7 법칙',
-                      style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.bold, fontSize: 12),
+                      style: TextStyle(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                     const Text(
                       '±1σ: 68.3% | ±2σ: 95.4% | ±3σ: 99.7%',
@@ -107,12 +114,15 @@ class _NormalDistributionScreenState extends State<NormalDistributionScreen> {
               // 영역 표시 토글
               Row(
                 children: [
-                  const Text('σ 영역 표시', style: TextStyle(color: AppColors.muted)),
+                  const Text(
+                    'σ 영역 표시',
+                    style: TextStyle(color: AppColors.muted),
+                  ),
                   const Spacer(),
                   Switch(
                     value: _showAreas,
                     onChanged: (v) => setState(() => _showAreas = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                 ],
               ),
@@ -153,14 +163,29 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'monospace')),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'monospace',
+          ),
+        ),
       ],
     );
   }
@@ -207,11 +232,44 @@ class _NormalDistributionPainter extends CustomPainter {
     // σ 영역 색칠
     if (showAreas) {
       // ±3σ
-      _fillArea(canvas, size, padding, centerY, xMin, xScale, yScale, mean - 3 * stdDev, mean + 3 * stdDev, Colors.blue.withValues(alpha: 0.1));
+      _fillArea(
+        canvas,
+        size,
+        padding,
+        centerY,
+        xMin,
+        xScale,
+        yScale,
+        mean - 3 * stdDev,
+        mean + 3 * stdDev,
+        Colors.blue.withValues(alpha: 0.1),
+      );
       // ±2σ
-      _fillArea(canvas, size, padding, centerY, xMin, xScale, yScale, mean - 2 * stdDev, mean + 2 * stdDev, Colors.blue.withValues(alpha: 0.15));
+      _fillArea(
+        canvas,
+        size,
+        padding,
+        centerY,
+        xMin,
+        xScale,
+        yScale,
+        mean - 2 * stdDev,
+        mean + 2 * stdDev,
+        Colors.blue.withValues(alpha: 0.15),
+      );
       // ±1σ
-      _fillArea(canvas, size, padding, centerY, xMin, xScale, yScale, mean - stdDev, mean + stdDev, Colors.blue.withValues(alpha: 0.2));
+      _fillArea(
+        canvas,
+        size,
+        padding,
+        centerY,
+        xMin,
+        xScale,
+        yScale,
+        mean - stdDev,
+        mean + stdDev,
+        Colors.blue.withValues(alpha: 0.2),
+      );
     }
 
     // 곡선
@@ -255,24 +313,67 @@ class _NormalDistributionPainter extends CustomPainter {
         canvas.drawLine(
           Offset(sigmaX, centerY - 5),
           Offset(sigmaX, centerY + 5),
-          Paint()..color = AppColors.muted..strokeWidth = 1,
+          Paint()
+            ..color = AppColors.muted
+            ..strokeWidth = 1,
         );
-        _drawText(canvas, '${i}σ', Offset(sigmaX - 8, centerY + 8), AppColors.muted, fontSize: 9);
+        _drawText(
+          canvas,
+          '$iσ',
+          Offset(sigmaX - 8, centerY + 8),
+          AppColors.muted,
+          fontSize: 9,
+        );
       }
     }
 
     // μ 표시
-    _drawText(canvas, 'μ', Offset(meanX - 5, centerY + 8), Colors.red, fontSize: 10);
+    _drawText(
+      canvas,
+      'μ',
+      Offset(meanX - 5, centerY + 8),
+      Colors.red,
+      fontSize: 10,
+    );
 
     // 범례
     if (showAreas) {
-      _drawText(canvas, '±1σ: 68.3%', Offset(size.width - 80, 20), Colors.blue.withValues(alpha: 0.8), fontSize: 9);
-      _drawText(canvas, '±2σ: 95.4%', Offset(size.width - 80, 32), Colors.blue.withValues(alpha: 0.6), fontSize: 9);
-      _drawText(canvas, '±3σ: 99.7%', Offset(size.width - 80, 44), Colors.blue.withValues(alpha: 0.4), fontSize: 9);
+      _drawText(
+        canvas,
+        '±1σ: 68.3%',
+        Offset(size.width - 80, 20),
+        Colors.blue.withValues(alpha: 0.8),
+        fontSize: 9,
+      );
+      _drawText(
+        canvas,
+        '±2σ: 95.4%',
+        Offset(size.width - 80, 32),
+        Colors.blue.withValues(alpha: 0.6),
+        fontSize: 9,
+      );
+      _drawText(
+        canvas,
+        '±3σ: 99.7%',
+        Offset(size.width - 80, 44),
+        Colors.blue.withValues(alpha: 0.4),
+        fontSize: 9,
+      );
     }
   }
 
-  void _fillArea(Canvas canvas, Size size, double padding, double centerY, double xMin, double xScale, double yScale, double x1, double x2, Color color) {
+  void _fillArea(
+    Canvas canvas,
+    Size size,
+    double padding,
+    double centerY,
+    double xMin,
+    double xScale,
+    double yScale,
+    double x1,
+    double x2,
+    Color color,
+  ) {
     final path = Path();
     final startPx = (x1 - xMin) * xScale;
     final endPx = (x2 - xMin) * xScale;
@@ -289,9 +390,18 @@ class _NormalDistributionPainter extends CustomPainter {
     canvas.drawPath(path, Paint()..color = color);
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

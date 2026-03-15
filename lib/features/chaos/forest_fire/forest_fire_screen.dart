@@ -115,8 +115,8 @@ class _ForestFireScreenState extends State<ForestFireScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('밀도', (_density * 100).toStringAsFixed(1) + '%'),
-          _V('화재', (_burning * 100).toStringAsFixed(3) + '%'),
+          _V('밀도', '${(_density * 100).toStringAsFixed(1)}%'),
+          _V('화재', '${(_burning * 100).toStringAsFixed(3)}%'),
           _V('f/p', (_fireProb / _growProb).toStringAsFixed(4)),
                 ]),
               ),

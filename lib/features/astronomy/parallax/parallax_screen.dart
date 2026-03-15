@@ -89,7 +89,7 @@ class _ParallaxScreenState extends State<ParallaxScreen>
                 max: 1,
                 step: 0.001,
                 defaultValue: 0.1,
-                formatValue: (v) => v.toStringAsFixed(3) + '"',
+                formatValue: (v) => '${v.toStringAsFixed(3)}"',
                 onChanged: (v) => setState(() => _parallaxAngle = v),
               ),
               
@@ -103,9 +103,9 @@ class _ParallaxScreenState extends State<ParallaxScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('거리', _distance.toStringAsFixed(1) + ' pc'),
-          _V('거리', _distLy.toStringAsFixed(1) + ' ly'),
-          _V('시차', _parallaxAngle.toStringAsFixed(3) + '"'),
+          _V('거리', '${_distance.toStringAsFixed(1)} pc'),
+          _V('거리', '${_distLy.toStringAsFixed(1)} ly'),
+          _V('시차', '${_parallaxAngle.toStringAsFixed(3)}"'),
                 ]),
               ),
             ],

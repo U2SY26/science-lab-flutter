@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -147,9 +146,21 @@ class _ElasticBallScreenState extends State<ElasticBallScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: '높이', value: '${_y.toStringAsFixed(0)} px', color: Colors.blue),
-                        _InfoItem(label: '속도', value: '${_vy.abs().toStringAsFixed(1)}', color: Colors.green),
-                        _InfoItem(label: '튕김 횟수', value: '$_bounceCount', color: AppColors.accent),
+                        _InfoItem(
+                          label: '높이',
+                          value: '${_y.toStringAsFixed(0)} px',
+                          color: Colors.blue,
+                        ),
+                        _InfoItem(
+                          label: '속도',
+                          value: _vy.abs().toStringAsFixed(1),
+                          color: Colors.green,
+                        ),
+                        _InfoItem(
+                          label: '튕김 횟수',
+                          value: '$_bounceCount',
+                          color: AppColors.accent,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -268,14 +279,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -286,7 +311,11 @@ class _BallPainter extends CustomPainter {
   final double maxHeight;
   final double restitution;
 
-  _BallPainter({required this.y, required this.maxHeight, required this.restitution});
+  _BallPainter({
+    required this.y,
+    required this.maxHeight,
+    required this.restitution,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -324,24 +353,27 @@ class _BallPainter extends CustomPainter {
     final shadowOpacity = ((maxHeight - y) / maxHeight * 0.5).clamp(0.0, 0.5);
     final shadowSize = 20 + (1 - y / maxHeight) * 15;
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(centerX, groundY - 5), width: shadowSize, height: 8),
+      Rect.fromCenter(
+        center: Offset(centerX, groundY - 5),
+        width: shadowSize,
+        height: 8,
+      ),
       Paint()..color = Colors.black.withValues(alpha: shadowOpacity),
     );
 
     // 공
     final gradient = RadialGradient(
       center: const Alignment(-0.3, -0.3),
-      colors: [
-        Colors.orange.shade300,
-        Colors.orange,
-        Colors.orange.shade800,
-      ],
+      colors: [Colors.orange.shade300, Colors.orange, Colors.orange.shade800],
     );
 
     canvas.drawCircle(
       Offset(centerX, ballY),
       ballRadius,
-      Paint()..shader = gradient.createShader(Rect.fromCircle(center: Offset(centerX, ballY), radius: ballRadius)),
+      Paint()
+        ..shader = gradient.createShader(
+          Rect.fromCircle(center: Offset(centerX, ballY), radius: ballRadius),
+        ),
     );
 
     // 하이라이트
@@ -356,7 +388,10 @@ class _BallPainter extends CustomPainter {
       final compression = 1 - (y / (ballRadius * 2));
       canvas.drawOval(
         Rect.fromCenter(
-          center: Offset(centerX, groundY - ballRadius * (1 - compression * 0.3)),
+          center: Offset(
+            centerX,
+            groundY - ballRadius * (1 - compression * 0.3),
+          ),
           width: ballRadius * 2 * (1 + compression * 0.3),
           height: ballRadius * 2 * (1 - compression * 0.3),
         ),
@@ -365,12 +400,24 @@ class _BallPainter extends CustomPainter {
     }
 
     // 반발 계수 표시
-    _drawText(canvas, 'e = ${restitution.toStringAsFixed(2)}', Offset(size.width - 80, 20), AppColors.accent);
+    _drawText(
+      canvas,
+      'e = ${restitution.toStringAsFixed(2)}',
+      Offset(size.width - 80, 20),
+      AppColors.accent,
+    );
   }
 
   void _drawText(Canvas canvas, String text, Offset pos, Color color) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

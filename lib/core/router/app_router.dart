@@ -9,7 +9,6 @@ import '../../shared/widgets/xr_webview_viewer.dart';
 import '../../features/home/data/simulation_data.dart';
 import '../../features/home/data/xr_sim_ids.dart';
 import '../../features/onboarding/presentation/splash_screen.dart';
-import '../../features/onboarding/presentation/promo_video_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/home/presentation/main_shell.dart';
 import '../../features/home/presentation/category_screen.dart';
@@ -499,11 +498,6 @@ final appRouter = GoRouter(
       path: '/',
       builder: (context, state) => const SplashScreen(),
     ),
-    // 프로모 영상 (최초 실행 시)
-    GoRoute(
-      path: '/promo',
-      builder: (context, state) => const PromoVideoScreen(),
-    ),
     // 온보딩
     GoRoute(
       path: '/onboarding',
@@ -593,11 +587,15 @@ class _SimulationAdWrapperState extends ConsumerState<_SimulationAdWrapper> {
       children: [
         Column(
           children: [
-            Expanded(child: widget.child),
-            SafeArea(
-              top: false,
-              minimum: const EdgeInsets.only(bottom: 4),
-              child: const AdBannerWidget(),
+            Expanded(
+              child: ClipRect(child: widget.child),
+            ),
+            ClipRect(
+              child: SafeArea(
+                top: false,
+                minimum: const EdgeInsets.only(bottom: 4),
+                child: const AdBannerWidget(),
+              ),
             ),
           ],
         ),
@@ -605,7 +603,7 @@ class _SimulationAdWrapperState extends ConsumerState<_SimulationAdWrapper> {
         if (showXr)
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
-            left: 12,
+            right: 12,
             child: GestureDetector(
               onTap: () {
                 AnalyticsService.logXrViewerOpen(widget.simId);
@@ -613,7 +611,12 @@ class _SimulationAdWrapperState extends ConsumerState<_SimulationAdWrapper> {
                   MaterialPageRoute(
                     builder: (_) => XrWebViewViewer(simId: widget.simId),
                   ),
-                );
+                ).then((_) {
+                  // XR 종료 시 AI 튜터 오버레이 복원 (dispose보다 안정적)
+                  if (context.mounted) {
+                    ref.read(showAiOverlayProvider.notifier).state = true;
+                  }
+                });
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

@@ -21,7 +21,7 @@ class _CellularAutomataScreenState extends ConsumerState<CellularAutomataScreen>
 
   // Parameters
   int _rule = 110; // Rule 110 is Turing complete
-  int _width = 101;
+  final int _width = 101;
   double _speed = 1.0;
   String _initialCondition = 'single';
 

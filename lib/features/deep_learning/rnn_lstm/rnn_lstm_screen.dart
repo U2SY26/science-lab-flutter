@@ -37,8 +37,8 @@ class _RnnLstmScreenState extends ConsumerState<RnnLstmScreen>
   List<double> _candidateCells = [];
 
   // Parameters
-  int _sequenceLength = 8;
-  int _hiddenSize = 4;
+  final int _sequenceLength = 8;
+  final int _hiddenSize = 4;
   int _currentStep = 0;
   bool _isAnimating = false;
 
@@ -70,7 +70,9 @@ class _RnnLstmScreenState extends ConsumerState<RnnLstmScreen>
     _Whh = List.generate(
       _hiddenSize,
       (_) => List.generate(
-          _hiddenSize, (_) => (_random.nextDouble() - 0.5) * 2 * scale),
+        _hiddenSize,
+        (_) => (_random.nextDouble() - 0.5) * 2 * scale,
+      ),
     );
     _bh = List.generate(_hiddenSize, (_) => 0.0);
 
@@ -262,11 +264,11 @@ class _RnnLstmScreenState extends ConsumerState<RnnLstmScreen>
               : 'c_t = f_t·c_{t-1} + i_t·tanh(W_c·[h_{t-1},x_t])',
           formulaDescription: isKorean
               ? (_networkType == 'rnn'
-                  ? '순환 신경망: 이전 상태를 기억하여 시퀀스 데이터를 처리'
-                  : 'LSTM: 게이트 메커니즘으로 장기 의존성 문제 해결')
+                    ? '순환 신경망: 이전 상태를 기억하여 시퀀스 데이터를 처리'
+                    : 'LSTM: 게이트 메커니즘으로 장기 의존성 문제 해결')
               : (_networkType == 'rnn'
-                  ? 'RNN: Processes sequences by maintaining hidden state'
-                  : 'LSTM: Solves vanishing gradient with gate mechanisms'),
+                    ? 'RNN: Processes sequences by maintaining hidden state'
+                    : 'LSTM: Solves vanishing gradient with gate mechanisms'),
           simulation: SizedBox(
             height: 350,
             child: CustomPaint(
@@ -291,10 +293,7 @@ class _RnnLstmScreenState extends ConsumerState<RnnLstmScreen>
               // Network type selection
               SimSegment<String>(
                 label: isKorean ? '네트워크 타입' : 'Network Type',
-                options: {
-                  'rnn': 'RNN',
-                  'lstm': 'LSTM',
-                },
+                options: {'rnn': 'RNN', 'lstm': 'LSTM'},
                 selected: _networkType,
                 onChanged: (v) {
                   HapticFeedback.selectionClick();
@@ -621,8 +620,13 @@ class _RnnLstmPainter extends CustomPainter {
     int highlightIndex,
   ) {
     // Draw label
-    _drawText(canvas, label, Offset(origin.dx, origin.dy - 18), AppColors.ink,
-        fontSize: 10);
+    _drawText(
+      canvas,
+      label,
+      Offset(origin.dx, origin.dy - 18),
+      AppColors.ink,
+      fontSize: 10,
+    );
 
     for (int i = 0; i < data.length; i++) {
       final x = origin.dx + i * cellWidth;
@@ -656,7 +660,11 @@ class _RnnLstmPainter extends CustomPainter {
   }
 
   void _drawRnnCells(
-      Canvas canvas, Size size, double padding, double cellWidth) {
+    Canvas canvas,
+    Size size,
+    double padding,
+    double cellWidth,
+  ) {
     final centerY = size.height / 2;
     final cellSize = 50.0;
 
@@ -664,8 +672,11 @@ class _RnnLstmPainter extends CustomPainter {
       final x = padding + i * cellWidth + cellWidth / 2;
 
       // Draw RNN cell
-      final cellRect =
-          Rect.fromCenter(center: Offset(x, centerY), width: cellSize, height: cellSize);
+      final cellRect = Rect.fromCenter(
+        center: Offset(x, centerY),
+        width: cellSize,
+        height: cellSize,
+      );
 
       final isActive = i < currentStep;
       final isCurrent = i == currentStep - 1;
@@ -674,14 +685,20 @@ class _RnnLstmPainter extends CustomPainter {
         RRect.fromRectAndRadius(cellRect, const Radius.circular(8)),
         Paint()
           ..color = isActive
-              ? (isCurrent ? AppColors.accent : AppColors.accent.withValues(alpha: 0.3))
+              ? (isCurrent
+                    ? AppColors.accent
+                    : AppColors.accent.withValues(alpha: 0.3))
               : AppColors.cardBorder,
       );
 
       // Draw "tanh" label
-      _drawText(canvas, 'tanh', Offset(x - 12, centerY - 6),
-          isActive ? Colors.white : AppColors.muted,
-          fontSize: 10);
+      _drawText(
+        canvas,
+        'tanh',
+        Offset(x - 12, centerY - 6),
+        isActive ? Colors.white : AppColors.muted,
+        fontSize: 10,
+      );
 
       // Draw recurrent connection
       if (i < inputSequence.length - 1) {
@@ -731,7 +748,11 @@ class _RnnLstmPainter extends CustomPainter {
   }
 
   void _drawLstmCells(
-      Canvas canvas, Size size, double padding, double cellWidth) {
+    Canvas canvas,
+    Size size,
+    double padding,
+    double cellWidth,
+  ) {
     final centerY = size.height / 2;
     final cellSize = 60.0;
 
@@ -739,8 +760,11 @@ class _RnnLstmPainter extends CustomPainter {
       final x = padding + i * cellWidth + cellWidth / 2;
 
       // Draw LSTM cell
-      final cellRect =
-          Rect.fromCenter(center: Offset(x, centerY), width: cellSize, height: cellSize);
+      final cellRect = Rect.fromCenter(
+        center: Offset(x, centerY),
+        width: cellSize,
+        height: cellSize,
+      );
 
       final isActive = i < currentStep;
       final isCurrent = i == currentStep - 1;
@@ -750,7 +774,9 @@ class _RnnLstmPainter extends CustomPainter {
         RRect.fromRectAndRadius(cellRect, const Radius.circular(8)),
         Paint()
           ..color = isActive
-              ? (isCurrent ? AppColors.accent.withValues(alpha: 0.8) : AppColors.accent.withValues(alpha: 0.3))
+              ? (isCurrent
+                    ? AppColors.accent.withValues(alpha: 0.8)
+                    : AppColors.accent.withValues(alpha: 0.3))
               : AppColors.cardBorder.withValues(alpha: 0.5),
       );
 
@@ -782,9 +808,13 @@ class _RnnLstmPainter extends CustomPainter {
       }
 
       // Draw "LSTM" label
-      _drawText(canvas, 'LSTM', Offset(x - 14, centerY + 5),
-          isActive ? Colors.white : AppColors.muted,
-          fontSize: 9);
+      _drawText(
+        canvas,
+        'LSTM',
+        Offset(x - 14, centerY + 5),
+        isActive ? Colors.white : AppColors.muted,
+        fontSize: 9,
+      );
 
       // Draw cell state line (top)
       if (i < inputSequence.length - 1) {
@@ -830,22 +860,50 @@ class _RnnLstmPainter extends CustomPainter {
     // Draw legend for LSTM
     final legendY = centerY + cellSize / 2 + 15;
     _drawText(canvas, 'f', Offset(padding, legendY), Colors.red, fontSize: 9);
-    _drawText(canvas, isKorean ? '=망각' : '=forget', Offset(padding + 8, legendY),
-        AppColors.muted,
-        fontSize: 8);
-    _drawText(canvas, 'i', Offset(padding + 50, legendY), Colors.blue, fontSize: 9);
-    _drawText(canvas, isKorean ? '=입력' : '=input', Offset(padding + 58, legendY),
-        AppColors.muted,
-        fontSize: 8);
     _drawText(
-        canvas, 'o', Offset(padding + 100, legendY), Colors.green, fontSize: 9);
-    _drawText(canvas, isKorean ? '=출력' : '=output', Offset(padding + 108, legendY),
-        AppColors.muted,
-        fontSize: 8);
+      canvas,
+      isKorean ? '=망각' : '=forget',
+      Offset(padding + 8, legendY),
+      AppColors.muted,
+      fontSize: 8,
+    );
+    _drawText(
+      canvas,
+      'i',
+      Offset(padding + 50, legendY),
+      Colors.blue,
+      fontSize: 9,
+    );
+    _drawText(
+      canvas,
+      isKorean ? '=입력' : '=input',
+      Offset(padding + 58, legendY),
+      AppColors.muted,
+      fontSize: 8,
+    );
+    _drawText(
+      canvas,
+      'o',
+      Offset(padding + 100, legendY),
+      Colors.green,
+      fontSize: 9,
+    );
+    _drawText(
+      canvas,
+      isKorean ? '=출력' : '=output',
+      Offset(padding + 108, legendY),
+      AppColors.muted,
+      fontSize: 8,
+    );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color,
-      {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,

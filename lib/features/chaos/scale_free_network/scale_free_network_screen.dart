@@ -170,8 +170,12 @@ class _ScaleFreeNetworkScreenPainter extends CustomPainter {
 
   void _drawGrid(Canvas canvas, Size size) {
     final p = Paint()..color = AppColors.simGrid.withValues(alpha: 0.3)..strokeWidth = 0.5;
-    for (double x = 0; x < size.width; x += 30) canvas.drawLine(Offset(x, 0), Offset(x, size.height), p);
-    for (double y = 0; y < size.height; y += 30) canvas.drawLine(Offset(0, y), Offset(size.width, y), p);
+    for (double x = 0; x < size.width; x += 30) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), p);
+    }
+    for (double y = 0; y < size.height; y += 30) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), p);
+    }
   }
 
   @override

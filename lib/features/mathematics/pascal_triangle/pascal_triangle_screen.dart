@@ -94,24 +94,39 @@ class _PascalTriangleScreenState extends State<PascalTriangleScreen> {
                   setState(() => _showMultiples = !_showMultiples);
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
-                    color: _showMultiples ? AppColors.accent.withValues(alpha: 0.2) : AppColors.simBg,
+                    color: _showMultiples
+                        ? AppColors.accent.withValues(alpha: 0.2)
+                        : AppColors.simBg,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: _showMultiples ? AppColors.accent : AppColors.cardBorder),
+                    border: Border.all(
+                      color: _showMultiples
+                          ? AppColors.accent
+                          : AppColors.cardBorder,
+                    ),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        _showMultiples ? Icons.check_box : Icons.check_box_outline_blank,
+                        _showMultiples
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
                         size: 18,
-                        color: _showMultiples ? AppColors.accent : AppColors.muted,
+                        color: _showMultiples
+                            ? AppColors.accent
+                            : AppColors.muted,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '배수 하이라이트',
                         style: TextStyle(
-                          color: _showMultiples ? AppColors.accent : AppColors.muted,
+                          color: _showMultiples
+                              ? AppColors.accent
+                              : AppColors.muted,
                           fontSize: 13,
                         ),
                       ),
@@ -126,7 +141,7 @@ class _PascalTriangleScreenState extends State<PascalTriangleScreen> {
                   label: '배수',
                   presets: [2, 3, 5, 7].map((n) {
                     return PresetButton(
-                      label: '${n}의 배수',
+                      label: '$n의 배수',
                       isSelected: _multipleOf == n,
                       onPressed: () {
                         HapticFeedback.selectionClick();
@@ -149,7 +164,14 @@ class _PascalTriangleScreenState extends State<PascalTriangleScreen> {
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('파스칼 삼각형의 특징', style: TextStyle(color: AppColors.ink, fontWeight: FontWeight.bold, fontSize: 13)),
+                    Text(
+                      '파스칼 삼각형의 특징',
+                      style: TextStyle(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
                     SizedBox(height: 4),
                     Text(
                       '• 각 수 = 위 두 수의 합\n'
@@ -203,7 +225,10 @@ class _PascalTrianglePainter extends CustomPainter {
     final availableWidth = size.width - padding * 2;
     final availableHeight = size.height - padding * 2;
     final cellSize = (availableWidth / triangle.length).clamp(20.0, 40.0);
-    final verticalSpacing = (availableHeight / triangle.length).clamp(20.0, 40.0);
+    final verticalSpacing = (availableHeight / triangle.length).clamp(
+      20.0,
+      40.0,
+    );
 
     for (int row = 0; row < triangle.length; row++) {
       final rowWidth = triangle[row].length * cellSize;
@@ -245,23 +270,42 @@ class _PascalTrianglePainter extends CustomPainter {
 
         // 숫자
         final fontSize = value > 999 ? 8.0 : (value > 99 ? 10.0 : 12.0);
-        _drawText(canvas, '$value', Offset(x, y), textColor, fontSize: fontSize);
+        _drawText(
+          canvas,
+          '$value',
+          Offset(x, y),
+          textColor,
+          fontSize: fontSize,
+        );
       }
     }
   }
 
-  void _drawText(Canvas canvas, String text, Offset center, Color color, {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset center,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
     textPainter.paint(
       canvas,
-      Offset(center.dx - textPainter.width / 2, center.dy - textPainter.height / 2),
+      Offset(
+        center.dx - textPainter.width / 2,
+        center.dy - textPainter.height / 2,
+      ),
     );
   }
 

@@ -90,7 +90,7 @@ class _LeChatelierScreenState extends State<LeChatelierScreen>
                 max: 600,
                 step: 10,
                 defaultValue: 300,
-                formatValue: (v) => v.toStringAsFixed(0) + ' K',
+                formatValue: (v) => '${v.toStringAsFixed(0)} K',
                 onChanged: (v) => setState(() => _temperature = v),
               ),
               advancedControls: [
@@ -101,7 +101,7 @@ class _LeChatelierScreenState extends State<LeChatelierScreen>
                 max: 10,
                 step: 0.1,
                 defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1) + ' atm',
+                formatValue: (v) => '${v.toStringAsFixed(1)} atm',
                 onChanged: (v) => setState(() => _pressure = v),
               ),
               ],

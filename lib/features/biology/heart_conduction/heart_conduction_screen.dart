@@ -90,7 +90,7 @@ class _HeartConductionScreenState extends State<HeartConductionScreen>
                 max: 200,
                 step: 1,
                 defaultValue: 72,
-                formatValue: (v) => v.toStringAsFixed(0) + ' bpm',
+                formatValue: (v) => '${v.toStringAsFixed(0)} bpm',
                 onChanged: (v) => setState(() => _heartRate = v),
               ),
               
@@ -104,9 +104,9 @@ class _HeartConductionScreenState extends State<HeartConductionScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('PR', (_prInterval * 1000).toStringAsFixed(0) + ' ms'),
-          _V('QRS', (_qrs * 1000).toStringAsFixed(0) + ' ms'),
-          _V('QT', (_qt * 1000).toStringAsFixed(0) + ' ms'),
+          _V('PR', '${(_prInterval * 1000).toStringAsFixed(0)} ms'),
+          _V('QRS', '${(_qrs * 1000).toStringAsFixed(0)} ms'),
+          _V('QT', '${(_qt * 1000).toStringAsFixed(0)} ms'),
                 ]),
               ),
             ],

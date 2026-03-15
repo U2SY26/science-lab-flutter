@@ -103,8 +103,8 @@ class _RedshiftMeasurementScreenState extends State<RedshiftMeasurementScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('v', _velocity.toStringAsFixed(0) + ' km/s'),
-          _V('거리', _distanceMpc.toStringAsFixed(0) + ' Mpc'),
+          _V('v', '${_velocity.toStringAsFixed(0)} km/s'),
+          _V('거리', '${_distanceMpc.toStringAsFixed(0)} Mpc'),
           _V('z', _redshift.toStringAsFixed(2)),
                 ]),
               ),

@@ -101,7 +101,7 @@ class _DragonCurveScreenState extends State<DragonCurveScreen>
                 ),
                 child: Row(children: [
           _V('레벨', '${_level.toInt()}'),
-          _V('선분 수', '${_segments}'),
+          _V('선분 수', '$_segments'),
                 ]),
               ),
             ],

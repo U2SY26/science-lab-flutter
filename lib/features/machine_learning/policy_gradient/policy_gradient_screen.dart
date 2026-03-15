@@ -13,7 +13,8 @@ class PolicyGradientScreen extends ConsumerStatefulWidget {
   const PolicyGradientScreen({super.key});
 
   @override
-  ConsumerState<PolicyGradientScreen> createState() => _PolicyGradientScreenState();
+  ConsumerState<PolicyGradientScreen> createState() =>
+      _PolicyGradientScreenState();
 }
 
 class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
@@ -35,20 +36,20 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
   int _episode = 0;
   int _stepCount = 0;
   int _maxStepsReached = 0;
-  List<int> _episodeLengths = [];
+  final List<int> _episodeLengths = [];
 
   // Episode trajectory
-  List<List<double>> _stateHistory = [];
-  List<int> _actionHistory = [];
-  List<double> _rewardHistory = [];
+  final List<List<double>> _stateHistory = [];
+  final List<int> _actionHistory = [];
+  final List<double> _rewardHistory = [];
 
   // Parameters
   double _learningRate = 0.01;
-  double _gravity = 9.8;
-  double _cartMass = 1.0;
-  double _poleMass = 0.1;
-  double _poleLength = 0.5;
-  double _forceMagnitude = 10.0;
+  final double _gravity = 9.8;
+  final double _cartMass = 1.0;
+  final double _poleMass = 0.1;
+  final double _poleLength = 0.5;
+  final double _forceMagnitude = 10.0;
   final double _dt = 0.02;
 
   @override
@@ -65,7 +66,10 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
 
   void _initializePolicy() {
     // 4 state features -> 1 output (probability of going right)
-    _policyWeights = List.generate(4, (_) => (_random.nextDouble() - 0.5) * 0.1);
+    _policyWeights = List.generate(
+      4,
+      (_) => (_random.nextDouble() - 0.5) * 0.1,
+    );
   }
 
   void _resetEnvironment() {
@@ -108,9 +112,17 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
     final poleMassLength = _poleMass * _poleLength;
 
     // Physics equations
-    final temp = (force + poleMassLength * _poleAngularVelocity * _poleAngularVelocity * sinTheta) / totalMass;
-    final thetaAcc = (_gravity * sinTheta - cosTheta * temp) /
-        (_poleLength * (4.0 / 3.0 - _poleMass * cosTheta * cosTheta / totalMass));
+    final temp =
+        (force +
+            poleMassLength *
+                _poleAngularVelocity *
+                _poleAngularVelocity *
+                sinTheta) /
+        totalMass;
+    final thetaAcc =
+        (_gravity * sinTheta - cosTheta * temp) /
+        (_poleLength *
+            (4.0 / 3.0 - _poleMass * cosTheta * cosTheta / totalMass));
     final xAcc = temp - poleMassLength * thetaAcc * cosTheta / totalMass;
 
     // Euler integration
@@ -178,8 +190,9 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
     // Normalize returns
     final meanReturn = returns.reduce((a, b) => a + b) / returns.length;
     final stdReturn = math.sqrt(
-        returns.map((r) => math.pow(r - meanReturn, 2)).reduce((a, b) => a + b) /
-            returns.length);
+      returns.map((r) => math.pow(r - meanReturn, 2)).reduce((a, b) => a + b) /
+          returns.length,
+    );
     final normalizedReturns = returns
         .map((r) => stdReturn > 0 ? (r - meanReturn) / (stdReturn + 1e-8) : 0.0)
         .toList();
@@ -276,7 +289,9 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
         padding: const EdgeInsets.all(16),
         child: SimulationContainer(
           category: isKorean ? '강화학습' : 'Reinforcement Learning',
-          title: isKorean ? '정책 경사법 (REINFORCE)' : 'Policy Gradient (REINFORCE)',
+          title: isKorean
+              ? '정책 경사법 (REINFORCE)'
+              : 'Policy Gradient (REINFORCE)',
           formula: 'nabla J(theta) = E[nabla log pi(a|s) * R]',
           formulaDescription: isKorean
               ? '보상을 최대화하는 방향으로 정책을 직접 학습'
@@ -307,7 +322,9 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
                       : AppColors.simBg,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _stepCount > 200 ? Colors.green : AppColors.cardBorder,
+                    color: _stepCount > 200
+                        ? Colors.green
+                        : AppColors.cardBorder,
                   ),
                 ),
                 child: Column(
@@ -341,14 +358,18 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
                           value: _episodeLengths.isEmpty
                               ? '-'
                               : (_episodeLengths.reduce((a, b) => a + b) /
-                                      _episodeLengths.length)
-                                  .toStringAsFixed(1),
+                                        _episodeLengths.length)
+                                    .toStringAsFixed(1),
                           color: Colors.purple,
                         ),
                         _StatItem(
                           label: isKorean ? '막대 각도' : 'Pole Angle',
-                          value: '${(_poleAngle * 180 / math.pi).toStringAsFixed(1)}',
-                          color: _poleAngle.abs() < 0.2 ? Colors.green : Colors.orange,
+                          value: (_poleAngle * 180 / math.pi).toStringAsFixed(
+                            1,
+                          ),
+                          color: _poleAngle.abs() < 0.2
+                              ? Colors.green
+                              : Colors.orange,
                         ),
                       ],
                     ),
@@ -396,19 +417,27 @@ class _PolicyGradientScreenState extends ConsumerState<PolicyGradientScreen>
                       children: [
                         _WeightItem(
                           label: isKorean ? '위치' : 'Pos',
-                          value: _policyWeights.isNotEmpty ? _policyWeights[0] : 0,
+                          value: _policyWeights.isNotEmpty
+                              ? _policyWeights[0]
+                              : 0,
                         ),
                         _WeightItem(
                           label: isKorean ? '속도' : 'Vel',
-                          value: _policyWeights.length > 1 ? _policyWeights[1] : 0,
+                          value: _policyWeights.length > 1
+                              ? _policyWeights[1]
+                              : 0,
                         ),
                         _WeightItem(
                           label: isKorean ? '각도' : 'Angle',
-                          value: _policyWeights.length > 2 ? _policyWeights[2] : 0,
+                          value: _policyWeights.length > 2
+                              ? _policyWeights[2]
+                              : 0,
                         ),
                         _WeightItem(
                           label: isKorean ? '각속도' : 'AngVel',
-                          value: _policyWeights.length > 3 ? _policyWeights[3] : 0,
+                          value: _policyWeights.length > 3
+                              ? _policyWeights[3]
+                              : 0,
                         ),
                       ],
                     ),
@@ -461,7 +490,10 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
         const SizedBox(height: 4),
         Text(
           value,
@@ -485,10 +517,15 @@ class _WeightItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = value > 0 ? Colors.green : (value < 0 ? Colors.red : AppColors.muted);
+    final color = value > 0
+        ? Colors.green
+        : (value < 0 ? Colors.red : AppColors.muted);
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 9)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 9),
+        ),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -498,7 +535,11 @@ class _WeightItem extends StatelessWidget {
           ),
           child: Text(
             value.toStringAsFixed(3),
-            style: TextStyle(color: color, fontSize: 10, fontFamily: 'monospace'),
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontFamily: 'monospace',
+            ),
           ),
         ),
       ],
@@ -694,14 +735,17 @@ class _PolicyGradientPainter extends CustomPainter {
     final padding = 10.0;
 
     for (int i = 0; i < episodeLengths.length; i++) {
-      final x = origin.dx +
+      final x =
+          origin.dx +
           padding +
           (i / (episodeLengths.length - 1).clamp(1, double.infinity)) *
               (chartSize.width - padding * 2);
-      final y = origin.dy +
+      final y =
+          origin.dy +
           chartSize.height -
           padding -
-          (episodeLengths[i] / effectiveMax) * (chartSize.height - padding * 2 - 15);
+          (episodeLengths[i] / effectiveMax) *
+              (chartSize.height - padding * 2 - 15);
 
       if (i == 0) {
         path.moveTo(x, y);
@@ -719,8 +763,13 @@ class _PolicyGradientPainter extends CustomPainter {
     );
   }
 
-  void _drawText(Canvas canvas, String text, Offset position, Color color,
-      {double fontSize = 12}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset position,
+    Color color, {
+    double fontSize = 12,
+  }) {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,

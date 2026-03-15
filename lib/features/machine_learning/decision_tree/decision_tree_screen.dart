@@ -21,7 +21,7 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
   // 트리 구조
   _TreeNode? _root;
   int _maxDepth = 3;
-  int _minSamples = 2;
+  final int _minSamples = 2;
 
   // 시각화 상태
   bool _showDecisionBoundary = true;
@@ -40,41 +40,53 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
       case 'blobs':
         // 2개 클래스 군집
         for (int i = 0; i < 30; i++) {
-          _points.add(_DataPoint(
-            x: 0.2 + rand.nextDouble() * 0.3,
-            y: 0.2 + rand.nextDouble() * 0.3,
-            label: 0,
-          ));
-          _points.add(_DataPoint(
-            x: 0.5 + rand.nextDouble() * 0.3,
-            y: 0.5 + rand.nextDouble() * 0.3,
-            label: 1,
-          ));
+          _points.add(
+            _DataPoint(
+              x: 0.2 + rand.nextDouble() * 0.3,
+              y: 0.2 + rand.nextDouble() * 0.3,
+              label: 0,
+            ),
+          );
+          _points.add(
+            _DataPoint(
+              x: 0.5 + rand.nextDouble() * 0.3,
+              y: 0.5 + rand.nextDouble() * 0.3,
+              label: 1,
+            ),
+          );
         }
         break;
       case 'xor':
         // XOR 패턴
         for (int i = 0; i < 20; i++) {
-          _points.add(_DataPoint(
-            x: 0.1 + rand.nextDouble() * 0.3,
-            y: 0.1 + rand.nextDouble() * 0.3,
-            label: 0,
-          ));
-          _points.add(_DataPoint(
-            x: 0.6 + rand.nextDouble() * 0.3,
-            y: 0.6 + rand.nextDouble() * 0.3,
-            label: 0,
-          ));
-          _points.add(_DataPoint(
-            x: 0.1 + rand.nextDouble() * 0.3,
-            y: 0.6 + rand.nextDouble() * 0.3,
-            label: 1,
-          ));
-          _points.add(_DataPoint(
-            x: 0.6 + rand.nextDouble() * 0.3,
-            y: 0.1 + rand.nextDouble() * 0.3,
-            label: 1,
-          ));
+          _points.add(
+            _DataPoint(
+              x: 0.1 + rand.nextDouble() * 0.3,
+              y: 0.1 + rand.nextDouble() * 0.3,
+              label: 0,
+            ),
+          );
+          _points.add(
+            _DataPoint(
+              x: 0.6 + rand.nextDouble() * 0.3,
+              y: 0.6 + rand.nextDouble() * 0.3,
+              label: 0,
+            ),
+          );
+          _points.add(
+            _DataPoint(
+              x: 0.1 + rand.nextDouble() * 0.3,
+              y: 0.6 + rand.nextDouble() * 0.3,
+              label: 1,
+            ),
+          );
+          _points.add(
+            _DataPoint(
+              x: 0.6 + rand.nextDouble() * 0.3,
+              y: 0.1 + rand.nextDouble() * 0.3,
+              label: 1,
+            ),
+          );
         }
         break;
       case 'linear':
@@ -82,11 +94,7 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
         for (int i = 0; i < 40; i++) {
           final x = rand.nextDouble();
           final y = rand.nextDouble();
-          _points.add(_DataPoint(
-            x: x,
-            y: y,
-            label: x + y > 1.0 ? 1 : 0,
-          ));
+          _points.add(_DataPoint(x: x, y: y, label: x + y > 1.0 ? 1 : 0));
         }
         break;
       case 'circles':
@@ -95,16 +103,20 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
           final angle = rand.nextDouble() * 2 * math.pi;
           final r1 = 0.15 + rand.nextDouble() * 0.1;
           final r2 = 0.35 + rand.nextDouble() * 0.1;
-          _points.add(_DataPoint(
-            x: 0.5 + r1 * math.cos(angle),
-            y: 0.5 + r1 * math.sin(angle),
-            label: 0,
-          ));
-          _points.add(_DataPoint(
-            x: 0.5 + r2 * math.cos(angle),
-            y: 0.5 + r2 * math.sin(angle),
-            label: 1,
-          ));
+          _points.add(
+            _DataPoint(
+              x: 0.5 + r1 * math.cos(angle),
+              y: 0.5 + r1 * math.sin(angle),
+              label: 0,
+            ),
+          );
+          _points.add(
+            _DataPoint(
+              x: 0.5 + r2 * math.cos(angle),
+              y: 0.5 + r2 * math.sin(angle),
+              label: 1,
+            ),
+          );
         }
         break;
     }
@@ -159,8 +171,12 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
       return _TreeNode.leaf(_majorityClass(data), data.length);
     }
 
-    final left = data.where((p) => (bestIsX ? p.x : p.y) <= bestThreshold).toList();
-    final right = data.where((p) => (bestIsX ? p.x : p.y) > bestThreshold).toList();
+    final left = data
+        .where((p) => (bestIsX ? p.x : p.y) <= bestThreshold)
+        .toList();
+    final right = data
+        .where((p) => (bestIsX ? p.x : p.y) > bestThreshold)
+        .toList();
 
     return _TreeNode(
       isX: bestIsX,
@@ -188,7 +204,7 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
   double _weightedGini(List<_DataPoint> left, List<_DataPoint> right) {
     final total = left.length + right.length;
     return (left.length / total) * _giniImpurity(left) +
-           (right.length / total) * _giniImpurity(right);
+        (right.length / total) * _giniImpurity(right);
   }
 
   void _reset() {
@@ -312,7 +328,7 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
                   Switch(
                     value: _showDecisionBoundary,
                     onChanged: (v) => setState(() => _showDecisionBoundary = v),
-                    activeColor: AppColors.accent,
+                    activeThumbColor: AppColors.accent,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -332,11 +348,7 @@ class _DecisionTreeScreenState extends State<DecisionTreeScreen> {
                 isPrimary: true,
                 onPressed: _buildTree,
               ),
-              SimButton(
-                label: '초기화',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '초기화', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -548,11 +560,7 @@ class _DecisionTreePainter extends CustomPainter {
 
       final color = point.label == 0 ? AppColors.accent : AppColors.accent2;
 
-      canvas.drawCircle(
-        Offset(px, py),
-        6,
-        Paint()..color = color,
-      );
+      canvas.drawCircle(Offset(px, py), 6, Paint()..color = color);
       canvas.drawCircle(
         Offset(px, py),
         6,
@@ -564,8 +572,14 @@ class _DecisionTreePainter extends CustomPainter {
     }
   }
 
-  void _drawSplits(Canvas canvas, _TreeNode node, double left, double top,
-      double width, double height) {
+  void _drawSplits(
+    Canvas canvas,
+    _TreeNode node,
+    double left,
+    double top,
+    double width,
+    double height,
+  ) {
     if (node.isLeaf) return;
 
     final paint = Paint()
@@ -578,20 +592,48 @@ class _DecisionTreePainter extends CustomPainter {
       canvas.drawLine(Offset(x, top), Offset(x, top + height), paint);
 
       if (node.left != null) {
-        _drawSplits(canvas, node.left!, left, top, node.threshold * width, height);
+        _drawSplits(
+          canvas,
+          node.left!,
+          left,
+          top,
+          node.threshold * width,
+          height,
+        );
       }
       if (node.right != null) {
-        _drawSplits(canvas, node.right!, x, top, (1 - node.threshold) * width, height);
+        _drawSplits(
+          canvas,
+          node.right!,
+          x,
+          top,
+          (1 - node.threshold) * width,
+          height,
+        );
       }
     } else {
       final y = top + (1 - node.threshold) * height;
       canvas.drawLine(Offset(left, y), Offset(left + width, y), paint);
 
       if (node.left != null) {
-        _drawSplits(canvas, node.left!, left, y, width, node.threshold * height);
+        _drawSplits(
+          canvas,
+          node.left!,
+          left,
+          y,
+          width,
+          node.threshold * height,
+        );
       }
       if (node.right != null) {
-        _drawSplits(canvas, node.right!, left, top, width, (1 - node.threshold) * height);
+        _drawSplits(
+          canvas,
+          node.right!,
+          left,
+          top,
+          width,
+          (1 - node.threshold) * height,
+        );
       }
     }
   }

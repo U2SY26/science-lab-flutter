@@ -89,7 +89,7 @@ class _ExoplanetTransitScreenState extends State<ExoplanetTransitScreen>
                 max: 15,
                 step: 0.1,
                 defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1) + ' R⊕',
+                formatValue: (v) => '${v.toStringAsFixed(1)} R⊕',
                 onChanged: (v) => setState(() => _planetRadius = v),
               ),
               
@@ -103,9 +103,9 @@ class _ExoplanetTransitScreenState extends State<ExoplanetTransitScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('통과 깊이', (_transitDepth * 100).toStringAsFixed(4) + '%'),
+          _V('통과 깊이', '${(_transitDepth * 100).toStringAsFixed(4)}%'),
           _V('Rp/Rs', _starRadiusRatio.toStringAsFixed(4)),
-          _V('Rp', _planetRadius.toStringAsFixed(1) + ' R⊕'),
+          _V('Rp', '${_planetRadius.toStringAsFixed(1)} R⊕'),
                 ]),
               ),
             ],

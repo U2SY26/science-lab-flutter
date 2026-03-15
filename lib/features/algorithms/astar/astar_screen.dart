@@ -17,8 +17,8 @@ class AstarScreen extends StatefulWidget {
 class _AstarScreenState extends State<AstarScreen> {
   static const int gridSize = 15;
   late List<List<int>> _grid; // 0: 빈칸, 1: 벽, 2: 시작, 3: 목표, 4: 방문, 5: 경로
-  Point _start = const Point(1, 1);
-  Point _goal = const Point(13, 13);
+  final Point _start = const Point(1, 1);
+  final Point _goal = const Point(13, 13);
   bool _isSearching = false;
   List<Point> _path = [];
   Set<Point> _visited = {};
@@ -57,12 +57,21 @@ class _AstarScreenState extends State<AstarScreen> {
 
   List<Point> _getNeighbors(Point p) {
     final neighbors = <Point>[];
-    final dirs = [const Point(0, -1), const Point(1, 0), const Point(0, 1), const Point(-1, 0)];
+    final dirs = [
+      const Point(0, -1),
+      const Point(1, 0),
+      const Point(0, 1),
+      const Point(-1, 0),
+    ];
 
     for (var d in dirs) {
       final nx = p.x + d.x;
       final ny = p.y + d.y;
-      if (nx >= 0 && nx < gridSize && ny >= 0 && ny < gridSize && _grid[ny][nx] != 1) {
+      if (nx >= 0 &&
+          nx < gridSize &&
+          ny >= 0 &&
+          ny < gridSize &&
+          _grid[ny][nx] != 1) {
         neighbors.add(Point(nx, ny));
       }
     }
@@ -137,7 +146,9 @@ class _AstarScreenState extends State<AstarScreen> {
   }
 
   void _toggleCell(int x, int y) {
-    if ((x == _start.x && y == _start.y) || (x == _goal.x && y == _goal.y)) return;
+    if ((x == _start.x && y == _start.y) || (x == _goal.x && y == _goal.y)) {
+      return;
+    }
     if (_isSearching) return;
 
     setState(() {
@@ -231,8 +242,16 @@ class _AstarScreenState extends State<AstarScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: '탐색 노드', value: '$_nodesExplored', color: Colors.orange),
-                        _InfoItem(label: '경로 길이', value: _path.isEmpty ? '-' : '${_path.length}', color: AppColors.accent),
+                        _InfoItem(
+                          label: '탐색 노드',
+                          value: '$_nodesExplored',
+                          color: Colors.orange,
+                        ),
+                        _InfoItem(
+                          label: '경로 길이',
+                          value: _path.isEmpty ? '-' : '${_path.length}',
+                          color: AppColors.accent,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -253,7 +272,10 @@ class _AstarScreenState extends State<AstarScreen> {
                   _LegendItem(color: Colors.green, label: '시작'),
                   _LegendItem(color: Colors.red, label: '목표'),
                   _LegendItem(color: Colors.grey.shade700, label: '벽'),
-                  _LegendItem(color: Colors.blue.withValues(alpha: 0.3), label: '방문'),
+                  _LegendItem(
+                    color: Colors.blue.withValues(alpha: 0.3),
+                    label: '방문',
+                  ),
                   _LegendItem(color: Colors.yellow, label: '경로'),
                 ],
               ),
@@ -266,16 +288,14 @@ class _AstarScreenState extends State<AstarScreen> {
                 label: _isSearching ? '탐색 중...' : '경로 찾기',
                 icon: Icons.search,
                 isPrimary: true,
-                onPressed: _isSearching ? null : () {
-                  HapticFeedback.selectionClick();
-                  _startSearch();
-                },
+                onPressed: _isSearching
+                    ? null
+                    : () {
+                        HapticFeedback.selectionClick();
+                        _startSearch();
+                      },
               ),
-              SimButton(
-                label: '새 미로',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '새 미로', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -289,7 +309,8 @@ class Point {
   const Point(this.x, this.y);
 
   @override
-  bool operator ==(Object other) => other is Point && x == other.x && y == other.y;
+  bool operator ==(Object other) =>
+      other is Point && x == other.x && y == other.y;
 
   @override
   int get hashCode => x.hashCode ^ y.hashCode;
@@ -306,14 +327,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -332,7 +367,10 @@ class _LegendItem extends StatelessWidget {
       children: [
         Container(width: 12, height: 12, color: color),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
       ],
     );
   }
@@ -361,7 +399,12 @@ class _AstarPainter extends CustomPainter {
 
     for (int y = 0; y < grid.length; y++) {
       for (int x = 0; x < grid[y].length; x++) {
-        final rect = Rect.fromLTWH(x * cellSize, y * cellSize, cellSize, cellSize);
+        final rect = Rect.fromLTWH(
+          x * cellSize,
+          y * cellSize,
+          cellSize,
+          cellSize,
+        );
         Color color = AppColors.card;
 
         if (grid[y][x] == 1) {

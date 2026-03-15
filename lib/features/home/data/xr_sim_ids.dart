@@ -1,5 +1,5 @@
 // XR 3D 뷰어를 지원하는 시뮬레이션 ID 레지스트리
-// 웹 data/xrSimMap.ts와 동기화 (36 native3d + 10 hybrid = 46 total)
+// 웹 data/xrSimMap.ts와 동기화 (36 native3d + 10 hybrid + 6 pro = 52 total)
 
 const String kXrBaseUrl = 'https://3dweb-rust.vercel.app/xr-test?sim=';
 
@@ -53,10 +53,19 @@ const Set<String> kXrSimIds = {
   'brownian-motion',
   'damped-oscillator',
   'bohr-model',
+  // Pro XR (6) — premium high-fidelity simulations
+  'solar-system-pro',
+  'black-hole-pro',
+  'lorenz-pro',
+  'hydrogen-orbital-pro',
+  'dna-helix-pro',
+  'electric-field-pro',
 };
 
 /// simId가 XR 3D 뷰어를 지원하는지 확인
 bool hasXrSupport(String simId) => kXrSimIds.contains(simId);
 
 /// simId에 대한 XR 뷰어 URL 생성
-String getXrViewerUrl(String simId) => '$kXrBaseUrl$simId';
+/// &screenshot=true → XRViewerModeProvider 사용 (100vh 캔버스, HUD/광고 없음)
+/// 모바일 WebView에서 캔버스 높이 오류 및 스크립트 간섭 방지
+String getXrViewerUrl(String simId) => '$kXrBaseUrl$simId&screenshot=true';

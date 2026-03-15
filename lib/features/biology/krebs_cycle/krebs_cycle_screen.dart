@@ -90,7 +90,7 @@ class _KrebsCycleScreenState extends State<KrebsCycleScreen>
                 max: 5,
                 step: 0.1,
                 defaultValue: 1,
-                formatValue: (v) => v.toStringAsFixed(1) + ' mM',
+                formatValue: (v) => '${v.toStringAsFixed(1)} mM',
                 onChanged: (v) => setState(() => _acetylCoA = v),
               ),
               

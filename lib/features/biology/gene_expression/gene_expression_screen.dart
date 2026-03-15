@@ -101,7 +101,7 @@ class _GeneExpressionScreenState extends State<GeneExpressionScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('단계', '${["전사","번역","접힘"][_stage]}'),
+          _V('단계', ["전사","번역","접힘"][_stage]),
                 ]),
               ),
             ],

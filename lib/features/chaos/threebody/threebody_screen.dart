@@ -27,7 +27,7 @@ class _ThreeBodyScreenState extends State<ThreeBodyScreen>
 
   // 물리 상수
   double _G = 1.0; // 중력 상수
-  double _dt = 0.02; // 시간 간격
+  final double _dt = 0.02; // 시간 간격
   double _totalEnergy = 0;
 
   // 프리셋

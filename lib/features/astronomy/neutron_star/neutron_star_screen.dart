@@ -19,7 +19,7 @@ class _NeutronStarScreenState extends State<NeutronStarScreen>
   bool _isRunning = true;
   double _nsMass = 1.4;
   double _period = 0.033;
-  double _radius = 10, _density = 0, _surfaceGravity = 0;
+  double _radius = 10, _density = 0;
 
   @override
   void initState() {
@@ -35,7 +35,6 @@ class _NeutronStarScreenState extends State<NeutronStarScreen>
       _time += 0.016;
       _radius = 10.0 + (_nsMass - 1.4) * (-2);
       _density = _nsMass * 1.989e30 / (4.0 / 3 * math.pi * math.pow(_radius * 1000, 3));
-      _surfaceGravity = 6.674e-11 * _nsMass * 1.989e30 / math.pow(_radius * 1000, 2);
     });
   }
 

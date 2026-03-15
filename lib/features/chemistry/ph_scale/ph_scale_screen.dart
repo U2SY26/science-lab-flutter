@@ -62,7 +62,6 @@ class _PhScaleScreenState extends State<PhScaleScreen>
   }
 
   double get _hConcentration => math.pow(10, -_pH).toDouble();
-  double get _ohConcentration => math.pow(10, -_pOH).toDouble();
   double get _pOH => 14 - _pH;
 
   @override

@@ -89,7 +89,7 @@ class _CarbonFixationScreenState extends State<CarbonFixationScreen>
                 max: 1000,
                 step: 10,
                 defaultValue: 400,
-                formatValue: (v) => v.toStringAsFixed(0) + ' ppm',
+                formatValue: (v) => '${v.toStringAsFixed(0)} ppm',
                 onChanged: (v) => setState(() => _co2Level = v),
               ),
               
@@ -104,8 +104,8 @@ class _CarbonFixationScreenState extends State<CarbonFixationScreen>
                 ),
                 child: Row(children: [
           _V('고정율', _fixRate.toStringAsFixed(2)),
-          _V('G3P', _g3p.toStringAsFixed(2) + ' mol'),
-          _V('CO₂', _co2Level.toStringAsFixed(0) + ' ppm'),
+          _V('G3P', '${_g3p.toStringAsFixed(2)} mol'),
+          _V('CO₂', '${_co2Level.toStringAsFixed(0)} ppm'),
                 ]),
               ),
             ],

@@ -117,8 +117,8 @@ class _NetworkCascadeScreenState extends State<NetworkCascadeScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('감염', (_infected * 100).toStringAsFixed(1) + '%'),
-          _V('회복', (_recovered * 100).toStringAsFixed(1) + '%'),
+          _V('감염', '${(_infected * 100).toStringAsFixed(1)}%'),
+          _V('회복', '${(_recovered * 100).toStringAsFixed(1)}%'),
           _V('R₀', (_beta / _gammaR).toStringAsFixed(2)),
                 ]),
               ),

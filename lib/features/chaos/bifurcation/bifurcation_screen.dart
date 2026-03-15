@@ -21,7 +21,7 @@ class _BifurcationScreenState extends ConsumerState<BifurcationScreen> {
   double _rMax = 4.0;
   int _resolution = 400;
   int _iterations = 100;
-  int _skip = 50;
+  final int _skip = 50;
 
   // Data
   List<List<double>> _bifurcationData = [];

@@ -18,14 +18,16 @@ class _BoseEinsteinScreenState extends State<BoseEinsteinScreen>
   double _time = 0;
   bool _isRunning = true;
   double _temperature = 100;
-  
+
   double _condensateFrac = 0, _tc = 170;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -34,7 +36,9 @@ class _BoseEinsteinScreenState extends State<BoseEinsteinScreen>
     setState(() {
       _time += 0.016;
       _tc = 170;
-      _condensateFrac = _temperature < _tc ? math.pow(1 - _temperature / _tc, 1.5).toDouble() : 0;
+      _condensateFrac = _temperature < _tc
+          ? math.pow(1 - _temperature / _tc, 1.5).toDouble()
+          : 0;
     });
   }
 
@@ -47,7 +51,10 @@ class _BoseEinsteinScreenState extends State<BoseEinsteinScreen>
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +62,27 @@ class _BoseEinsteinScreenState extends State<BoseEinsteinScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('양자역학 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('보즈-아인슈타인 응축', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '양자역학 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '보즈-아인슈타인 응축',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -81,19 +104,18 @@ class _BoseEinsteinScreenState extends State<BoseEinsteinScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '온도 (nK)',
-                value: _temperature,
-                min: 1,
-                max: 500,
-                step: 1,
-                defaultValue: 100,
-                formatValue: (v) => v.toStringAsFixed(0) + ' nK',
-                onChanged: (v) => setState(() => _temperature = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '온도 (nK)',
+                  value: _temperature,
+                  min: 1,
+                  max: 500,
+                  step: 1,
+                  defaultValue: 100,
+                  formatValue: (v) => '${v.toStringAsFixed(0)} nK',
+                  onChanged: (v) => setState(() => _temperature = v),
+                ),
               ),
-              
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -102,23 +124,34 @@ class _BoseEinsteinScreenState extends State<BoseEinsteinScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('N₀/N', (_condensateFrac * 100).toStringAsFixed(1) + '%'),
-          _V('T_c', _tc.toStringAsFixed(0) + ' nK'),
-          _V('T', _temperature.toStringAsFixed(0) + ' nK'),
-                ]),
+                child: Row(
+                  children: [
+                    _V(
+                      'N₀/N',
+                      '${(_condensateFrac * 100).toStringAsFixed(1)}%',
+                    ),
+                    _V('T_c', '${_tc.toStringAsFixed(0)} nK'),
+                    _V('T', '${_temperature.toStringAsFixed(0)} nK'),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -129,26 +162,46 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _BoseEinsteinScreenPainter extends CustomPainter {
   final double time;
   final double temperature;
 
-  _BoseEinsteinScreenPainter({
-    required this.time,
-    required this.temperature,
-  });
+  _BoseEinsteinScreenPainter({required this.time, required this.temperature});
 
-  void _label(Canvas canvas, String text, Offset offset,
-      {double fontSize = 9, Color color = const Color(0xFF5A8A9A)}) {
+  void _label(
+    Canvas canvas,
+    String text,
+    Offset offset, {
+    double fontSize = 9,
+    Color color = const Color(0xFF5A8A9A),
+  }) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, offset);
@@ -157,7 +210,10 @@ class _BoseEinsteinScreenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width;
     final h = size.height;
@@ -176,8 +232,14 @@ class _BoseEinsteinScreenPainter extends CustomPainter {
     final plotBot = padT + plotH;
 
     // Axes
-    final axisPaint = Paint()..color = const Color(0xFF1A3040)..strokeWidth = 1;
-    canvas.drawLine(Offset(padL, plotBot), Offset(padL + plotW, plotBot), axisPaint);
+    final axisPaint = Paint()
+      ..color = const Color(0xFF1A3040)
+      ..strokeWidth = 1;
+    canvas.drawLine(
+      Offset(padL, plotBot),
+      Offset(padL + plotW, plotBot),
+      axisPaint,
+    );
     canvas.drawLine(Offset(padL, padT), Offset(padL, plotBot), axisPaint);
 
     _label(canvas, 'v', Offset(padL + plotW - 4, plotBot + 2));
@@ -205,45 +267,94 @@ class _BoseEinsteinScreenPainter extends CustomPainter {
     }
     mbPath.lineTo(padL + plotW, plotBot);
     mbPath.close();
-    canvas.drawPath(mbPath, Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.25));
+    canvas.drawPath(
+      mbPath,
+      Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.25),
+    );
     final mbStroke = Path()..moveTo(padL, plotBot);
     for (int i = 0; i <= 200; i++) {
       final px = padL + i / 200.0 * plotW;
       final py = mbY(px).clamp(padT, plotBot);
       mbStroke.lineTo(px, py);
     }
-    canvas.drawPath(mbStroke, Paint()..color = const Color(0xFFFF6B35)..strokeWidth = 1.5..style = PaintingStyle.stroke);
+    canvas.drawPath(
+      mbStroke,
+      Paint()
+        ..color = const Color(0xFFFF6B35)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
+    );
 
     // BEC spike at v=0 (k=0 mode)
     if (condensateFrac > 0.01) {
       final spikeHeight = plotH * condensateFrac * 0.85;
       final spikeW = plotW * 0.018;
-      final spikePaint = Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.8);
+      final spikePaint = Paint()
+        ..color = const Color(0xFF00D4FF).withValues(alpha: 0.8);
       canvas.drawRect(
-        Rect.fromLTWH(padL - spikeW / 2, plotBot - spikeHeight, spikeW, spikeHeight),
+        Rect.fromLTWH(
+          padL - spikeW / 2,
+          plotBot - spikeHeight,
+          spikeW,
+          spikeHeight,
+        ),
         spikePaint,
       );
       // Glow
       canvas.drawRect(
-        Rect.fromLTWH(padL - spikeW, plotBot - spikeHeight * 0.7, spikeW * 2, spikeHeight * 0.7),
+        Rect.fromLTWH(
+          padL - spikeW,
+          plotBot - spikeHeight * 0.7,
+          spikeW * 2,
+          spikeHeight * 0.7,
+        ),
         Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.2),
       );
-      _label(canvas, 'BEC', Offset(padL + 4, plotBot - spikeHeight - 12),
-          color: const Color(0xFF00D4FF), fontSize: 9);
+      _label(
+        canvas,
+        'BEC',
+        Offset(padL + 4, plotBot - spikeHeight - 12),
+        color: const Color(0xFF00D4FF),
+        fontSize: 9,
+      );
     }
 
     // Tc marker
     final tcX = padL + plotW * (tc / 500.0).clamp(0.0, 1.0);
-    canvas.drawLine(Offset(tcX, padT), Offset(tcX, plotBot),
-        Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.4)..strokeWidth = 1);
-    _label(canvas, 'T_c=${tc.toStringAsFixed(0)}nK', Offset(tcX + 2, padT),
-        color: const Color(0xFFFF6B35), fontSize: 8);
+    canvas.drawLine(
+      Offset(tcX, padT),
+      Offset(tcX, plotBot),
+      Paint()
+        ..color = const Color(0xFFFF6B35).withValues(alpha: 0.4)
+        ..strokeWidth = 1,
+    );
+    _label(
+      canvas,
+      'T_c=${tc.toStringAsFixed(0)}nK',
+      Offset(tcX + 2, padT),
+      color: const Color(0xFFFF6B35),
+      fontSize: 8,
+    );
 
     // T label
-    _label(canvas, 'T=${temperature.toStringAsFixed(0)}nK', Offset(padL + 4, padT),
-        color: temperature < tc ? const Color(0xFF00D4FF) : const Color(0xFFFF6B35), fontSize: 9);
-    _label(canvas, temperature < tc ? 'T < Tc (BEC)' : 'T > Tc (정상)', Offset(padL + plotW * 0.45, padT),
-        color: temperature < tc ? const Color(0xFF00D4FF) : const Color(0xFF5A8A9A), fontSize: 9);
+    _label(
+      canvas,
+      'T=${temperature.toStringAsFixed(0)}nK',
+      Offset(padL + 4, padT),
+      color: temperature < tc
+          ? const Color(0xFF00D4FF)
+          : const Color(0xFFFF6B35),
+      fontSize: 9,
+    );
+    _label(
+      canvas,
+      temperature < tc ? 'T < Tc (BEC)' : 'T > Tc (정상)',
+      Offset(padL + plotW * 0.45, padT),
+      color: temperature < tc
+          ? const Color(0xFF00D4FF)
+          : const Color(0xFF5A8A9A),
+      fontSize: 9,
+    );
 
     // ---- BOTTOM: atom cloud + condensate fraction bar ----
     final cloudTop = splitY + 8;
@@ -261,17 +372,18 @@ class _BoseEinsteinScreenPainter extends CustomPainter {
       final r = rng.nextDouble();
       // Condensed atoms cluster at center
       final isCondensed = i < (nAtoms * condensateFrac).round();
-      final radius = isCondensed
-          ? r * cloudR * 0.18
-          : r * cloudR * cloudScale;
+      final radius = isCondensed ? r * cloudR * 0.18 : r * cloudR * cloudScale;
       final ax = cloudCx + radius * math.cos(angle);
       final ay = cloudCy + radius * math.sin(angle);
       if (ay < cloudTop || ay > cloudBot) continue;
       final dotColor = isCondensed
           ? const Color(0xFF00D4FF)
           : const Color(0xFFFF6B35).withValues(alpha: 0.6);
-      canvas.drawCircle(Offset(ax, ay), isCondensed ? 2.5 : 1.5,
-          Paint()..color = dotColor);
+      canvas.drawCircle(
+        Offset(ax, ay),
+        isCondensed ? 2.5 : 1.5,
+        Paint()..color = dotColor,
+      );
     }
     _label(canvas, '원자 구름', Offset(cloudCx - 16, cloudBot + 4));
 
@@ -282,10 +394,19 @@ class _BoseEinsteinScreenPainter extends CustomPainter {
     final barBot = cloudBot - 4;
     final barH = barBot - barTop;
 
-    canvas.drawRect(Rect.fromLTRB(barLeft, barTop, barRight, barBot),
-        Paint()..color = const Color(0xFF1A3040)..style = PaintingStyle.fill);
-    canvas.drawRect(Rect.fromLTRB(barLeft, barTop, barRight, barBot),
-        Paint()..color = const Color(0xFF1A3040)..strokeWidth = 1..style = PaintingStyle.stroke);
+    canvas.drawRect(
+      Rect.fromLTRB(barLeft, barTop, barRight, barBot),
+      Paint()
+        ..color = const Color(0xFF1A3040)
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawRect(
+      Rect.fromLTRB(barLeft, barTop, barRight, barBot),
+      Paint()
+        ..color = const Color(0xFF1A3040)
+        ..strokeWidth = 1
+        ..style = PaintingStyle.stroke,
+    );
 
     // Filled portion
     final fillH = barH * condensateFrac;
@@ -296,10 +417,18 @@ class _BoseEinsteinScreenPainter extends CustomPainter {
       );
     }
 
-    _label(canvas, 'N₀/N', Offset(barLeft + (barRight - barLeft) / 2 - 8, barTop - 12));
-    _label(canvas, '${(condensateFrac * 100).toStringAsFixed(0)}%',
-        Offset(barLeft + (barRight - barLeft) / 2 - 10, barBot - fillH - 14),
-        color: const Color(0xFF00D4FF), fontSize: 10);
+    _label(
+      canvas,
+      'N₀/N',
+      Offset(barLeft + (barRight - barLeft) / 2 - 8, barTop - 12),
+    );
+    _label(
+      canvas,
+      '${(condensateFrac * 100).toStringAsFixed(0)}%',
+      Offset(barLeft + (barRight - barLeft) / 2 - 10, barBot - fillH - 14),
+      color: const Color(0xFF00D4FF),
+      fontSize: 10,
+    );
 
     // 0% and 100% labels
     _label(canvas, '100%', Offset(barLeft - 28, barTop - 2), fontSize: 8);

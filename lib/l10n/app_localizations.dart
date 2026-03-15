@@ -6061,6 +6061,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap Gyro button for motion control'**
   String get xrGyroHint;
+
+  /// No description provided for @community.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get community;
+
+  /// No description provided for @comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get comments;
+
+  /// No description provided for @writeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment...'**
+  String get writeComment;
+
+  /// No description provided for @beFirstToComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to comment!'**
+  String get beFirstToComment;
+
+  /// No description provided for @replyingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {nickname}'**
+  String replyingTo(String nickname);
+
+  /// No description provided for @report.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get report;
+
+  /// No description provided for @reportConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to report this content?'**
+  String get reportConfirm;
+
+  /// No description provided for @reportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Content has been reported.'**
+  String get reportSuccess;
+
+  /// No description provided for @moderationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'This content violates community guidelines.'**
+  String get moderationFailed;
+
+  /// No description provided for @accountRestricted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been restricted.'**
+  String get accountRestricted;
+
+  /// No description provided for @levelUp.
+  ///
+  /// In en, this message translates to:
+  /// **'LEVEL UP!'**
+  String get levelUp;
+
+  /// No description provided for @levelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String levelLabel(int level);
+
+  /// No description provided for @tapToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to continue'**
+  String get tapToContinue;
+
+  /// No description provided for @quizChallenge.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Challenge'**
+  String get quizChallenge;
+
+  /// No description provided for @quizCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Completed'**
+  String get quizCompleted;
+
+  /// No description provided for @quizGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is generating a quiz...'**
+  String get quizGenerating;
+
+  /// No description provided for @quizFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate quiz'**
+  String get quizFailed;
+
+  /// No description provided for @quizCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct!'**
+  String get quizCorrect;
+
+  /// No description provided for @quizIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect'**
+  String get quizIncorrect;
+
+  /// No description provided for @submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @forumGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get forumGeneral;
+
+  /// No description provided for @forumQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get forumQuestion;
+
+  /// No description provided for @forumTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip'**
+  String get forumTip;
+
+  /// No description provided for @forumBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug Report'**
+  String get forumBug;
+
+  /// No description provided for @newPost.
+  ///
+  /// In en, this message translates to:
+  /// **'New Post'**
+  String get newPost;
+
+  /// No description provided for @postTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get postTitle;
+
+  /// No description provided for @postContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get postContent;
+
+  /// No description provided for @noPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet. Be the first!'**
+  String get noPosts;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @post.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get post;
 }
 
 class _AppLocalizationsDelegate

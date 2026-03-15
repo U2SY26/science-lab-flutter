@@ -90,7 +90,7 @@ class _PlanetFormationScreenState extends State<PlanetFormationScreen>
                 max: 1000,
                 step: 10,
                 defaultValue: 100,
-                formatValue: (v) => v.toStringAsFixed(0) + ' M⊕',
+                formatValue: (v) => '${v.toStringAsFixed(0)} M⊕',
                 onChanged: (v) => setState(() => _diskMass = v),
               ),
               
@@ -104,9 +104,9 @@ class _PlanetFormationScreenState extends State<PlanetFormationScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('행성 질량', _planetMass.toStringAsFixed(2) + ' M⊕'),
+          _V('행성 질량', '${_planetMass.toStringAsFixed(2)} M⊕'),
           _V('강착률', _accretionRate.toStringAsFixed(4)),
-          _V('원반', _diskMass.toStringAsFixed(0) + ' M⊕'),
+          _V('원반', '${_diskMass.toStringAsFixed(0)} M⊕'),
                 ]),
               ),
             ],

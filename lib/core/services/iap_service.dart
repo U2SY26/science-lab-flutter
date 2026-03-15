@@ -137,6 +137,15 @@ class IAPService {
     }
   }
 
+  /// 외부에서 광고 제거 상태 설정 (ai 구독 포함 광고 제거 시 호출)
+  Future<void> markAdsRemoved() async {
+    if (_adsRemoved) return;
+    _adsRemoved = true;
+    _adsRemovedController.add(true);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_adsRemovedKey, true);
+  }
+
   /// 구매 복원
   Future<void> restorePurchases() async {
     if (!_isAvailable) return;

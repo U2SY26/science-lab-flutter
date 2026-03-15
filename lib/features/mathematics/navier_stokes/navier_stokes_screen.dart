@@ -89,16 +89,27 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
     for (int k = 0; k < 20; k++) {
       for (int i = 1; i <= gridSize; i++) {
         for (int j = 1; j <= gridSize; j++) {
-          x[_idx(i, j)] = (x0[_idx(i, j)] +
-              a * (x[_idx(i - 1, j)] + x[_idx(i + 1, j)] +
-                  x[_idx(i, j - 1)] + x[_idx(i, j + 1)])) / c;
+          x[_idx(i, j)] =
+              (x0[_idx(i, j)] +
+                  a *
+                      (x[_idx(i - 1, j)] +
+                          x[_idx(i + 1, j)] +
+                          x[_idx(i, j - 1)] +
+                          x[_idx(i, j + 1)])) /
+              c;
         }
       }
       _setBnd(b, x);
     }
   }
 
-  void _advect(int b, Float32List d, Float32List d0, Float32List u, Float32List v) {
+  void _advect(
+    int b,
+    Float32List d,
+    Float32List d0,
+    Float32List u,
+    Float32List v,
+  ) {
     final dt0 = 0.016 * gridSize;
 
     for (int i = 1; i <= gridSize; i++) {
@@ -119,7 +130,8 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
         final t1 = y - j0;
         final t0 = 1 - t1;
 
-        d[_idx(i, j)] = s0 * (t0 * d0[_idx(i0, j0)] + t1 * d0[_idx(i0, j1)]) +
+        d[_idx(i, j)] =
+            s0 * (t0 * d0[_idx(i0, j0)] + t1 * d0[_idx(i0, j1)]) +
             s1 * (t0 * d0[_idx(i1, j0)] + t1 * d0[_idx(i1, j1)]);
       }
     }
@@ -131,8 +143,13 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
 
     for (int i = 1; i <= gridSize; i++) {
       for (int j = 1; j <= gridSize; j++) {
-        div[_idx(i, j)] = -0.5 * h * (u[_idx(i + 1, j)] - u[_idx(i - 1, j)] +
-            v[_idx(i, j + 1)] - v[_idx(i, j - 1)]);
+        div[_idx(i, j)] =
+            -0.5 *
+            h *
+            (u[_idx(i + 1, j)] -
+                u[_idx(i - 1, j)] +
+                v[_idx(i, j + 1)] -
+                v[_idx(i, j - 1)]);
         p[_idx(i, j)] = 0;
       }
     }
@@ -142,9 +159,13 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
     for (int k = 0; k < 20; k++) {
       for (int i = 1; i <= gridSize; i++) {
         for (int j = 1; j <= gridSize; j++) {
-          p[_idx(i, j)] = (div[_idx(i, j)] +
-              p[_idx(i - 1, j)] + p[_idx(i + 1, j)] +
-              p[_idx(i, j - 1)] + p[_idx(i, j + 1)]) / 4;
+          p[_idx(i, j)] =
+              (div[_idx(i, j)] +
+                  p[_idx(i - 1, j)] +
+                  p[_idx(i + 1, j)] +
+                  p[_idx(i, j - 1)] +
+                  p[_idx(i, j + 1)]) /
+              4;
         }
       }
       _setBnd(0, p);
@@ -163,19 +184,31 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
   void _setBnd(int b, Float32List x) {
     for (int i = 1; i <= gridSize; i++) {
       x[_idx(0, i)] = b == 1 ? -x[_idx(1, i)] : x[_idx(1, i)];
-      x[_idx(gridSize + 1, i)] = b == 1 ? -x[_idx(gridSize, i)] : x[_idx(gridSize, i)];
+      x[_idx(gridSize + 1, i)] = b == 1
+          ? -x[_idx(gridSize, i)]
+          : x[_idx(gridSize, i)];
       x[_idx(i, 0)] = b == 2 ? -x[_idx(i, 1)] : x[_idx(i, 1)];
-      x[_idx(i, gridSize + 1)] = b == 2 ? -x[_idx(i, gridSize)] : x[_idx(i, gridSize)];
+      x[_idx(i, gridSize + 1)] = b == 2
+          ? -x[_idx(i, gridSize)]
+          : x[_idx(i, gridSize)];
     }
     x[_idx(0, 0)] = 0.5 * (x[_idx(1, 0)] + x[_idx(0, 1)]);
-    x[_idx(0, gridSize + 1)] = 0.5 * (x[_idx(1, gridSize + 1)] + x[_idx(0, gridSize)]);
-    x[_idx(gridSize + 1, 0)] = 0.5 * (x[_idx(gridSize, 0)] + x[_idx(gridSize + 1, 1)]);
-    x[_idx(gridSize + 1, gridSize + 1)] = 0.5 * (x[_idx(gridSize, gridSize + 1)] + x[_idx(gridSize + 1, gridSize)]);
+    x[_idx(0, gridSize + 1)] =
+        0.5 * (x[_idx(1, gridSize + 1)] + x[_idx(0, gridSize)]);
+    x[_idx(gridSize + 1, 0)] =
+        0.5 * (x[_idx(gridSize, 0)] + x[_idx(gridSize + 1, 1)]);
+    x[_idx(gridSize + 1, gridSize + 1)] =
+        0.5 *
+        (x[_idx(gridSize, gridSize + 1)] + x[_idx(gridSize + 1, gridSize)]);
   }
 
   void _addSource(Offset position, Size size) {
-    final x = ((position.dx / size.width) * gridSize).clamp(1, gridSize).toInt();
-    final y = ((position.dy / size.height) * gridSize).clamp(1, gridSize).toInt();
+    final x = ((position.dx / size.width) * gridSize)
+        .clamp(1, gridSize)
+        .toInt();
+    final y = ((position.dy / size.height) * gridSize)
+        .clamp(1, gridSize)
+        .toInt();
 
     _density[_idx(x, y)] += 100;
 
@@ -245,7 +278,8 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
                     _lastTouch = null;
                     _addSource(d.localPosition, constraints.biggest);
                   },
-                  onPanUpdate: (d) => _addSource(d.localPosition, constraints.biggest),
+                  onPanUpdate: (d) =>
+                      _addSource(d.localPosition, constraints.biggest),
                   onPanEnd: (_) => _lastTouch = null,
                   child: CustomPaint(
                     painter: _FluidPainter(
@@ -270,7 +304,9 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
                 decoration: BoxDecoration(
                   color: Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.amber.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +317,10 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
                         SizedBox(width: 8),
                         Text(
                           '상금: \$1,000,000',
-                          style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -336,7 +375,7 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
                   min: 0,
                   max: 10,
                   defaultValue: 1,
-                  formatValue: (v) => '${(v / 10000).toStringAsFixed(4)}',
+                  formatValue: (v) => (v / 10000).toStringAsFixed(4),
                   onChanged: (v) => setState(() => _viscosity = v / 10000),
                 ),
                 advancedControls: [
@@ -346,7 +385,7 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
                     min: 0,
                     max: 10,
                     defaultValue: 1,
-                    formatValue: (v) => '${(v / 10000).toStringAsFixed(4)}',
+                    formatValue: (v) => (v / 10000).toStringAsFixed(4),
                     onChanged: (v) => setState(() => _diffusion = v / 10000),
                   ),
                 ],
@@ -372,11 +411,7 @@ class _NavierStokesScreenState extends State<NavierStokesScreen>
                   });
                 },
               ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -404,7 +439,10 @@ class _FluidPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0a0a1a));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0a0a1a),
+    );
 
     final cellWidth = size.width / gridSize;
     final cellHeight = size.height / gridSize;
@@ -422,19 +460,25 @@ class _FluidPainter extends CustomPainter {
     }
   }
 
-  void _drawDensity(Canvas canvas, Size size, double cellWidth, double cellHeight) {
+  void _drawDensity(
+    Canvas canvas,
+    Size size,
+    double cellWidth,
+    double cellHeight,
+  ) {
     for (int i = 1; i <= gridSize; i++) {
       for (int j = 1; j <= gridSize; j++) {
         final d = density[_idx(i, j)].clamp(0, 255) / 255;
         if (d > 0.01) {
-          final color = Color.lerp(
-            const Color(0xFF0a0a1a),
-            Colors.cyan,
-            d,
-          )!;
+          final color = Color.lerp(const Color(0xFF0a0a1a), Colors.cyan, d)!;
 
           canvas.drawRect(
-            Rect.fromLTWH((i - 1) * cellWidth, (j - 1) * cellHeight, cellWidth, cellHeight),
+            Rect.fromLTWH(
+              (i - 1) * cellWidth,
+              (j - 1) * cellHeight,
+              cellWidth,
+              cellHeight,
+            ),
             Paint()..color = color,
           );
         }
@@ -442,7 +486,12 @@ class _FluidPainter extends CustomPainter {
     }
   }
 
-  void _drawVelocity(Canvas canvas, Size size, double cellWidth, double cellHeight) {
+  void _drawVelocity(
+    Canvas canvas,
+    Size size,
+    double cellWidth,
+    double cellHeight,
+  ) {
     final step = 4;
     for (int i = 1; i <= gridSize; i += step) {
       for (int j = 1; j <= gridSize; j += step) {
@@ -456,7 +505,11 @@ class _FluidPainter extends CustomPainter {
           final endX = startX + vx * 2;
           final endY = startY + vy * 2;
 
-          final color = Color.lerp(Colors.blue, Colors.red, (magnitude / 20).clamp(0, 1))!;
+          final color = Color.lerp(
+            Colors.blue,
+            Colors.red,
+            (magnitude / 20).clamp(0, 1),
+          )!;
 
           canvas.drawLine(
             Offset(startX, startY),
@@ -470,24 +523,43 @@ class _FluidPainter extends CustomPainter {
     }
   }
 
-  void _drawVorticity(Canvas canvas, Size size, double cellWidth, double cellHeight) {
+  void _drawVorticity(
+    Canvas canvas,
+    Size size,
+    double cellWidth,
+    double cellHeight,
+  ) {
     for (int i = 2; i < gridSize; i++) {
       for (int j = 2; j < gridSize; j++) {
         // 와도 = ∂vy/∂x - ∂vx/∂y
-        final vorticity = (velocityY[_idx(i + 1, j)] - velocityY[_idx(i - 1, j)]) / 2 -
+        final vorticity =
+            (velocityY[_idx(i + 1, j)] - velocityY[_idx(i - 1, j)]) / 2 -
             (velocityX[_idx(i, j + 1)] - velocityX[_idx(i, j - 1)]) / 2;
 
         final normalizedVort = (vorticity / 5).clamp(-1.0, 1.0);
 
         Color color;
         if (normalizedVort > 0) {
-          color = Color.lerp(const Color(0xFF0a0a1a), Colors.red, normalizedVort)!;
+          color = Color.lerp(
+            const Color(0xFF0a0a1a),
+            Colors.red,
+            normalizedVort,
+          )!;
         } else {
-          color = Color.lerp(const Color(0xFF0a0a1a), Colors.blue, -normalizedVort)!;
+          color = Color.lerp(
+            const Color(0xFF0a0a1a),
+            Colors.blue,
+            -normalizedVort,
+          )!;
         }
 
         canvas.drawRect(
-          Rect.fromLTWH((i - 1) * cellWidth, (j - 1) * cellHeight, cellWidth, cellHeight),
+          Rect.fromLTWH(
+            (i - 1) * cellWidth,
+            (j - 1) * cellHeight,
+            cellWidth,
+            cellHeight,
+          ),
           Paint()..color = color,
         );
       }

@@ -25,7 +25,6 @@ class _PVsNpScreenState extends State<PVsNpScreen>
   List<int> _data = [];
   int _currentStep = 0;
   int _totalSteps = 0;
-  int _comparisons = 0;
 
   // TSP 관련
   List<Offset> _cities = [];
@@ -45,13 +44,12 @@ class _PVsNpScreenState extends State<PVsNpScreen>
 
   void _generateData() {
     _data = List.generate(_inputSize, (i) => _random.nextInt(100));
-    _cities = List.generate(_inputSize, (i) => Offset(
-      _random.nextDouble(),
-      _random.nextDouble(),
-    ));
+    _cities = List.generate(
+      _inputSize,
+      (i) => Offset(_random.nextDouble(), _random.nextDouble()),
+    );
     _currentStep = 0;
     _totalSteps = 0;
-    _comparisons = 0;
     _currentPath = [];
     _bestPath = [];
     _bestDistance = double.infinity;
@@ -73,7 +71,6 @@ class _PVsNpScreenState extends State<PVsNpScreen>
     // 버블 정렬 (P 문제 - O(n²))
     bool swapped = false;
     for (int i = 0; i < _data.length - 1 - _currentStep; i++) {
-      _comparisons++;
       if (_data[i] > _data[i + 1]) {
         final temp = _data[i];
         _data[i] = _data[i + 1];
@@ -113,11 +110,15 @@ class _PVsNpScreenState extends State<PVsNpScreen>
 
   bool _nextPermutation(List<int> arr) {
     int i = arr.length - 2;
-    while (i >= 0 && arr[i] >= arr[i + 1]) i--;
+    while (i >= 0 && arr[i] >= arr[i + 1]) {
+      i--;
+    }
     if (i < 0) return false;
 
     int j = arr.length - 1;
-    while (arr[j] <= arr[i]) j--;
+    while (arr[j] <= arr[i]) {
+      j--;
+    }
 
     final temp = arr[i];
     arr[i] = arr[j];
@@ -140,7 +141,9 @@ class _PVsNpScreenState extends State<PVsNpScreen>
     for (int i = 0; i < path.length; i++) {
       final from = _cities[path[i]];
       final to = _cities[path[(i + 1) % path.length]];
-      total += math.sqrt(math.pow(from.dx - to.dx, 2) + math.pow(from.dy - to.dy, 2));
+      total += math.sqrt(
+        math.pow(from.dx - to.dx, 2) + math.pow(from.dy - to.dy, 2),
+      );
     }
     return total;
   }
@@ -224,7 +227,9 @@ class _PVsNpScreenState extends State<PVsNpScreen>
                 decoration: BoxDecoration(
                   color: Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.amber.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +240,10 @@ class _PVsNpScreenState extends State<PVsNpScreen>
                         SizedBox(width: 8),
                         Text(
                           '상금: \$1,000,000',
-                          style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -244,7 +252,10 @@ class _PVsNpScreenState extends State<PVsNpScreen>
                       _problem == 'sorting'
                           ? 'P 문제: 정렬 - O(n²) 또는 O(n log n)에 해결 가능'
                           : 'NP 문제: TSP - O(n!)로 모든 경우를 확인해야 함',
-                      style: const TextStyle(color: AppColors.muted, fontSize: 11),
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                 ),
@@ -262,7 +273,11 @@ class _PVsNpScreenState extends State<PVsNpScreen>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _InfoItem(label: '입력 크기', value: '$_inputSize', color: AppColors.ink),
+                    _InfoItem(
+                      label: '입력 크기',
+                      value: '$_inputSize',
+                      color: AppColors.ink,
+                    ),
                     _InfoItem(
                       label: '총 단계',
                       value: _problem == 'sorting'
@@ -375,14 +390,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -460,7 +489,13 @@ class _PvsNpPainter extends CustomPainter {
         padding + cities[i].dy * graphHeight,
       );
       canvas.drawCircle(pos, 8, Paint()..color = Colors.orange);
-      _drawText(canvas, '$i', Offset(pos.dx - 3, pos.dy - 5), Colors.white, fontSize: 10);
+      _drawText(
+        canvas,
+        '$i',
+        Offset(pos.dx - 3, pos.dy - 5),
+        Colors.white,
+        fontSize: 10,
+      );
     }
 
     // 현재 경로
@@ -513,9 +548,22 @@ class _PvsNpPainter extends CustomPainter {
     _drawText(canvas, 'NP 문제: 지수/팩토리얼 시간', Offset(10, 10), Colors.red);
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, {double fontSize = 11}) {
+  void _drawText(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color, {
+    double fontSize = 11,
+  }) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize, fontWeight: FontWeight.bold)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();

@@ -20,7 +20,7 @@ class _DaltonLawScreenState extends State<DaltonLawScreen>
   double _n1 = 1.0;
   double _n2 = 0.5;
   double _n3 = 0.2;
-  double _p1 = 0, _p2 = 0, _p3 = 0, _totalP = 0;
+  double _p1 = 0, _p2 = 0, _totalP = 0;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _DaltonLawScreenState extends State<DaltonLawScreen>
     setState(() {
       _time += 0.016;
       final total = _n1 + _n2 + _n3;
-      _p1 = _n1 / total; _p2 = _n2 / total; _p3 = _n3 / total;
+      _p1 = _n1 / total; _p2 = _n2 / total;
       _totalP = total * 0.0821 * 300 / 24.0;
     });
   }
@@ -95,7 +95,7 @@ class _DaltonLawScreenState extends State<DaltonLawScreen>
                 max: 3.0,
                 step: 0.1,
                 defaultValue: 1.0,
-                formatValue: (v) => '${v.toStringAsFixed(1)}',
+                formatValue: (v) => v.toStringAsFixed(1),
                 onChanged: (v) => setState(() => _n1 = v),
               ),
               advancedControls: [
@@ -106,7 +106,7 @@ class _DaltonLawScreenState extends State<DaltonLawScreen>
                 max: 3.0,
                 step: 0.1,
                 defaultValue: 0.5,
-                formatValue: (v) => '${v.toStringAsFixed(1)}',
+                formatValue: (v) => v.toStringAsFixed(1),
                 onChanged: (v) => setState(() => _n2 = v),
               ),
             SimSlider(
@@ -116,7 +116,7 @@ class _DaltonLawScreenState extends State<DaltonLawScreen>
                 max: 2.0,
                 step: 0.1,
                 defaultValue: 0.2,
-                formatValue: (v) => '${v.toStringAsFixed(1)}',
+                formatValue: (v) => v.toStringAsFixed(1),
                 onChanged: (v) => setState(() => _n3 = v),
               ),
               ],
@@ -286,7 +286,7 @@ class _DaltonLawScreenPainter extends CustomPainter {
 
       _lbl(canvas, gasNames[gi], Offset(bx + barW3 / 2, chartBot + 8),
           gasColors[gi], 9, fw: FontWeight.bold);
-      _lbl(canvas, '${gasP[gi].toStringAsFixed(2)}', Offset(bx + barW3 / 2, by - 7),
+      _lbl(canvas, gasP[gi].toStringAsFixed(2), Offset(bx + barW3 / 2, by - 7),
           gasColors[gi], 8);
     }
 
@@ -304,7 +304,7 @@ class _DaltonLawScreenPainter extends CustomPainter {
         Paint()..color = const Color(0xFFE0F4FF)..strokeWidth = 1..style = PaintingStyle.stroke);
     _lbl(canvas, 'Total', Offset(totalBarX + barW3 / 2, chartBot + 8),
         const Color(0xFFE0F4FF), 8);
-    _lbl(canvas, '${pTotal.toStringAsFixed(2)}', Offset(totalBarX + barW3 / 2, stackY - 7),
+    _lbl(canvas, pTotal.toStringAsFixed(2), Offset(totalBarX + barW3 / 2, stackY - 7),
         const Color(0xFFE0F4FF), 8);
 
     // ===== BOTTOM: Mole fraction table =====

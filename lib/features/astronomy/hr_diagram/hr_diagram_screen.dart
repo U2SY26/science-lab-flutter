@@ -18,7 +18,7 @@ class _HrDiagramScreenState extends State<HrDiagramScreen>
   double _time = 0;
   bool _isRunning = true;
   double _starMass = 1.0;
-  double _luminosity = 1, _temperature = 5778, _lifetime = 10; String _spectralType = 'G';
+  double _luminosity = 1, _temperature = 5778, _lifetime = 10;
 
   @override
   void initState() {
@@ -35,7 +35,6 @@ class _HrDiagramScreenState extends State<HrDiagramScreen>
       _luminosity = math.pow(_starMass, 3.5).toDouble();
       _temperature = 5778 * math.pow(_starMass, 0.505).toDouble();
       _lifetime = 10 / math.pow(_starMass, 2.5).toDouble();
-      _spectralType = _temperature > 30000 ? 'O' : _temperature > 10000 ? 'B' : _temperature > 7500 ? 'A' : _temperature > 6000 ? 'F' : _temperature > 5200 ? 'G' : _temperature > 3700 ? 'K' : 'M';
     });
   }
 

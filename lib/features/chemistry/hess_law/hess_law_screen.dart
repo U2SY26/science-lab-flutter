@@ -103,9 +103,9 @@ class _HessLawScreenState extends State<HessLawScreen>
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: Row(children: [
-          _V('ΔH₁', _step1.toStringAsFixed(0) + ' kJ'),
-          _V('ΔH₂', _step2.toStringAsFixed(0) + ' kJ'),
-          _V('∑ΔH', _deltaH.toStringAsFixed(0) + ' kJ'),
+          _V('ΔH₁', '${_step1.toStringAsFixed(0)} kJ'),
+          _V('ΔH₂', '${_step2.toStringAsFixed(0)} kJ'),
+          _V('∑ΔH', '${_deltaH.toStringAsFixed(0)} kJ'),
                 ]),
               ),
             ],

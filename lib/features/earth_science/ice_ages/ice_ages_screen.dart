@@ -24,8 +24,10 @@ class _IceAgesScreenState extends State<IceAgesScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -42,12 +44,16 @@ class _IceAgesScreenState extends State<IceAgesScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _time = 0;
-      _eccentricity = 0.017; _obliquity = 23.5;
+      _eccentricity = 0.017;
+      _obliquity = 23.5;
     });
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +61,27 @@ class _IceAgesScreenState extends State<IceAgesScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('지구과학 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('빙하기 주기', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '지구과학 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '빙하기 주기',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -82,30 +104,30 @@ class _IceAgesScreenState extends State<IceAgesScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: '이심률',
-                value: _eccentricity,
-                min: 0,
-                max: 0.06,
-                step: 0.001,
-                defaultValue: 0.017,
-                formatValue: (v) => v.toStringAsFixed(3),
-                onChanged: (v) => setState(() => _eccentricity = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: '이심률',
+                  value: _eccentricity,
+                  min: 0,
+                  max: 0.06,
+                  step: 0.001,
+                  defaultValue: 0.017,
+                  formatValue: (v) => v.toStringAsFixed(3),
+                  onChanged: (v) => setState(() => _eccentricity = v),
+                ),
+                advancedControls: [
+                  SimSlider(
+                    label: '기울기 (°)',
+                    value: _obliquity,
+                    min: 22,
+                    max: 25,
+                    step: 0.1,
+                    defaultValue: 23.5,
+                    formatValue: (v) => '${v.toStringAsFixed(1)}°',
+                    onChanged: (v) => setState(() => _obliquity = v),
+                  ),
+                ],
               ),
-              advancedControls: [
-            SimSlider(
-                label: '기울기 (°)',
-                value: _obliquity,
-                min: 22,
-                max: 25,
-                step: 0.1,
-                defaultValue: 23.5,
-                formatValue: (v) => v.toStringAsFixed(1) + '°',
-                onChanged: (v) => setState(() => _obliquity = v),
-              ),
-              ],
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -114,23 +136,31 @@ class _IceAgesScreenState extends State<IceAgesScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('일사량', _insolation.toStringAsFixed(3)),
-          _V('온도차', _tempAnomaly.toStringAsFixed(1) + ' °C'),
-          _V('이심률', _eccentricity.toStringAsFixed(3)),
-                ]),
+                child: Row(
+                  children: [
+                    _V('일사량', _insolation.toStringAsFixed(3)),
+                    _V('온도차', '${_tempAnomaly.toStringAsFixed(1)} °C'),
+                    _V('이심률', _eccentricity.toStringAsFixed(3)),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -141,11 +171,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _IceAgesScreenPainter extends CustomPainter {
@@ -162,7 +207,10 @@ class _IceAgesScreenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width == 0 || size.height == 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width;
     final h = size.height;
@@ -172,13 +220,22 @@ class _IceAgesScreenPainter extends CustomPainter {
 
     void drawLabel(String text, double x, double y, Color color, double fs) {
       final tp = TextPainter(
-        text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fs)),
+        text: TextSpan(
+          text: text,
+          style: TextStyle(color: color, fontSize: fs),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       tp.paint(canvas, Offset(x - tp.width / 2, y - tp.height / 2));
     }
 
-    drawLabel('밀란코비치 사이클 (800 kyr)', w / 2, pad + titleH / 2, const Color(0xFF00D4FF), 10);
+    drawLabel(
+      '밀란코비치 사이클 (800 kyr)',
+      w / 2,
+      pad + titleH / 2,
+      const Color(0xFF00D4FF),
+      10,
+    );
 
     // Layout: 4 chart rows
     // Row 0: δ18O (temperature proxy)  ~30% of remaining height
@@ -188,13 +245,22 @@ class _IceAgesScreenPainter extends CustomPainter {
     final chartTop = pad + titleH + 4;
     final chartBot = h - pad;
     final totalH = chartBot - chartTop;
-    final rowHeights = [totalH * 0.32, totalH * 0.22, totalH * 0.22, totalH * 0.22];
+    final rowHeights = [
+      totalH * 0.32,
+      totalH * 0.22,
+      totalH * 0.22,
+      totalH * 0.22,
+    ];
     final gL = pad + labelW;
     final gR = w - pad;
     final gW = gR - gL;
 
-    final axPaint = Paint()..color = const Color(0xFF1A3040)..strokeWidth = 0.8;
-    final axisPaint = Paint()..color = const Color(0xFF5A8A9A)..strokeWidth = 1;
+    final axPaint = Paint()
+      ..color = const Color(0xFF1A3040)
+      ..strokeWidth = 0.8;
+    final axisPaint = Paint()
+      ..color = const Color(0xFF5A8A9A)
+      ..strokeWidth = 1;
 
     double rowY = chartTop;
     final rowConfigs = [
@@ -220,7 +286,10 @@ class _IceAgesScreenPainter extends CustomPainter {
 
       // Row label
       final lTp = TextPainter(
-        text: TextSpan(text: label, style: TextStyle(color: color, fontSize: 7.5)),
+        text: TextSpan(
+          text: label,
+          style: TextStyle(color: color, fontSize: 7.5),
+        ),
         textDirection: TextDirection.ltr,
       )..layout();
       lTp.paint(canvas, Offset(pad, rMid - lTp.height / 2));
@@ -238,9 +307,13 @@ class _IceAgesScreenPainter extends CustomPainter {
         double y;
         if (row == 0) {
           // δ18O: composite of 100kyr + 41kyr + 23kyr cycles
-          final v = math.sin(t * 2 * math.pi * 8.0)       // 100kyr
-                  + 0.4 * math.sin(t * 2 * math.pi * 19.5) // 41kyr
-                  + 0.25 * math.sin(t * 2 * math.pi * 34.8);// 23kyr
+          final v =
+              math.sin(t * 2 * math.pi * 8.0) // 100kyr
+              +
+              0.4 *
+                  math.sin(t * 2 * math.pi * 19.5) // 41kyr
+                  +
+              0.25 * math.sin(t * 2 * math.pi * 34.8); // 23kyr
           y = rMid - v * rH * 0.38;
         } else if (row == 1) {
           // Eccentricity: 100kyr cycle, modulated by eccentricity param
@@ -254,21 +327,34 @@ class _IceAgesScreenPainter extends CustomPainter {
           // Precession: 23kyr cycle
           y = rMid - math.sin(t * 2 * math.pi * 34.8) * rH * 0.38;
         }
-        if (i == 0) { path.moveTo(x, y); } else { path.lineTo(x, y); }
+        if (i == 0) {
+          path.moveTo(x, y);
+        } else {
+          path.lineTo(x, y);
+        }
       }
       canvas.drawPath(path, curvePaint);
 
       // Ice age highlight bands on row 0 only
       if (row == 0) {
-        final icePaint = Paint()..color = const Color(0xFFADD8E6).withValues(alpha: 0.10);
+        final icePaint = Paint()
+          ..color = const Color(0xFFADD8E6).withValues(alpha: 0.10);
         // Approximate glacial maxima positions (every ~100kyr)
         for (int g = 1; g <= 7; g++) {
           final cx = gL + gW * (g * 0.125 - 0.04);
-          canvas.drawRect(Rect.fromLTRB(cx, rTop, cx + gW * 0.04, rBot), icePaint);
+          canvas.drawRect(
+            Rect.fromLTRB(cx, rTop, cx + gW * 0.04, rBot),
+            icePaint,
+          );
         }
         // "현재" marker at right edge
-        canvas.drawLine(Offset(gR - 1, rTop), Offset(gR - 1, rBot),
-            Paint()..color = const Color(0xFFFF6B35)..strokeWidth = 1.5);
+        canvas.drawLine(
+          Offset(gR - 1, rTop),
+          Offset(gR - 1, rBot),
+          Paint()
+            ..color = const Color(0xFFFF6B35)
+            ..strokeWidth = 1.5,
+        );
         drawLabel('현재', gR - 1, rTop + 6, const Color(0xFFFF6B35), 7);
       }
 
@@ -277,7 +363,13 @@ class _IceAgesScreenPainter extends CustomPainter {
 
     // X axis labels
     drawLabel('800 kyr 전', gL + 10, chartBot - 6, const Color(0xFF5A8A9A), 7.5);
-    drawLabel('400 kyr', gL + gW * 0.5, chartBot - 6, const Color(0xFF5A8A9A), 7.5);
+    drawLabel(
+      '400 kyr',
+      gL + gW * 0.5,
+      chartBot - 6,
+      const Color(0xFF5A8A9A),
+      7.5,
+    );
     drawLabel('현재', gR - 8, chartBot - 6, const Color(0xFF5A8A9A), 7.5);
   }
 

@@ -24,8 +24,10 @@ class _WheatstoneBridgeScreenState extends State<WheatstoneBridgeScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))
-      ..addListener(_update);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..addListener(_update);
     _controller.repeat();
   }
 
@@ -42,12 +44,16 @@ class _WheatstoneBridgeScreenState extends State<WheatstoneBridgeScreen>
     HapticFeedback.mediumImpact();
     setState(() {
       _time = 0;
-      _r1 = 100.0; _r2 = 200.0;
+      _r1 = 100.0;
+      _r2 = 200.0;
     });
   }
 
   @override
-  void dispose() { _controller.dispose(); super.dispose(); }
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +61,27 @@ class _WheatstoneBridgeScreenState extends State<WheatstoneBridgeScreen>
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bg.withValues(alpha: 0.9),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('물리 시뮬레이션', style: TextStyle(color: AppColors.accent, fontSize: 11, letterSpacing: 1.5)),
-          const Text('휘트스톤 브리지', style: TextStyle(color: AppColors.ink, fontSize: 16)),
-        ]),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '물리 시뮬레이션',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text(
+              '휘트스톤 브리지',
+              style: TextStyle(color: AppColors.ink, fontSize: 16),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -82,30 +104,30 @@ class _WheatstoneBridgeScreenState extends State<WheatstoneBridgeScreen>
           controls: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            ControlGroup(
-              primaryControl: SimSlider(
-                label: 'R₁ (Ω)',
-                value: _r1,
-                min: 10,
-                max: 1000,
-                step: 10,
-                defaultValue: 100,
-                formatValue: (v) => v.toStringAsFixed(0) + ' Ω',
-                onChanged: (v) => setState(() => _r1 = v),
+              ControlGroup(
+                primaryControl: SimSlider(
+                  label: 'R₁ (Ω)',
+                  value: _r1,
+                  min: 10,
+                  max: 1000,
+                  step: 10,
+                  defaultValue: 100,
+                  formatValue: (v) => '${v.toStringAsFixed(0)} Ω',
+                  onChanged: (v) => setState(() => _r1 = v),
+                ),
+                advancedControls: [
+                  SimSlider(
+                    label: 'R₂ (Ω)',
+                    value: _r2,
+                    min: 10,
+                    max: 1000,
+                    step: 10,
+                    defaultValue: 200,
+                    formatValue: (v) => '${v.toStringAsFixed(0)} Ω',
+                    onChanged: (v) => setState(() => _r2 = v),
+                  ),
+                ],
               ),
-              advancedControls: [
-            SimSlider(
-                label: 'R₂ (Ω)',
-                value: _r2,
-                min: 10,
-                max: 1000,
-                step: 10,
-                defaultValue: 200,
-                formatValue: (v) => v.toStringAsFixed(0) + ' Ω',
-                onChanged: (v) => setState(() => _r2 = v),
-              ),
-              ],
-            ),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -114,23 +136,31 @@ class _WheatstoneBridgeScreenState extends State<WheatstoneBridgeScreen>
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.cardBorder),
                 ),
-                child: Row(children: [
-          _V('Rx', _rx.toStringAsFixed(1) + ' Ω'),
-          _V('Vₐ', _vBridge.toStringAsFixed(3) + ' V'),
-          _V('비율', (_r2 / _r1).toStringAsFixed(2)),
-                ]),
+                child: Row(
+                  children: [
+                    _V('Rx', '${_rx.toStringAsFixed(1)} Ω'),
+                    _V('Vₐ', '${_vBridge.toStringAsFixed(3)} V'),
+                    _V('비율', (_r2 / _r1).toStringAsFixed(2)),
+                  ],
+                ),
               ),
             ],
           ),
-          buttons: SimButtonGroup(expanded: true, buttons: [
-            SimButton(
-              label: _isRunning ? '정지' : '재생',
-              icon: _isRunning ? Icons.pause : Icons.play_arrow,
-              isPrimary: true,
-              onPressed: () { HapticFeedback.selectionClick(); setState(() => _isRunning = !_isRunning); },
-            ),
-            SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
-          ]),
+          buttons: SimButtonGroup(
+            expanded: true,
+            buttons: [
+              SimButton(
+                label: _isRunning ? '정지' : '재생',
+                icon: _isRunning ? Icons.pause : Icons.play_arrow,
+                isPrimary: true,
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  setState(() => _isRunning = !_isRunning);
+                },
+              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
+            ],
+          ),
         ),
       ),
     );
@@ -141,11 +171,26 @@ class _V extends StatelessWidget {
   final String label, value;
   const _V(this.label, this.value);
   @override
-  Widget build(BuildContext context) => Expanded(child: Column(children: [
-    Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-    const SizedBox(height: 2),
-    Text(value, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
-  ]));
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontSize: 12,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _WheatstoneBridgeScreenPainter extends CustomPainter {
@@ -159,15 +204,24 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
     required this.r2,
   });
 
-  void _label(Canvas canvas, String text, Offset pos, Color color, double sz,
-      {bool bold = false, bool center = false}) {
+  void _label(
+    Canvas canvas,
+    String text,
+    Offset pos,
+    Color color,
+    double sz, {
+    bool bold = false,
+    bool center = false,
+  }) {
     final tp = TextPainter(
       text: TextSpan(
-          text: text,
-          style: TextStyle(
-              color: color,
-              fontSize: sz,
-              fontWeight: bold ? FontWeight.bold : FontWeight.w500)),
+        text: text,
+        style: TextStyle(
+          color: color,
+          fontSize: sz,
+          fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+        ),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, center ? Offset(pos.dx - tp.width / 2, pos.dy) : pos);
@@ -188,21 +242,32 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
     for (int i = 0; i < zigs; i++) {
       final sign = (i % 2 == 0) ? 1.0 : -1.0;
       path.lineTo(
-          a.dx + nx * (segLen + (i * 2 + 1) * segLen) + px * zigW * sign,
-          a.dy + ny * (segLen + (i * 2 + 1) * segLen) + py * zigW * sign);
+        a.dx + nx * (segLen + (i * 2 + 1) * segLen) + px * zigW * sign,
+        a.dy + ny * (segLen + (i * 2 + 1) * segLen) + py * zigW * sign,
+      );
       path.lineTo(
-          a.dx + nx * (segLen + (i * 2 + 2) * segLen),
-          a.dy + ny * (segLen + (i * 2 + 2) * segLen));
+        a.dx + nx * (segLen + (i * 2 + 2) * segLen),
+        a.dy + ny * (segLen + (i * 2 + 2) * segLen),
+      );
     }
     path.lineTo(b.dx, b.dy);
-    canvas.drawPath(path,
-        Paint()..color = color..strokeWidth = 1.8..style = PaintingStyle.stroke..strokeCap = StrokeCap.round);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..strokeWidth = 1.8
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round,
+    );
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     if (size.width <= 0 || size.height <= 0) return;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF0D1A20));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFF0D1A20),
+    );
 
     final w = size.width, h = size.height;
 
@@ -237,7 +302,10 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
     }
 
     // Draw wires (thick colored segments showing voltage)
-    final wirePaint = Paint()..strokeWidth = 2.5..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
+    final wirePaint = Paint()
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
 
     // Top→Left wire (R1 segment)
     wirePaint.color = wireColor((vSupply + vLeft) / 2);
@@ -253,63 +321,158 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
     canvas.drawLine(bridgeRight, bridgeBot, wirePaint);
 
     // Galvanometer wire (middle, muted)
-    wirePaint.color = const Color(0xFF5A8A9A).withValues(alpha: isBalanced ? 0.4 : 0.8);
+    wirePaint.color = const Color(
+      0xFF5A8A9A,
+    ).withValues(alpha: isBalanced ? 0.4 : 0.8);
     canvas.drawLine(bridgeLeft, bridgeRight, wirePaint);
 
     // Battery wire
     wirePaint.color = const Color(0xFF5A8A9A);
     canvas.drawLine(battTop, battBot, wirePaint);
     // Battery symbol
-    canvas.drawLine(Offset(cx - 10, h * 0.88), Offset(cx + 10, h * 0.88),
-        Paint()..color = const Color(0xFF00D4FF)..strokeWidth = 3);
-    canvas.drawLine(Offset(cx - 6, h * 0.91), Offset(cx + 6, h * 0.91),
-        Paint()..color = const Color(0xFF00D4FF)..strokeWidth = 1.5);
+    canvas.drawLine(
+      Offset(cx - 10, h * 0.88),
+      Offset(cx + 10, h * 0.88),
+      Paint()
+        ..color = const Color(0xFF00D4FF)
+        ..strokeWidth = 3,
+    );
+    canvas.drawLine(
+      Offset(cx - 6, h * 0.91),
+      Offset(cx + 6, h * 0.91),
+      Paint()
+        ..color = const Color(0xFF00D4FF)
+        ..strokeWidth = 1.5,
+    );
     _label(canvas, '+', Offset(cx + 12, h * 0.85), const Color(0xFFFF6B35), 9);
     _label(canvas, '−', Offset(cx + 12, h * 0.90), const Color(0xFF5A8A9A), 9);
     _label(canvas, '5V', Offset(cx - 28, h * 0.87), const Color(0xFFE0F4FF), 8);
 
     // Draw resistors on each arm
-    final r1Mid = Offset((bridgeTop.dx + bridgeLeft.dx) / 2, (bridgeTop.dy + bridgeLeft.dy) / 2);
-    final r2Mid = Offset((bridgeTop.dx + bridgeRight.dx) / 2, (bridgeTop.dy + bridgeRight.dy) / 2);
-    final r3Mid = Offset((bridgeLeft.dx + bridgeBot.dx) / 2, (bridgeLeft.dy + bridgeBot.dy) / 2);
-    final r4Mid = Offset((bridgeRight.dx + bridgeBot.dx) / 2, (bridgeRight.dy + bridgeBot.dy) / 2);
+    final r1Mid = Offset(
+      (bridgeTop.dx + bridgeLeft.dx) / 2,
+      (bridgeTop.dy + bridgeLeft.dy) / 2,
+    );
+    final r2Mid = Offset(
+      (bridgeTop.dx + bridgeRight.dx) / 2,
+      (bridgeTop.dy + bridgeRight.dy) / 2,
+    );
+    final r3Mid = Offset(
+      (bridgeLeft.dx + bridgeBot.dx) / 2,
+      (bridgeLeft.dy + bridgeBot.dy) / 2,
+    );
+    final r4Mid = Offset(
+      (bridgeRight.dx + bridgeBot.dx) / 2,
+      (bridgeRight.dy + bridgeBot.dy) / 2,
+    );
 
-    _drawResistor(canvas,
-        Offset(bridgeTop.dx * 0.6 + bridgeLeft.dx * 0.4, bridgeTop.dy * 0.6 + bridgeLeft.dy * 0.4),
-        Offset(bridgeTop.dx * 0.4 + bridgeLeft.dx * 0.6, bridgeTop.dy * 0.4 + bridgeLeft.dy * 0.6),
-        const Color(0xFF00D4FF));
-    _label(canvas, 'R₁=${r1.toStringAsFixed(0)}Ω', Offset(r1Mid.dx - 34, r1Mid.dy - 4),
-        const Color(0xFF00D4FF), 8);
+    _drawResistor(
+      canvas,
+      Offset(
+        bridgeTop.dx * 0.6 + bridgeLeft.dx * 0.4,
+        bridgeTop.dy * 0.6 + bridgeLeft.dy * 0.4,
+      ),
+      Offset(
+        bridgeTop.dx * 0.4 + bridgeLeft.dx * 0.6,
+        bridgeTop.dy * 0.4 + bridgeLeft.dy * 0.6,
+      ),
+      const Color(0xFF00D4FF),
+    );
+    _label(
+      canvas,
+      'R₁=${r1.toStringAsFixed(0)}Ω',
+      Offset(r1Mid.dx - 34, r1Mid.dy - 4),
+      const Color(0xFF00D4FF),
+      8,
+    );
 
-    _drawResistor(canvas,
-        Offset(bridgeTop.dx * 0.6 + bridgeRight.dx * 0.4, bridgeTop.dy * 0.6 + bridgeRight.dy * 0.4),
-        Offset(bridgeTop.dx * 0.4 + bridgeRight.dx * 0.6, bridgeTop.dy * 0.4 + bridgeRight.dy * 0.6),
-        const Color(0xFFFF6B35));
-    _label(canvas, 'R₂=${r2.toStringAsFixed(0)}Ω', Offset(r2Mid.dx + 4, r2Mid.dy - 4),
-        const Color(0xFFFF6B35), 8);
+    _drawResistor(
+      canvas,
+      Offset(
+        bridgeTop.dx * 0.6 + bridgeRight.dx * 0.4,
+        bridgeTop.dy * 0.6 + bridgeRight.dy * 0.4,
+      ),
+      Offset(
+        bridgeTop.dx * 0.4 + bridgeRight.dx * 0.6,
+        bridgeTop.dy * 0.4 + bridgeRight.dy * 0.6,
+      ),
+      const Color(0xFFFF6B35),
+    );
+    _label(
+      canvas,
+      'R₂=${r2.toStringAsFixed(0)}Ω',
+      Offset(r2Mid.dx + 4, r2Mid.dy - 4),
+      const Color(0xFFFF6B35),
+      8,
+    );
 
-    _drawResistor(canvas,
-        Offset(bridgeLeft.dx * 0.6 + bridgeBot.dx * 0.4, bridgeLeft.dy * 0.6 + bridgeBot.dy * 0.4),
-        Offset(bridgeLeft.dx * 0.4 + bridgeBot.dx * 0.6, bridgeLeft.dy * 0.4 + bridgeBot.dy * 0.6),
-        const Color(0xFF00D4FF));
-    _label(canvas, 'R₃=${r3.toStringAsFixed(0)}Ω', Offset(r3Mid.dx - 38, r3Mid.dy - 4),
-        const Color(0xFF00D4FF), 8);
+    _drawResistor(
+      canvas,
+      Offset(
+        bridgeLeft.dx * 0.6 + bridgeBot.dx * 0.4,
+        bridgeLeft.dy * 0.6 + bridgeBot.dy * 0.4,
+      ),
+      Offset(
+        bridgeLeft.dx * 0.4 + bridgeBot.dx * 0.6,
+        bridgeLeft.dy * 0.4 + bridgeBot.dy * 0.6,
+      ),
+      const Color(0xFF00D4FF),
+    );
+    _label(
+      canvas,
+      'R₃=${r3.toStringAsFixed(0)}Ω',
+      Offset(r3Mid.dx - 38, r3Mid.dy - 4),
+      const Color(0xFF00D4FF),
+      8,
+    );
 
-    _drawResistor(canvas,
-        Offset(bridgeRight.dx * 0.6 + bridgeBot.dx * 0.4, bridgeRight.dy * 0.6 + bridgeBot.dy * 0.4),
-        Offset(bridgeRight.dx * 0.4 + bridgeBot.dx * 0.6, bridgeRight.dy * 0.4 + bridgeBot.dy * 0.6),
-        const Color(0xFFFF6B35));
-    _label(canvas, 'Rx=${rx.toStringAsFixed(0)}Ω', Offset(r4Mid.dx + 4, r4Mid.dy - 4),
-        const Color(0xFFFF6B35), 8);
+    _drawResistor(
+      canvas,
+      Offset(
+        bridgeRight.dx * 0.6 + bridgeBot.dx * 0.4,
+        bridgeRight.dy * 0.6 + bridgeBot.dy * 0.4,
+      ),
+      Offset(
+        bridgeRight.dx * 0.4 + bridgeBot.dx * 0.6,
+        bridgeRight.dy * 0.4 + bridgeBot.dy * 0.6,
+      ),
+      const Color(0xFFFF6B35),
+    );
+    _label(
+      canvas,
+      'Rx=${rx.toStringAsFixed(0)}Ω',
+      Offset(r4Mid.dx + 4, r4Mid.dy - 4),
+      const Color(0xFFFF6B35),
+      8,
+    );
 
     // Galvanometer in the middle
-    final galvMid = Offset((bridgeLeft.dx + bridgeRight.dx) / 2,
-        (bridgeLeft.dy + bridgeRight.dy) / 2);
-    canvas.drawCircle(galvMid, 10,
-        Paint()..color = const Color(0xFF0A0A0F)..style = PaintingStyle.fill);
-    canvas.drawCircle(galvMid, 10,
-        Paint()..color = const Color(0xFF5A8A9A)..strokeWidth = 1.5..style = PaintingStyle.stroke);
-    _label(canvas, 'G', Offset(galvMid.dx - 4, galvMid.dy - 5), const Color(0xFF5A8A9A), 9);
+    final galvMid = Offset(
+      (bridgeLeft.dx + bridgeRight.dx) / 2,
+      (bridgeLeft.dy + bridgeRight.dy) / 2,
+    );
+    canvas.drawCircle(
+      galvMid,
+      10,
+      Paint()
+        ..color = const Color(0xFF0A0A0F)
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawCircle(
+      galvMid,
+      10,
+      Paint()
+        ..color = const Color(0xFF5A8A9A)
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke,
+    );
+    _label(
+      canvas,
+      'G',
+      Offset(galvMid.dx - 4, galvMid.dy - 5),
+      const Color(0xFF5A8A9A),
+      9,
+    );
 
     // Animated current dot on galvanometer branch
     if (!isBalanced) {
@@ -317,8 +480,11 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
       final direction = vBridge > 0 ? dotPhase : (1.0 - dotPhase);
       final dotX = bridgeLeft.dx + (bridgeRight.dx - bridgeLeft.dx) * direction;
       final dotY = bridgeLeft.dy + (bridgeRight.dy - bridgeLeft.dy) * direction;
-      canvas.drawCircle(Offset(dotX, dotY), 3.5,
-          Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.9));
+      canvas.drawCircle(
+        Offset(dotX, dotY),
+        3.5,
+        Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.9),
+      );
     }
 
     // Animated current dots on main branches
@@ -327,11 +493,17 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
       // Left branch: top→left→bot
       final leftBranchX = bridgeTop.dx + (bridgeBot.dx - bridgeTop.dx) * phase;
       final leftBranchY = bridgeTop.dy + (bridgeBot.dy - bridgeTop.dy) * phase;
-      canvas.drawCircle(Offset(leftBranchX - 8, leftBranchY),
-          2.5, Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.6));
+      canvas.drawCircle(
+        Offset(leftBranchX - 8, leftBranchY),
+        2.5,
+        Paint()..color = const Color(0xFF00D4FF).withValues(alpha: 0.6),
+      );
       // Right branch
-      canvas.drawCircle(Offset(leftBranchX + 8, leftBranchY),
-          2.5, Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.6));
+      canvas.drawCircle(
+        Offset(leftBranchX + 8, leftBranchY),
+        2.5,
+        Paint()..color = const Color(0xFFFF6B35).withValues(alpha: 0.6),
+      );
     }
 
     // Node dots
@@ -340,25 +512,58 @@ class _WheatstoneBridgeScreenPainter extends CustomPainter {
     }
 
     // Voltage labels at nodes
-    _label(canvas, '${vSupply.toStringAsFixed(0)}V', Offset(bridgeTop.dx + 5, bridgeTop.dy - 12),
-        const Color(0xFFE0F4FF), 8);
-    _label(canvas, '${vLeft.toStringAsFixed(2)}V', Offset(bridgeLeft.dx - 32, bridgeLeft.dy - 5),
-        const Color(0xFF00D4FF), 8);
-    _label(canvas, '${vRight.toStringAsFixed(2)}V', Offset(bridgeRight.dx + 5, bridgeRight.dy - 5),
-        const Color(0xFFFF6B35), 8);
-    _label(canvas, '0V', Offset(bridgeBot.dx + 5, bridgeBot.dy - 5),
-        const Color(0xFF5A8A9A), 8);
+    _label(
+      canvas,
+      '${vSupply.toStringAsFixed(0)}V',
+      Offset(bridgeTop.dx + 5, bridgeTop.dy - 12),
+      const Color(0xFFE0F4FF),
+      8,
+    );
+    _label(
+      canvas,
+      '${vLeft.toStringAsFixed(2)}V',
+      Offset(bridgeLeft.dx - 32, bridgeLeft.dy - 5),
+      const Color(0xFF00D4FF),
+      8,
+    );
+    _label(
+      canvas,
+      '${vRight.toStringAsFixed(2)}V',
+      Offset(bridgeRight.dx + 5, bridgeRight.dy - 5),
+      const Color(0xFFFF6B35),
+      8,
+    );
+    _label(
+      canvas,
+      '0V',
+      Offset(bridgeBot.dx + 5, bridgeBot.dy - 5),
+      const Color(0xFF5A8A9A),
+      8,
+    );
 
     // Balance / imbalance indicator
     final balStr = isBalanced ? '균형 (G=0)' : 'Δ=${vBridge.toStringAsFixed(3)}V';
-    _label(canvas, balStr, Offset(galvMid.dx, galvMid.dy + 15),
-        isBalanced ? const Color(0xFF64FF8C) : const Color(0xFFFF6B35), 8, center: true);
+    _label(
+      canvas,
+      balStr,
+      Offset(galvMid.dx, galvMid.dy + 15),
+      isBalanced ? const Color(0xFF64FF8C) : const Color(0xFFFF6B35),
+      8,
+      center: true,
+    );
 
     // Balance condition label
-    _label(canvas, 'R₁/R₂ = R₃/Rx', Offset(cx - 36, h * 0.97 - 2),
-        const Color(0xFF5A8A9A), 8, bold: true);
+    _label(
+      canvas,
+      'R₁/R₂ = R₃/Rx',
+      Offset(cx - 36, h * 0.97 - 2),
+      const Color(0xFF5A8A9A),
+      8,
+      bold: true,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant _WheatstoneBridgeScreenPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _WheatstoneBridgeScreenPainter oldDelegate) =>
+      true;
 }

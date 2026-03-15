@@ -18,12 +18,11 @@ class _GeneticScreenState extends State<GeneticScreen> {
   final _random = math.Random();
   List<_Individual> _population = [];
   int _generation = 0;
-  int _populationSize = 20;
+  final int _populationSize = 20;
   double _mutationRate = 0.1;
   bool _isRunning = false;
 
   // 목표: x^2 최대화 (0 ~ 31)
-  String _targetBinary = '11111'; // 31
   int get _targetValue => 31;
 
   @override
@@ -120,7 +119,9 @@ class _GeneticScreenState extends State<GeneticScreen> {
   @override
   Widget build(BuildContext context) {
     final bestIndividual = _population.isNotEmpty ? _population.first : null;
-    final bestValue = bestIndividual != null ? _decode(bestIndividual.genes) : 0;
+    final bestValue = bestIndividual != null
+        ? _decode(bestIndividual.genes)
+        : 0;
     final bestFitness = bestIndividual != null ? _fitness(bestIndividual) : 0;
 
     return Scaffold(
@@ -174,21 +175,45 @@ class _GeneticScreenState extends State<GeneticScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: bestValue == _targetValue ? Colors.green.withValues(alpha: 0.1) : AppColors.simBg,
+                  color: bestValue == _targetValue
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : AppColors.simBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: bestValue == _targetValue ? Colors.green : AppColors.cardBorder),
+                  border: Border.all(
+                    color: bestValue == _targetValue
+                        ? Colors.green
+                        : AppColors.cardBorder,
+                  ),
                 ),
                 child: Column(
                   children: [
                     if (bestValue == _targetValue)
-                      const Text('🎉 최적해 발견!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                      const Text(
+                        '🎉 최적해 발견!',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _InfoItem(label: '세대', value: '$_generation', color: Colors.blue),
-                        _InfoItem(label: '최고 적합도', value: bestFitness.toStringAsFixed(0), color: AppColors.accent),
-                        _InfoItem(label: '최고 값', value: '$bestValue / $_targetValue', color: Colors.green),
+                        _InfoItem(
+                          label: '세대',
+                          value: '$_generation',
+                          color: Colors.blue,
+                        ),
+                        _InfoItem(
+                          label: '최고 적합도',
+                          value: bestFitness.toStringAsFixed(0),
+                          color: AppColors.accent,
+                        ),
+                        _InfoItem(
+                          label: '최고 값',
+                          value: '$bestValue / $_targetValue',
+                          color: Colors.green,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -196,16 +221,34 @@ class _GeneticScreenState extends State<GeneticScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('최고 유전자: ', style: TextStyle(color: AppColors.muted, fontSize: 11)),
-                          ...bestIndividual.genes.map((g) => Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 2),
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: g == 1 ? AppColors.accent : AppColors.card,
-                                  borderRadius: BorderRadius.circular(4),
+                          const Text(
+                            '최고 유전자: ',
+                            style: TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 11,
+                            ),
+                          ),
+                          ...bestIndividual.genes.map(
+                            (g) => Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 2),
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: g == 1
+                                    ? AppColors.accent
+                                    : AppColors.card,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '$g',
+                                style: TextStyle(
+                                  color: g == 1
+                                      ? Colors.white
+                                      : AppColors.muted,
+                                  fontSize: 12,
                                 ),
-                                child: Text('$g', style: TextStyle(color: g == 1 ? Colors.white : AppColors.muted, fontSize: 12)),
-                              )),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                   ],
@@ -233,10 +276,12 @@ class _GeneticScreenState extends State<GeneticScreen> {
                 label: _isRunning ? '진화 중...' : '진화 시작',
                 icon: Icons.play_arrow,
                 isPrimary: true,
-                onPressed: _isRunning ? null : () {
-                  HapticFeedback.selectionClick();
-                  _startEvolution();
-                },
+                onPressed: _isRunning
+                    ? null
+                    : () {
+                        HapticFeedback.selectionClick();
+                        _startEvolution();
+                      },
               ),
               SimButton(
                 label: '1 세대',
@@ -247,11 +292,7 @@ class _GeneticScreenState extends State<GeneticScreen> {
                   setState(() {});
                 },
               ),
-              SimButton(
-                label: '리셋',
-                icon: Icons.refresh,
-                onPressed: _reset,
-              ),
+              SimButton(label: '리셋', icon: Icons.refresh, onPressed: _reset),
             ],
           ),
         ),
@@ -270,14 +311,28 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _InfoItem({required this.label, required this.value, required this.color});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(color: AppColors.muted, fontSize: 10)),
-        Text(value, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(color: AppColors.muted, fontSize: 10),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -364,13 +419,26 @@ class _GeneticPainter extends CustomPainter {
     }
 
     // 라벨
-    _drawText(canvas, 'x', Offset(size.width - padding + 5, size.height - padding + 5), AppColors.muted);
-    _drawText(canvas, 'f(x)=x²', Offset(padding + 5, padding - 15), AppColors.muted);
+    _drawText(
+      canvas,
+      'x',
+      Offset(size.width - padding + 5, size.height - padding + 5),
+      AppColors.muted,
+    );
+    _drawText(
+      canvas,
+      'f(x)=x²',
+      Offset(padding + 5, padding - 15),
+      AppColors.muted,
+    );
   }
 
   void _drawText(Canvas canvas, String text, Offset pos, Color color) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: 10)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: 10),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
