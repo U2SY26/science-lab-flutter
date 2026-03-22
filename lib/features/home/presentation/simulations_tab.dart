@@ -38,7 +38,7 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
     _allSimulations = getSimulations();
     _particleController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(milliseconds: 1500),
     )..repeat();
   }
 
@@ -64,7 +64,28 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
           pinned: true,
           forceElevated: innerBoxIsScrolled,
           backgroundColor: Colors.black,
-          flexibleSpace: Container(color: Colors.black),
+          flexibleSpace: AnimatedBuilder(
+            animation: _particleController,
+            builder: (context, child) {
+              final sweep = (_particleController.value * 2 - 0.5);
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment(sweep - 0.6, -0.5),
+                    end: Alignment(sweep + 0.6, 0.5),
+                    colors: [
+                      Colors.black,
+                      const Color(0xFFFF0080).withValues(alpha: 0.08),
+                      const Color(0xFF00D4FF).withValues(alpha: 0.12),
+                      const Color(0xFF8B5CF6).withValues(alpha: 0.08),
+                      Colors.black,
+                    ],
+                    stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
+                  ),
+                ),
+              );
+            },
+          ),
           bottom: TabBar(
             controller: _tabController,
             indicatorColor: AppColors.accent,
@@ -503,6 +524,14 @@ Color getCategoryColor(SimCategory category) {
       return const Color(0xFF87CEEB);
     case SimCategory.earth:
       return const Color(0xFF8FBC8F);
+    case SimCategory.semiconductor:
+      return const Color(0xFF6C5CE7);
+    case SimCategory.materials:
+      return const Color(0xFFD4A574);
+    case SimCategory.battery:
+      return const Color(0xFF00B894);
+    case SimCategory.energy:
+      return const Color(0xFFFD79A8);
     case SimCategory.all:
       return AppColors.accent;
   }
@@ -532,6 +561,14 @@ String getCategoryDescription(SimCategory category, {bool isKorean = false}) {
         return '특수 및 일반 상대성';
       case SimCategory.earth:
         return '지질, 기후, 대기';
+      case SimCategory.semiconductor:
+        return '반도체, 소자, 회로';
+      case SimCategory.materials:
+        return '금속, 세라믹, 고분자';
+      case SimCategory.battery:
+        return '전지, 전기화학';
+      case SimCategory.energy:
+        return '발전, 신재생, 변환';
       case SimCategory.all:
         return '전체 시뮬레이션';
     }
@@ -557,6 +594,14 @@ String getCategoryDescription(SimCategory category, {bool isKorean = false}) {
       return 'Special & General Relativity';
     case SimCategory.earth:
       return 'Geology, Climate, Atmosphere';
+    case SimCategory.semiconductor:
+      return 'Devices, Circuits, Chips';
+    case SimCategory.materials:
+      return 'Metals, Ceramics, Polymers';
+    case SimCategory.battery:
+      return 'Cells, Electrochemistry';
+    case SimCategory.energy:
+      return 'Power, Renewables, Conversion';
     case SimCategory.all:
       return 'All Simulations';
   }
@@ -681,7 +726,7 @@ class _AnimatedHeroTitleState extends State<_AnimatedHeroTitle>
     _effectIndex = _rng.nextInt(4);
 
     _mainCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
-    _loopCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    _loopCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
 
     // 쿵 찍기: 크게 → 원래 크기 + 흔들림
     _scaleAnim = TweenSequence<double>([
@@ -784,13 +829,15 @@ class _AnimatedHeroTitleState extends State<_AnimatedHeroTitle>
               begin: Alignment(offset - 0.3, 0),
               end: Alignment(offset + 0.3, 0),
               colors: const [
-                Color(0xFFE2E8F0),
-                Color(0xFF00D4FF),
+                Color(0xFFFF0080),
+                Color(0xFFFF8C00),
                 Color(0xFFFFD700),
+                Color(0xFF00FF88),
                 Color(0xFF00D4FF),
-                Color(0xFFE2E8F0),
+                Color(0xFF8B5CF6),
+                Color(0xFFFF0080),
               ],
-              stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
+              stops: const [0.0, 0.17, 0.33, 0.5, 0.67, 0.83, 1.0],
             ).createShader(bounds);
           },
           child: titleWidget,

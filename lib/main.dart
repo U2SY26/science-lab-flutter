@@ -42,12 +42,12 @@ void main() async {
   // Firebase 초기화 (실패해도 앱은 계속 실행)
   try {
     await Firebase.initializeApp();
-    // App Check — 릴리즈에서만 Play Integrity 활성화
-    if (!kDebugMode) {
-      await FirebaseAppCheck.instance.activate(
-        providerAndroid: const AndroidPlayIntegrityProvider(),
-      );
-    }
+    // App Check — 릴리즈: Play Integrity / 디버그: Debug Provider
+    await FirebaseAppCheck.instance.activate(
+      providerAndroid: kDebugMode
+          ? const AndroidDebugProvider()
+          : const AndroidPlayIntegrityProvider(),
+    );
     // Firebase AI Logic (Gemini) 초기화 — API 키 불필요
     FirebaseAiService().initialize();
     // 앱 시작 이벤트 로깅

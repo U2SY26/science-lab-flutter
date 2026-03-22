@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/comment.dart';
 import '../models/forum_post.dart';
@@ -100,9 +101,12 @@ class CommentNotifier extends StateNotifier<CommentState> {
       await loadPage(state.currentPage);
       return true;
     } catch (e) {
+      debugPrint('[CommentNotifier] addComment error: $e');
       final msg = e.toString();
       if (msg.contains('rate_limited')) {
         state = state.copyWith(error: 'rate_limited');
+      } else if (msg.contains('PERMISSION_DENIED') || msg.contains('permission-denied')) {
+        state = state.copyWith(error: 'permission_denied');
       } else {
         state = state.copyWith(error: msg);
       }

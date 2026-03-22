@@ -11,7 +11,7 @@ class ModerationService {
     if (content.trim().isEmpty) return false;
 
     // 짧은 텍스트는 모더레이션 스킵 (AI가 오판하기 쉬움)
-    if (content.trim().length <= 10) return true;
+    if (content.trim().length <= 50) return true;
 
     // AI 서비스 사용 불가 시 통과 (사후 신고로 대응)
     if (!FirebaseAiService().isAvailable) return true;
@@ -38,23 +38,24 @@ class ModerationService {
   }
 
   static const _moderationPrompt = '''
-You are a content moderator for a science education app used by students worldwide.
-Evaluate the following user-generated content and respond with ONLY "PASS" or "FAIL".
+You are a lenient content moderator for a science education community app.
+Respond with ONLY "PASS" or "FAIL".
 
-FAIL if the content contains:
-- Hate speech, harassment, bullying, or threats
-- Sexual or violent content
-- Personal information (names, emails, phone numbers, addresses)
-- Spam, advertising, or promotional content
-- Profanity or offensive language in any language
-- Content completely unrelated to science/education
+ONLY FAIL for clearly harmful content:
+- Explicit hate speech, serious threats, or harassment targeting individuals
+- Sexually explicit or graphically violent content
+- Phone numbers, email addresses, or home addresses (personal info)
+- Obvious spam with external links or advertising
 
-PASS if the content is:
-- Science-related discussion, questions, or answers
-- Respectful feedback or opinions
-- Educational tips or resources
-- General friendly conversation
+PASS everything else, including:
+- Greetings, casual conversation, emojis, slang
+- Off-topic but harmless chat
+- Opinions, feedback, jokes
+- Short messages like "hi", "thanks", "lol", "ㅋㅋ"
+- Science questions AND non-science questions
+- Any content that is not clearly harmful
 
+When in doubt, ALWAYS respond PASS. Be very lenient.
 Respond with ONLY one word: PASS or FAIL.
 ''';
 }
