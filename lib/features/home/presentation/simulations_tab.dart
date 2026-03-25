@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rive/rive.dart' hide LinearGradient, RadialGradient;
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/ai_chat_provider.dart';
 import '../../../core/providers/language_provider.dart';
@@ -29,16 +31,21 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
     with TickerProviderStateMixin {
   late TabController _tabController;
   late AnimationController _particleController;
+  late AnimationController _rainbowController;
   late List<SimulationInfo> _allSimulations;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _allSimulations = getSimulations();
     _particleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
+    )..repeat();
+    _rainbowController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
     )..repeat();
   }
 
@@ -46,6 +53,7 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
   void dispose() {
     _tabController.dispose();
     _particleController.dispose();
+    _rainbowController.dispose();
     super.dispose();
   }
 
@@ -86,24 +94,58 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
               );
             },
           ),
-          bottom: TabBar(
-            controller: _tabController,
-            indicatorColor: AppColors.accent,
-            labelColor: Colors.white,
-            unselectedLabelColor: AppColors.muted,
-            tabs: [
-              Tab(text: isKorean ? '카테고리' : 'Categories'),
-              const Tab(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.view_in_ar, size: 16),
-                    SizedBox(width: 4),
-                    Text('XR 3D'),
-                  ],
-                ),
-              ),
-            ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: AnimatedBuilder(
+              animation: _rainbowController,
+              builder: (context, child) {
+                final t = _rainbowController.value;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: CustomPaint(
+                    painter: _RainbowBorderPainter(
+                      progress: t,
+                      borderRadius: 25,
+                      strokeWidth: 1.5,
+                      opacity: 0.4,
+                    ),
+                    child: TabBar(
+                      controller: _tabController,
+                      indicatorColor: AppColors.accent,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      labelColor: Colors.white,
+                      unselectedLabelColor: AppColors.muted,
+                      dividerColor: Colors.transparent,
+                      labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      unselectedLabelStyle: const TextStyle(fontSize: 13),
+                      tabs: [
+                        Tab(text: isKorean ? '카테고리' : 'Categories'),
+                        const Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.view_in_ar, size: 16),
+                              SizedBox(width: 4),
+                              Text('XR 3D'),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.bubble_chart, size: 16),
+                              SizedBox(width: 4),
+                              Text(isKorean ? '3D 파티클' : '3D Particle'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -112,6 +154,7 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
         children: [
           _buildCategoryView(isKorean),
           _buildXrView(isKorean),
+          _buildParticleView(isKorean),
         ],
       ),
     ),
@@ -210,7 +253,7 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _StatCard(
-                  number: '${_allSimulations.length}+',
+                  number: '1,246+',
                   label: isKorean ? '시뮬레이션' : 'Simulations',
                   icon: Icons.science,
                 ),
@@ -355,6 +398,111 @@ class _SimulationsTabState extends ConsumerState<SimulationsTab>
         final sim = xrSims[index - 1];
         return _XrSimCard(sim: sim, isKorean: isKorean);
       },
+    );
+  }
+
+  Widget _buildParticleView(bool isKorean) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF00D4FF), Color(0xFF8B5CF6), Color(0xFFFF0080)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00D4FF).withValues(alpha: 0.3),
+                    blurRadius: 24,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.bubble_chart, size: 48, color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              isKorean ? '3D 파티클 시뮬레이터' : '3D Particle Simulator',
+              style: const TextStyle(
+                color: AppColors.ink,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isKorean
+                  ? 'Three.js 기반 3D 파티클 물리 엔진\n다양한 재질과 건축 구조물 생성'
+                  : 'Three.js 3D particle physics engine\nCreate structures with various materials',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.muted, fontSize: 14, height: 1.5),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                _featureChip(isKorean ? '물리 엔진' : 'Physics', const Color(0xFF00D4FF)),
+                _featureChip(isKorean ? '건축 생성' : 'Architecture', const Color(0xFF8B5CF6)),
+                _featureChip(isKorean ? '재질 선택' : 'Materials', const Color(0xFFFF0080)),
+                _featureChip(isKorean ? 'WebXR' : 'WebXR', const Color(0xFFFFD700)),
+                _featureChip(isKorean ? '네온 렌더링' : 'Neon FX', const Color(0xFF64FF8C)),
+              ],
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const _ParticleWebView(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.play_circle_fill, size: 24),
+                label: Text(
+                  isKorean ? '시뮬레이터 열기' : 'Open Simulator',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00D4FF),
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 8,
+                  shadowColor: const Color(0xFF00D4FF).withValues(alpha: 0.4),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _featureChip(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
+      ),
     );
   }
 
@@ -1008,6 +1156,55 @@ class _TodaySimCard extends StatelessWidget {
   }
 }
 
+/// 레인보우 외곽선 페인터 — 2초 주기 좌→우 흐르는 그라데이션 (투명도 적용)
+class _RainbowBorderPainter extends CustomPainter {
+  final double progress;
+  final double borderRadius;
+  final double strokeWidth;
+  final double opacity;
+
+  _RainbowBorderPainter({
+    required this.progress,
+    required this.borderRadius,
+    required this.strokeWidth,
+    required this.opacity,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(borderRadius));
+
+    final colors = [
+      Color(0xFFFF0080).withValues(alpha: opacity),
+      Color(0xFFFF8C00).withValues(alpha: opacity),
+      Color(0xFFFFD700).withValues(alpha: opacity),
+      Color(0xFF00FF88).withValues(alpha: opacity),
+      Color(0xFF00D4FF).withValues(alpha: opacity),
+      Color(0xFF8B5CF6).withValues(alpha: opacity),
+      Color(0xFFFF0080).withValues(alpha: opacity),
+    ];
+
+    final shader = LinearGradient(
+      begin: Alignment(progress * 4 - 2, 0),
+      end: Alignment(progress * 4, 0),
+      colors: colors,
+      tileMode: TileMode.repeated,
+    ).createShader(rect);
+
+    final paint = Paint()
+      ..shader = shader
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    canvas.drawRRect(rrect, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _RainbowBorderPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
+
 /// 히어로 헤더 — Rive 모션 캐릭터 (터치 인터랙션 지원)
 class _RiveHeroMotion extends StatelessWidget {
   const _RiveHeroMotion();
@@ -1018,6 +1215,108 @@ class _RiveHeroMotion extends StatelessWidget {
       'assets/rive/hero_motion.riv',
       fit: BoxFit.contain,
       stateMachines: ['State Machine 1'],
+    );
+  }
+}
+
+/// 3D 파티클 시뮬레이터 — WebView로 웹 버전 로드
+class _ParticleWebView extends StatefulWidget {
+  const _ParticleWebView();
+
+  @override
+  State<_ParticleWebView> createState() => _ParticleWebViewState();
+}
+
+class _ParticleWebViewState extends State<_ParticleWebView> {
+  double _progress = 0;
+  bool _hasError = false;
+
+  static const _url = 'https://3dweb-rust.vercel.app/particle';
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: const Text('3D Particle Simulator', style: TextStyle(fontSize: 16)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.open_in_browser),
+            onPressed: () => launchUrl(Uri.parse(_url), mode: LaunchMode.externalApplication),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          InAppWebView(
+            initialUrlRequest: URLRequest(url: WebUri(_url)),
+            initialSettings: InAppWebViewSettings(
+              javaScriptEnabled: true,
+              allowsInlineMediaPlayback: true,
+              mediaPlaybackRequiresUserGesture: false,
+              transparentBackground: true,
+              useWideViewPort: true,
+            ),
+            onProgressChanged: (_, progress) {
+              if (mounted) setState(() => _progress = progress / 100);
+            },
+            onLoadStop: (_, __) {
+              if (mounted) setState(() => _progress = 1.0);
+            },
+            onReceivedError: (_, __, ___) {
+              if (mounted) setState(() => _hasError = true);
+            },
+          ),
+          if (_progress < 1.0 && !_hasError)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    value: _progress > 0 ? _progress : null,
+                    color: const Color(0xFF00D4FF),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${(_progress * 100).toInt()}%',
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          if (_hasError)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.wifi_off, color: Colors.white54, size: 48),
+                  const SizedBox(height: 12),
+                  const Text('Network error', style: TextStyle(color: Colors.white70)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => setState(() => _hasError = false),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
